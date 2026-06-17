@@ -1,0 +1,100 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2007.05.03.21.41.26;	author gw8440;	state Exp;
+branches;
+next	;
+
+
+desc
+@ race2 org version
+@
+
+
+1.1
+log
+@ race2 org version
+@
+text
+@#! /bin/ksh 
+  if [[ $# = "0" || $# > "7" ]]
+    then
+      echo  Usage: rcheck_out {-l} {-r revision_number} {-v version_label} \
+            file_name subsystem_name/component_name "\007"
+      echo " Example: rcheck_out -l mfcr010.ksh ceg/bin"
+      exit -1
+  fi
+
+export RCSDIR=media1:/prod/race
+export STGDIR=/stage/race
+
+  LARG=""                                        # -l is Lock flag
+  RARG=""                                        # -r is Revision number flag
+  VARG=""                                        # -v is Version label flag
+
+  while getopts -"lr:v:" ARG                     # parse parmeters
+    do
+      if [ $ARG = "l" ]                          # set -l value
+        then
+          LARG="-l"
+      else
+      if [ $ARG = "r" ]                          # set -r value
+        then
+          RARG="-r "$OPTARG
+      else
+      if [ $ARG = "v" ]                          # set -v value
+        then
+          VARG="-v "$OPTARG
+      else
+          echo Unknown parameter "\007" >&2
+          exit -2                                # invalid parameter - exit
+      fi
+      fi
+      fi
+  done
+
+  shift 'OPTIND - 1'                             # set $1 to next-to-last argument
+
+  mrverify $1 $2                                  # verify argument-name strings
+  if [ $? != 0 ]
+    then
+    exit -1
+  fi
+
+  check_out.ksh $LARG $RARG $VARG $1 $2  > $1.tmp               # check it out, O/P to stdout
+  if [ $? = 0 ]                                   # test return code of check_out...
+   then
+     ci_okay=0
+   else
+     ci_okay=-1
+  fi
+   
+#rsh a8400 ls -l  /prod/race/$2/RCS/$1,v
+#extent=$(echo $1 | awk -F. '{print $2}')
+#
+#echo DEV:
+#if [ $extent != 'cbl' ]
+#then
+  #ls -l /stage/race/$2/$1
+  #ls -l /stage/race/$2/rollback/$1
+#fi
+#echo CWD:
+#ls -l $PWD/$1
+#echo =======================================================================
+
+ if [ $ci_okay = 0 ]
+ then
+   mv $1.tmp $1
+   chmod +x $1
+   mrstatus $1 $2
+ else 
+   rm -f $1.tmp
+ fi
+
+# end of script
+@

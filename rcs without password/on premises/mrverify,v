@@ -1,0 +1,58 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2007.05.03.21.43.50;	author gw8440;	state Exp;
+branches;
+next	;
+
+
+desc
+@ race2 org version
+@
+
+
+1.1
+log
+@ race2 org version
+@
+text
+@#! /bin/ksh
+
+#  if [ $# != "2" ]
+#    then
+#      echo  Usage: mverify file_name subsys/component "\007"
+#      exit -1
+#  fi
+
+# verify legal filename extension
+
+  export fname=$(echo $1 | awk -F. '{print $1}')
+  export extent=$(echo $1 | awk -F. '{print $2}')
+
+  case $extent in
+	ksh|awk) ;;
+    *) echo "$extent: file extension_name not ksh|awk\007" ; exit -2;; 
+  esac
+
+# verify subsys/component names
+
+  export subsys=$(echo $2 | awk -F/ '{print $1}')
+  export component=$(echo $2 | awk -F/ '{print $2}')
+
+  case $subsys in
+	altp|ceg|flr|misc|oto|parts|share) echo > /dev/null;;
+    *) echo "$subsys: subsystem_name not altp|ceg|flr|misc|oto|parts|share \007" ; exit -2;; 
+  esac
+  case $component in
+	bin) echo " ";;
+    *) echo "$component: component_name not bin \007" ; exit -2;; 
+  esac
+
+exit 0
+# end of script
+@

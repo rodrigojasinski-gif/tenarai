@@ -1,0 +1,26 @@
+PBI 1
+Title: Install RCS package on pawapp7017l.production.int (RHEL 9)
+Description:
+The RACE source-control workflow (check-in / check-out) requires the RCS tools — co, ci, rlog, rcsdiff — on pawapp7017l, which hosts the RCS repository under /prod/race/*/*/RCS/. The package is currently not installed.
+Verification (run on pawapp7017l):
+
+rpm -q rcs → package rcs is not installed
+co / ci / rlog / rcsdiff → not found (absent from /usr/bin and PATH)
+diffutils already installed (/usr/bin/diff) — runtime dependency satisfied
+
+Request: install the rcs package. On RHEL 9 it comes from EPEL (not base/AppStream):
+dnf install epel-release    # if EPEL isn't enabled yet
+dnf install rcs
+The RPM installs to /usr/bin/co, /usr/bin/ci, /usr/bin/rlog, /usr/bin/rcsdiff — matching the sudoers entries already configured for the svc-apd-race-prd service account, so no further changes are needed.
+Host: pawapp7017l.production.int (RHEL 9, x86_64)
+
+PBI 2
+Title: Install Rocket Software Visual COBOL on [host]
+Description:
+The RACE build/runtime requires Rocket Software Visual COBOL, expected at /opt/rocketsoftware/VisualCOBOL (binaries under /opt/rocketsoftware/VisualCOBOL/bin; environment initialized via /opt/rocketsoftware/VisualCOBOL/bin/cobsetenv, sourced from the user profile). Please install Visual COBOL on [host].
+Details:
+
+Install path: /opt/rocketsoftware/VisualCOBOL
+Post-install env: . /opt/rocketsoftware/VisualCOBOL/bin/cobsetenv
+Please confirm the Visual COBOL license/entitlement is available for this host.
+Used by the RACE process to compile/run COBOL sources.

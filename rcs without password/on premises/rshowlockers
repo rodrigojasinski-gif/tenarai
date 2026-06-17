@@ -1,0 +1,21 @@
+#!/bin/ksh 
+#$Id: rshowlockers,v 1.7 2021/07/03 01:47:13 pg2697 Exp $
+##########################################################################
+# 05/03/2016 PAG Uncommented out rm statement as rshowlockers is leaving
+#                files in the tmp directory. 
+# 03/11/2007 GW  Modified to use ACT_LVL  
+# 06/25/2021 PG  Took out reference to media1 server
+##########################################################################
+##/mdev/race/share/bin/rshowlocks | grep / > /tmp/$$.rshowlockers
+/$ACT_LVL/race/share/bin/rshowlocks| grep / > /tmp/$$.rshowlockers
+
+#cat /tmp/$$.rshowlockers | sed -e "s/race:/rrevlog /"  -e "s/media1:/mrrevlog /"  -e "s;$; | egrep \"locked|Working\";"  > /tmp/$$.rshowlockers.ksh
+cat /tmp/$$.rshowlockers | sed -e "s/race:/rrevlog /"  -e "s;$; | egrep \"locked|Working\";"  > /tmp/$$.rshowlockers.ksh
+
+cat /tmp/$$.rshowlockers
+
+chmod 775  /tmp/$$.rshowlockers.ksh
+
+/bin/ksh /tmp/$$.rshowlockers.ksh
+
+/bin/rm -f /tmp/$$.rshowlockers /tmp/$$.rshowlockers.ksh

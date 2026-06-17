@@ -1,0 +1,32 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2007.05.03.21.42.52;	author gw8440;	state Exp;
+branches;
+next	;
+
+
+desc
+@ race2 org version
+@
+
+
+1.1
+log
+@ race2 org version
+@
+text
+@#!/bin/ksh
+echo "============================================="
+echo "The following are checked out:"
+rsh race  rlog -L -R /prod/race/*/bin/RCS/*     | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+rsh race  rlog -L -R /prod/race/*/src/RCS/*     | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+rsh race  rlog -L -R /prod/race/share/inc/RCS/* | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+rsh media1 rlog -L -R /prod/race/*/bin/RCS/*     | awk -F/ '{ printf "media1: %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+echo "============================================="
+@

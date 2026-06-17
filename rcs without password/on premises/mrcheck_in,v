@@ -1,0 +1,106 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2007.05.03.21.41.08;	author gw8440;	state Exp;
+branches;
+next	;
+
+
+desc
+@ race2 org version
+@
+
+
+1.1
+log
+@ race2 org version
+@
+text
+@#! /bin/ksh 
+  if [[ $# = "0" || $# > "6" ]]
+    then
+      echo Usage: rcheck_in [-d "change_description"] [-i] [-R] filename subsys_name/component_name"\007"
+      exit -1
+  fi
+
+export RCSDIR=media1:/prod/race
+export STGDIR=/stage/race
+
+  DARG=""                                        # Description argument
+  LARG="R"                                       # reLease argument
+  RARG=""                                        # Revision number argument
+
+  while getopts +"d:r:iR" ARG                    # parse parmeters
+    do
+      if [ $ARG = "i" ]                          # set -i value
+        then
+          LARG="-i"
+      else
+      if [ $ARG = "l" ]                          # set -R value
+        then
+          LARG="-l"
+      else
+      if [ $ARG = "d" ]                          # set -d value
+        then
+          DARG="-d "$OPTARG
+      else
+      if [ $ARG = "r" ]                          # set -r value
+        then
+          RARG="-r "$OPTARG
+      else
+          echo Unknown parameter "\007" >&2
+          exit -2                                # invalid parameter - exit
+      fi
+      fi
+      fi
+      fi
+  done
+
+  shift 'OPTIND - 1'                             # set $1 to last argument
+
+mrverify $1 $2                                   # verify argument-name strings
+  if [ $? != 0 ]
+    then
+    exit -1
+  fi
+
+if [[ -z $DARG ]]                                # setup message
+  then
+    read name?"Enter message: "
+    DARG="-d "$name
+  fi
+
+#echo ========================= summary =====================================
+
+check_in.ksh < $1 "$DARG" $RARG $1 $2           # check it in
+
+if [ $? = 0 ]                                   # test return code of check_in...
+ then
+   ci_okay=0
+# remove .ksh from bin
+   if [[ $( echo $1 | awk -F. '{print $(NF)}') = "ksh" ]]  # housekeep .ksh
+     then
+       mv /mdev/race/$2/$1 /mdev/race/$2/rollback/$1
+   fi
+ else
+   ci_okay=-1
+fi
+
+# ============= Summarize ==============
+ if [ $ci_okay = 0 ]
+ then
+   mrstatus $1 $2
+ fi
+
+# end of script
+
+
+
+
+
+@

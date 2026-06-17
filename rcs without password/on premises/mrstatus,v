@@ -1,0 +1,71 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2007.05.03.21.43.12;	author gw8440;	state Exp;
+branches;
+next	;
+
+
+desc
+@ race2 org version
+@
+
+
+1.1
+log
+@ race2 org version
+@
+text
+@#! /bin/ksh
+  if [ $# != "2" ]
+    then
+      echo  Usage: mrstatus file_name subsys/component "\007"
+      exit -1
+  fi
+
+  subsys=$(echo $2 | awk -F/ '{print $1}')
+  component=$(echo $2 | awk -F/ '{print $2}')
+
+  case $subsys in
+        altp|ceg|flr|misc|oto|parts|share) ;;
+    *) echo "$subsys: subsystem_name not altp|ceg|flr|misc|oto|parts|share" ; exit -2;;
+  esac
+  case $component in
+        bin|src|inc|lib) echo " " > /dev/null;;
+    *) echo "$component: component_name not bin|src|inc|lib" ; exit -2;;
+  esac
+
+  fname=$(echo $1 | awk -F. '{print $1}')
+  extent=$(echo $1 | awk -F. '{print $2}')
+
+  case $extent in
+        cbl|ksh|awk|cpy|o) echo " " > /dev/null;;
+    *) echo "$extent: file extension_name not cbl|ksh|cpy|o" ; exit -2;;
+  esac
+
+export RCSDIR=media1:/prod/race
+export STGDIR=/stage/race
+
+echo =========================== Summary =====================================
+
+  echo "                              PROD:"
+  rsh media1 ls -lc  /prod/race/$2/RCS/$1,v
+
+  echo "                              DEV:"
+  case $extent in
+    cpy) ls -lc /stage/race/share/inc/$1 /stage/race/share/inc/rollback/$1 ;;
+    ksh|awk) ls -lc /stage/race/$2/$1 /stage/race/$2/rollback/$1; ls -lc /mdev/race/$2/$1 ;;
+    cbl) ls -lc /stage/race/$subsys/bin/$fname; ls -lc /mdev/race/$subsys/bin/$fname ;;
+      *) echo "$extent: filename type not cbl, ksh or cpy " ; exit -2;;
+  esac
+   
+echo   "                              CWD:"
+ls -lc $PWD/$1
+#
+# end of script
+@

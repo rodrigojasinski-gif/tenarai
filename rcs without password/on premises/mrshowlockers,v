@@ -1,0 +1,33 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2007.05.03.21.42.29;	author gw8440;	state Exp;
+branches;
+next	;
+
+
+desc
+@ race2 oeg version[D[D[D[D[D[D[D[D[Dr[C[C[C[C[C[C[C[C[C
+@
+
+
+1.1
+log
+@ race2 oeg version[D[D[D[D[D[D[D[D[Dr[C[C[C[C[C[C[C[C[C
+@
+text
+@#!/bin/ksh
+/mdev/race/bin/mrshowlocks | grep / > /tmp/$$.mrshowlockers
+sed -e "s/race:/mrrevlog /" \
+    -e "s/media1:/mrrevlog /"\
+    -e "s;$; | egrep \"locked|Working\";" \
+       /tmp/$$.mrshowlockers \
+    > /tmp/$$.mrshowlockers.ksh
+/bin/ksh /tmp/$$.mrshowlockers.ksh
+/bin/rm -f /tmp/$$.mrshowlockers /tmp/$$.mrshowlockers.ksh
+@
