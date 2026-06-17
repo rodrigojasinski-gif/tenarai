@@ -1,0 +1,38 @@
+dawapp7017l(RADD.MITCHELL.COM):/home/corp.int/rj132422> rcheck_in -d "testing RCS on linux"  mptr856.ksh oem/bin
+You are running on MDEV server. OK to proceed with check in.
+
+Verifying this is a ksh script.
+
+This system is for AUTHORIZED USERS ONLY.
+Individual use of this computer and/or network without authority, or in excess
+of your authority, is strictly prohibited.  Monitoring of transmissions or
+transactional information may be conducted to ensure the proper functioning
+and security of system resources.  Anyone using this system expressly consents
+to such monitoring and is advised that if such monitoring reveals possible
+criminal activity or policy violation, system personnel may provide evidence
+of such monitoring to law enforcement or to other senior officials for
+disciplinary action.
+
+sudo: a terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper
+sudo: a password is required
+Checkin was not successful
+
+
+ssh pawapp7017l.production.int "sudo -n su - svc-apd-race-prd@production.int -c whoami"
+
+
+ ssh-keygen -t ed25519 -C "rj132422-ftp-mitchell"
+
+ssh-keyscan ftp-ssh.mitchell.com >> ~/.ssh/known_hosts
+
+
+Hi team — quick architecture question coming out of the AIX → RHEL migration.
+On AIX, our RCS scripts (rcheck_in / rcheck_out) just worked — no auth needed. After the move, SSH from dawapp7017l (dev) to pawapp7017l.production.int (RCS host) needs to act as svc-apd-race-prd@production.int to touch /prod/race/.../RCS/. Today it's being attempted via sudo su - svc-apd-race-prd, but sudo is failing with a terminal is required to read the password since SSH doesn't allocate a TTY.
+We need a decision on the access pattern going forward. A few options that come to mind: sudo NOPASSWD for that transition on pawapp7017l, SSH-key auth directly as svc-apd-race-prd (devs' public keys in its authorized_keys), or a different model entirely (CI/CD pipeline, JIT access, etc.). I'd rather align with whatever the org already does for dev → service-account workflows than invent a new pattern just for RCS.
+Should I open a PBI to track this?
+
+
+Hi team — quick architecture question coming out of the AIX → RHEL migration.
+On AIX, our RCS scripts (rcheck_in / rcheck_out) just worked — no auth needed. After the move, SSH from dawapp7017l (dev) to pawapp7017l.production.int (RCS host) needs to act as svc-apd-race-prd@production.int to touch /prod/race/.../RCS/. Today it's being attempted via sudo su - svc-apd-race-prd, but sudo is failing with a terminal is required to read the password since SSH doesn't allocate a TTY.
+How should we proceed to make this passwordless?
+Should I open a PBI to track this?
