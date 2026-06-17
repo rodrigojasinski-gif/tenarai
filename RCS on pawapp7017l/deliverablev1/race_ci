@@ -1,0 +1,8 @@
+#!/bin/bash
+# race_ci - run RCS ci as the service account, but record the real developer
+#           (taken from SUDO_USER, stripped of @domain) as the author.
+: "${SUDO_USER:?race_ci must be invoked via sudo}"
+CLEAN_USER=${SUDO_USER%%@*}
+export USER="$CLEAN_USER"
+export LOGNAME="$CLEAN_USER"
+exec /usr/local/bin/ci "$@"
