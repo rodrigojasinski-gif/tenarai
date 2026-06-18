@@ -14,20 +14,22 @@ WORK=/tmp/race_test.$$
 EXPECT=${LOGNAME%%@*}                   # expected lock owner = your login minus @domain
 
 echo "Testing wrapper : $RACE_CO"
-echo "Via             : ssh $DEVHOST  sudo $SUDO_AS ... (real SUDO_USER)"
+echo "Via             : sudo $SUDO_AS ... (real SUDO_USER set by sudo)"
 echo "Expected locker : $EXPECT"
 echo
 
 # 1) throwaway RCS archive, bootstrapped with a clean name so ci accepts it
   mkdir -p $WORK || exit 1
+  chmod 777 $WORK                       # so the SUDO_AS account can enter/write here
   cd $WORK || exit 1
   echo "race_co test $(date)" > tfile.ksh
   LOGNAME=$EXPECT $RCSBIN/ci -q -i -t-test -m"init" tfile.ksh
   if [ $? != 0 ]; then echo "SETUP FAILED (ci -i)"; cd /; rm -rf $WORK; exit 1; fi
+  chmod 666 tfile.ksh,v                 # so the SUDO_AS account can rewrite the lock
 
-# 2) lock it through the real chain: ssh into dev -> sudo -> race_co
-  echo ">>> locking via real ssh+sudo ..."
-  ssh -t $DEVHOST "cd $WORK && sudo $SUDO_AS $RACE_CO -l tfile.ksh"
+# 2) lock it through a REAL sudo (sudo sets SUDO_USER regardless of ssh)
+  echo ">>> locking via real sudo ..."
+  ( cd $WORK && sudo $SUDO_AS $RACE_CO -l tfile.ksh )
 
 # 3) verify who holds the lock
   echo
