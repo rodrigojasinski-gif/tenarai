@@ -1,0 +1,59 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2025.09.30.15.25.17;	author rj132422;	state Exp;
+branches;
+next	;
+
+
+desc
+@ xexm660 first version
+@
+
+
+1.1
+log
+@ xexm660 first version
+@
+text
+@#!/bin/ksh
+. race_ext.ksh
+#$Id:
+############################################################################
+#  JOBNAME:  xexm660.ksh     MITCHELL DATA EXTRACT                         #
+#  Modification: COSBatch Abend Notification                               #
+
+export LIBPATH=/opt/microfocus/cobol/lib:/db_home/listener/lib32
+
+    echo "    Start  ${JOBNAME}   "$(date)        >> $JOBLOGNAME
+    logger -p user.info "OPCOM*I*PROCES*${JOBNAME}* *Start "$(date)
+
+## Note:  COSBatch Abend Notification
+##  
+##        'exec_restart.ksh subscript $RS' is not used. 
+##        The perl script called by the following script has built in restartability.
+##        Test for exit status of subscript and return any error codes
+
+    xex660.ksh $1 >> $JOBLOGNAME
+    
+    RET=$?
+    if ! [ $RET = "0" ]
+       then
+         echo "   ** master script exit status $RET"  >> $JOBLOGNAME
+         exit $RET
+     fi    
+ 
+    rpt_log_retention.ksh "${JOBNAME}_" >> ${JOBLOGNAME}
+ 
+    logger -p user.info "OPCOM*I*PROCES*${JOBNAME}* *End   "$(date)
+    echo "    End    ${JOBNAME}   "$(date) >> $JOBLOGNAME
+
+############################################################################
+#  END                                                                     #
+############################################################################
+@

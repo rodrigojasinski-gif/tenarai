@@ -1,0 +1,519 @@
+    Start  xexm100   Tue Jun 16 09:04:53 PDT 2026
+
+
+**********************************************************************************
+Restart Step was NOT included in the job execution. Job will run from the beginning.
+**********************************************************************************
+
+
+
+
+**************************************************************************************************************
+Calling:  xex010.ksh    Datetime: 06/16/26 09:04:53   Script: /tmp/xexm100_xex010.ksh_run
+**************************************************************************************************************
+
+
+: xex010.ksh,v 1.8 2022/08/11 19:07:51 pg2697 Exp xexm100.ksh,v 1.1 2001/10/26 09:09:09 jn0132 Exp $
+export PROCNAME=$(basename $0 .ksh_run)
++ basename /tmp/xexm100_xex010.ksh_run .ksh_run
++ export PROCNAME=xexm100_xex010
+trap 'abndalrt.ksh $?' err
++ trap abndalrt.ksh $? err
+         
+############################################################################
+# Initialize variables.                                                    #
+#                                                                          #
+# NOTE: No Step number here since this process should be performed each    #
+#       time the script is run.                                            #
+#                                                                          #
+# Get JOB parm file values from zxex000.prm                                #
+#  a) set parm file name                                                   #
+#  b) set restart flag (T=restart, F=start from beginning)                 #
+#  c) set parmfile subdirectory                                            #
+#  d) set ftp machine                                                      #
+#  e) set ftp directory                                                    #
+############################################################################
+
+#   use Korn shell 'grep' command to get job parm values
+    PARMFILE=`      grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $2}'`
++ + grep xexm100.ksh /mdev/race/ext/prm/zxex000.prm
++ awk {print $2}
+PARMFILE=zxex100a.prm
+    VERSION=`       grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $3}'`
++ + grep xexm100.ksh /mdev/race/ext/prm/zxex000.prm
++ awk {print $3}
+VERSION=PR
+    XFER_FILE=`     grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $7}'`
++ + awk {print $7}
++ grep xexm100.ksh /mdev/race/ext/prm/zxex000.prm
+XFER_FILE=N/A
+    RUN_TYPE=`      grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $8}'`
++ + grep xexm100.ksh /mdev/race/ext/prm/zxex000.prm
++ awk {print $8}
+RUN_TYPE=FULL
+    SYS_DATE=`date +%EY%Om%d%H%M%OS`
++ + date +%EY%Om%d%H%M%OS
+SYS_DATE=20260616090453
+
+    export SQL_JOBNAME=$JOBNAME
++ export SQL_JOBNAME=xexm100
+    export SQL_PARMFILE=$PARMFILE
++ export SQL_PARMFILE=zxex100a.prm
+    export SQL_PARMFILE_PATH=$OBJ_PRMDIR
++ export SQL_PARMFILE_PATH=RACE_EXT_PRM_DIR
+    export SQL_VERSION=$VERSION
++ export SQL_VERSION=PR
+    export SQL_SYS_DATE=$SYS_DATE
++ export SQL_SYS_DATE=20260616090453
+
+    export EXTUSERID=`cat $RACE/prm/zxexpass.prm`
++ cat /mdev/race/ext/prm/zxexpass.prm
++ export EXTUSERID=ext/ext10g
+
+#STEP Step010R
+   export STEPNAME=Step010R
++ export STEPNAME=Step010R
+    echo "    Start " ${STEPNAME} "    "$(date)
++ date
++ echo     Start  Step010R     Tue Jun 16 09:04:53 PDT 2026
+    Start  Step010R     Tue Jun 16 09:04:53 PDT 2026
+#*******************************************************************
+#* Step010R: REMOVE ANY PREVIOUSLY CREATED DATASET                 *
+#*           UPLOAD NOVELL MFR/SRVC: mprod/race/bcsprod.prm        *
+#*******************************************************************
+
+    if [ $XFER_FILE != "N/A" ]
+    then
+
+# RM -F any previous .tmp file(s):
+         rm -f $RACE/tmp/${JOBNAME}_bcswrk.tmp
+         rm -f $RACE/tmp/${JOBNAME}_bcsxfr.tmp
+
+# Declare Novell, UX  disk file variable & Novell Source Directory:
+         export DD_NOVELDSK=$XFER_FILE
+         export DD_UNIXDSK=$RACE/tmp/${JOBNAME}_bcswrk.tmp
+         export DD_NOVELDIR=${NOVELL}usrdat
+         export DD_FTPLOG=$RACE/tmp/${JOBNAME}_bcsxfr.tmp
+
+         fileget.exp $DD_NOVELDSK $DD_UNIXDSK $DD_NOVELDIR \
+         | tee $DD_FTPLOG
+
+         echo; date
+
+        #Check that DD_UNIXDSK exists and is not Null:
+         if [ ! -s $DD_UNIXDSK ]
+         then
+              echo "Error: Unix file was not created !!\a"
+              abndalrt.ksh ftp_null_file
+         fi
+
+         novelcount="$(grep 'Information returned by' $DD_FTPLOG | awk '{print $1}')"
+         unixcount="$(wc -c $DD_UNIXDSK | awk ' {print $1}')"
+
+         if [ novelcount -eq unixcount ]
+         then
+            echo "Succeeded ftp of file $DD_NOVELDSK, bytes =$novelcount"
+         else
+            echo "ftp get of file $DD_NOVELDSK failed: ftp says $novelcount, Unix count is $unixcount"
+            abndalrt.ksh ftp_get
+         fi
+    else
+        echo "continuing to extract......."
+    fi
++ [ N/A != N/A ]
++ echo continuing to extract.......
+continuing to extract.......
+
+#*******************************************************************
+#* TRANSLATE   : REMOVE CARRIAGE RETURNS AND LAST LINE WITH ^Z     *
+#*               BEFORE USING FILE IN UNIX                         *
+#*               RENAME TRANSFER WORK FILE TO bcsprod.xfr          *
+#*******************************************************************
+  if [ $XFER_FILE != "N/A" ]
+  then
+     cat $DD_UNIXDSK | tr -d '\015' | sed -e '$d' > $RACE/dat/${JOBNAME}_bcsprod.xfr
+     rm -f $RACE/prm/$PARMFILE
+     mv $RACE/dat/${JOBNAME}_bcsprod.xfr $RACE/prm/$PARMFILE
+  else
+        echo "no translate performed ......."
+  fi
++ [ N/A != N/A ]
++ echo no translate performed .......
+no translate performed .......
+
+#STEP Step020R
+    export STEPNAME=Step020R
++ export STEPNAME=Step020R
+    echo "    Start ${STEPNAME}    "$(date)
++ date
++ echo     Start Step020R    Tue Jun 16 09:04:53 PDT 2026
+    Start Step020R    Tue Jun 16 09:04:53 PDT 2026
+#######################################################################
+#  Step020R   1. Execute procedure sp_forward_pointer_purge to remove #
+#                pointed lines more than a year old prior to extract  #
+#             2. Execute procedure sp_race_to_ext to copy Race to Ext #
+#######################################################################
+export LOG="$(basename $0 .sql)".log
++ basename /tmp/xexm100_xex010.ksh_run .sql
++ export LOG=xexm100_xex010.ksh_run.log
+
+sqlplus << CODE_BLOCK 2>&1 > $LOG
+$EXTUSERID
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON; 
+whenever sqlerror exit sql.sqlcode
+
+
+/* 2022/08/10 (AES-2674)-------------------------------
+-- Comment out execution of Forward Pointer Purge procedure.
+-- It's causing issue with UM/MCE Claims, where they can no longer find part line.
+                       
+-- exec sp_forward_pointer_purge;
+
+-- 2022/08/10 (AES-2674)-------------------------------*/              
+
+exec sp_race_to_ext('$SQL_PARMFILE_PATH','$SQL_PARMFILE','$SQL_VERSION','$RUN_TYPE');
+
+QUIT;
+CODE_BLOCK
++ sqlplus
++ 0<<
+ext/ext10g
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON; 
+whenever sqlerror exit sql.sqlcode
+
+
+/* 2022/08/10 (AES-2674)-------------------------------
+-- Comment out execution of Forward Pointer Purge procedure.
+-- It's causing issue with UM/MCE Claims, where they can no longer find part line.
+                       
+-- exec sp_forward_pointer_purge;
+
+-- 2022/08/10 (AES-2674)-------------------------------*/              
+
+exec sp_race_to_ext('RACE_EXT_PRM_DIR','zxex100a.prm','PR','FULL');
+
+QUIT;
+2>& 1 1> xexm100_xex010.ksh_run.log
+
+
+#STEP Step030R
+    export STEPNAME=Step030R
++ export STEPNAME=Step030R
+    echo "    Start ${STEPNAME}    "$(date)
++ date
++ echo     Start Step030R    Tue Jun 16 09:04:57 PDT 2026
+    Start Step030R    Tue Jun 16 09:04:57 PDT 2026
+#######################################################################
+#  Step030R   1. Execute procedure sp_update_special_graphics to 
+#                update Special_Material_Graphic table with new png
+#                filenames.
+#             2. Email ADD report to recipients.
+#######################################################################
+export LOG="$(basename $0 .sql)".log
++ basename /tmp/xexm100_xex010.ksh_run .sql
++ export LOG=xexm100_xex010.ksh_run.log
+export ADD_RPT_NAME=${JOBNAME}a_spec_graphic_add_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export ADD_RPT_NAME=xexm100a_spec_graphic_add_20260616090457.rpt
+export ALL_RPT_NAME=${JOBNAME}b_spec_graphic_all_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export ALL_RPT_NAME=xexm100b_spec_graphic_all_20260616090457.rpt
+export SOURCE_FILE=${RACE}/rpt/${ALL_RPT_NAME}
++ export SOURCE_FILE=/mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260616090457.rpt
+export NT_FILE=${JOBNAME}b_spec_graphic_all_rpt.txt
++ export NT_FILE=xexm100b_spec_graphic_all_rpt.txt
+export FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_rptxfer.tmp
++ export FTP_LOGFILE=/mdev/race/ext/tmp/xexm100_rptxfer.tmp
+
+if [ $RUN_TYPE = "FULL" ]
+  then
+
+sqlplus << CODE_BLOCK 2>&1 > $LOG
+$EXTUSERID
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON; 
+whenever sqlerror exit sql.sqlcode
+
+exec sp_update_special_graphics(p_in_run_type => '${RUN_TYPE}', \
+                           p_in_rptpath  => '${OBJ_RPTDIR}', \
+                           p_in_add_rpt  => '${ADD_RPT_NAME}', \
+                           p_in_all_rpt  => '${ALL_RPT_NAME}');
+
+QUIT;
+CODE_BLOCK
+
+#email report a
+email_rpt.ksh "${JOBNAME}a" 
+rpt_log_retention.ksh "${JOBNAME}a"
+
+#report b is not emailed. It is transfered to NT.
+rpt_log_retention.ksh "${JOBNAME}b"
+
+# Copy the "ALL" report to the Network      
+fileput.exp ${SOURCE_FILE} ${NT_FILE} ${NOVELL}usrdat ascii | tee ${FTP_LOGFILE}
+
+# With ASCII transfer, you cannot compare unix byte count to FTPBYTECOUNT to determine successful transfer   
+FTPBYTECOUNT="$(cat ${FTP_LOGFILE} | grep 'Information returned by' | awk '{print $1}')"
+
+fi
++ [ FULL = FULL ]
++ sqlplus
++ 0<<
+ext/ext10g
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON; 
+whenever sqlerror exit sql.sqlcode
+
+exec sp_update_special_graphics(p_in_run_type => 'FULL',                            p_in_rptpath  => 'RACE_EXT_RPT_DIR',                            p_in_add_rpt  => 'xexm100a_spec_graphic_add_20260616090457.rpt',                            p_in_all_rpt  => 'xexm100b_spec_graphic_all_20260616090457.rpt');
+
+QUIT;
+2>& 1 1> xexm100_xex010.ksh_run.log
++ email_rpt.ksh xexm100a
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+###############################################################################
+# SCRIPT NAME: email_rpt.ksh
+# 
+# EXECUTION: email_rpt.ksh <reportid> 
+#       e.g. email_rpt.ksh "${JOBNAME}a"  
+#            
+# SCRIPT DESC: Send email with report attached (based on race.email_xref table).   
+###############################################################################
+# Modification History
+# Date        User-id    Description
+# ==========  ======     =========================================
+# 2014/06/01  pg2697     Replacement for CosReport and PrintPipe.
+# 2016/02/08  pg2697     1. Changed input to be reportid (not report name)
+#                        2. Added check and bypass of email if rpt size = 0
+#                        3. Added code to derive reportname using ls -1t
+#                           so that email could be invoked in the step following
+#                           an abended step. (If file is dated, restart step would
+#                           not know filename/date.)
+# 2016/03/31 pg2697      1. Added calc of TMP_RPT to include extension of txt.
+#                        2. Added calc and pass in of RPT_DIRECTORY to procedure. 
+# 2021/10/28 pg2697      Changed awk that precedes email pkg to copy. 
+#                        awk was inserting extra lines in COBOL-created rpts   
+#                        and not needed for Oracle-created rpts. Also, don't
+#                        rename csv files to txt.
+###############################################################################
+
+  export SHAREUSERID=`cat /$ACT_LVL/race/share/prm/zsharepass.prm`
++ cat /mdev/race/share/prm/zsharepass.prm
++ export SHAREUSERID=racejob/q1w2e3r4
+
+###############################################################################
+# check for passed in values
+###############################################################################
+if [ $# = 1 ]                                 
+then
+  REPORT_ID=$1    
+else
+  echo "\n***ERROR! Reportid not passed to email_rpt.ksh"
+  $(abndalrt.ksh 911)
+fi
++ [ 1 = 1 ]
++ REPORT_ID=xexm100a
+
+###############################################################################
+# 1. obtain full filename using passed-in reportid and get most recently 
+#    created file (ORIG_RPT) 
+#    e.g. /mdev/race/oem/rpt/mptd001c_extrsums_odd_ca_en_20160330110713.rpt
+# 2. get just rpt's filename without the path and .rpt extension  (RPT_FILENAME)
+#    e.g. mptd001c_extrsums_odd_ca_en_20160330110713
+# 3. create the tmp file name to be used for emailing windows-version (TMP_RPT)
+#    by stripping off directory path and extension; then adding .txt extension
+#    e.g. mptd001c_extrsums_odd_ca_en_20160330110713.txt
+# 4. NOTE: sql tmp directory object is used to pass into procedure (not path)
+###############################################################################
+
+ORIG_RPT=`ls -1t ${RACE}/rpt/${REPORT_ID}* | head -1`
++ + ls -1t /mdev/race/ext/rpt/xexm100a_spec_graphic_add_20260326081027.rpt /mdev/race/ext/rpt/xexm100a_spec_graphic_add_20260326090647.rpt /mdev/race/ext/rpt/xexm100a_spec_graphic_add_20260326114214.rpt /mdev/race/ext/rpt/xexm100a_spec_graphic_add_20260616090457.rpt
++ head -1
+ORIG_RPT=/mdev/race/ext/rpt/xexm100a_spec_graphic_add_20260616090457.rpt
+
+EXTENSION=$(echo $ORIG_RPT | awk -F. '{print $(NF)}') 
++ + awk -F. {print $(NF)}
++ echo /mdev/race/ext/rpt/xexm100a_spec_graphic_add_20260616090457.rpt
+EXTENSION=rpt
+
+# keep csv file extension; otherwise change emailed file to txt extension
+if [ $EXTENSION = "csv" ]
+  then 
+    RPT_FILENAME=$(basename $ORIG_RPT .csv).csv
+  else
+    RPT_FILENAME=$(basename $ORIG_RPT .rpt).txt
+fi
++ [ rpt = csv ]
++ + basename /mdev/race/ext/rpt/xexm100a_spec_graphic_add_20260616090457.rpt .rpt
+RPT_FILENAME=xexm100a_spec_graphic_add_20260616090457.txt
+
+RPT_DIRECTORY=${RACE}/tmp
++ RPT_DIRECTORY=/mdev/race/ext/tmp
+TMP_RPT=${RPT_DIRECTORY}/${RPT_FILENAME}
++ TMP_RPT=/mdev/race/ext/tmp/xexm100a_spec_graphic_add_20260616090457.txt
+
+echo LATEST REPORT TO BE EMAILED: ${RPT_FILENAME} from ${RPT_DIRECTORY}.
++ echo LATEST REPORT TO BE EMAILED: xexm100a_spec_graphic_add_20260616090457.txt from /mdev/race/ext/tmp.
+LATEST REPORT TO BE EMAILED: xexm100a_spec_graphic_add_20260616090457.txt from /mdev/race/ext/tmp.
+
+###############################################################################
+# check if report file exists and has a size greater than 0
+# if it doesn't exist or is empty, skip emailing it. 
+#    (p_email_report will abend otherwise)
+# if it's valid, 
+#    -> chg tmp version to windows-readable format
+#       (2021/10/28 pag - chg'd to a copy.)                       
+#    -> email it
+#    -> remove tmp version
+###############################################################################
+if [ ! -s ${ORIG_RPT} ] 
+then
+  echo "Report is empty or does not exist. Report will not be distributed."
+else 
+  #(2021/10/28 pag)#awk 'sub("$", "\r")' ${ORIG_RPT} > ${TMP_RPT} 
+  cp ${ORIG_RPT} ${TMP_RPT}
+
+echo $LOG
+echo "ck1"
+
+sqlplus << CODE_BLOCK 2>&1 > $LOG
+$SHAREUSERID
+SET LINESIZE 132;
+SET SERVEROUTPUT ON FORMAT WRAPPED;
+whenever sqlerror exit sql.sqlcode
+
+    exec pkg_report_mgmt.p_email_report(p_in_activity_level => '${ACT_LVL}', \
+                                        p_in_report_filename => '${RPT_FILENAME}', \
+                                        p_in_report_directory => '${OBJ_TMPDIR}');
+
+QUIT;
+CODE_BLOCK
+
+rm -f ${TMP_RPT} 
+ 
+fi
++ [ ! -s /mdev/race/ext/rpt/xexm100a_spec_graphic_add_20260616090457.rpt ]
++ cp /mdev/race/ext/rpt/xexm100a_spec_graphic_add_20260616090457.rpt /mdev/race/ext/tmp/xexm100a_spec_graphic_add_20260616090457.txt
++ echo xexm100_xex010.ksh_run.log
+xexm100_xex010.ksh_run.log
++ echo ck1
+ck1
++ sqlplus
++ 0<<
+racejob/q1w2e3r4
+SET LINESIZE 132;
+SET SERVEROUTPUT ON FORMAT WRAPPED;
+whenever sqlerror exit sql.sqlcode
+
+    exec pkg_report_mgmt.p_email_report(p_in_activity_level => 'mdev',                                         p_in_report_filename => 'xexm100a_spec_graphic_add_20260616090457.txt',                                         p_in_report_directory => 'RACE_EXT_TMP_DIR');
+
+QUIT;
+2>& 1 1> xexm100_xex010.ksh_run.log
++ rm -f /mdev/race/ext/tmp/xexm100a_spec_graphic_add_20260616090457.txt
+
+###############################################################################
+# end of email_rpt.ksh
+###############################################################################
++ rpt_log_retention.ksh xexm100a
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=xexm100a
+oldest file removed: /mdev/race/ext/rpt/xexm100a_spec_graphic_add_20260326081027.rpt (due to retention)
+
+ End rpt_log_retention.ksh
++ rpt_log_retention.ksh xexm100b
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=xexm100b
+oldest file removed: /mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260326081027.rpt (due to retention)
+
+ End rpt_log_retention.ksh
++ fileput.exp /mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260616090457.rpt xexm100b_spec_graphic_all_rpt.txt mdev/usrdat ascii
++ tee /mdev/race/ext/tmp/xexm100_rptxfer.tmp
+
+ftp server: prod3nt.production.int
+
+Establishing ftp connection to prod3nt.production.int
+
+ftp command: ascii
+ftp response: Type set to A.
+
+ftp command: cd /cdprod02/ftp_data/mdev/usrdat
+ftp response: CWD command successful.
+
+ftp command: put /mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260616090457.rpt xexm100b_spec_graphic_all_rpt.txt
+ftp response: Transfer complete.
+4558191 bytes sent in 0.1953 seconds (2.279e+04 Kbytes/s)
+local: /mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260616090457.rpt remote: xexm100b_spec_graphic_all_rpt.txt
+
+4558191 xexm100b_spec_graphic_all_rpt.txt  (Information returned by "dir" on NT side.)
+
+ftp command: quit
+ftp response: Transfer complete.
++ + cat /mdev/race/ext/tmp/xexm100_rptxfer.tmp
++ grep Information returned by
++ awk {print $1}
+FTPBYTECOUNT=4558191
+
+#STEP Step999R
+    export STEPNAME=Step999R
++ export STEPNAME=Step999R
+    echo "    Start ${STEPNAME}    "$(date)
++ date
++ echo     Start Step999R    Tue Jun 16 09:06:33 PDT 2026
+    Start Step999R    Tue Jun 16 09:06:33 PDT 2026
+#############################################################################
+# Step999R    1. Remove all temp files                                      #
+#############################################################################
+
+    rm -f $RACE/tmp/$JOBNAME*
++ rm -f /mdev/race/ext/tmp/xexm100_rptxfer.tmp
+
+############################################################################
+#  END                                                                     #
+###########################################################################
+
+
+**************************************************************************************************************
+Finished: xex010.ksh    Datetime: 06/16/26 09:06:33   Script: /tmp/xexm100_xex010.ksh_run
+**************************************************************************************************************
+
+
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=xexm100_
+
+SQL*Plus: Release 11.2.0.4.0 Production on Tue Jun 16 09:06:33 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /mdev/race/ext/log/xexm100_20260326081023.log (due to retention)
+
+ End rpt_log_retention.ksh
+    End    xexm100   Tue Jun 16 09:06:33 PDT 2026
