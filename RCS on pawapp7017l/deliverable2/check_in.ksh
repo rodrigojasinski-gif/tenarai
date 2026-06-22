@@ -112,6 +112,8 @@
 
   RCSSVC=${RCSSVC:-svc-apd-race-prd@production.int}        # prod service account that owns the RCS files
   RCSSUDO="sudo -u $RCSSVC"                                # run remote RCS cmds as the service account
+  RCSBIN=/usr/local/bin                                   # rj132422 - RCS install dir on prod (full path matches sudoers)
+  SPOOL=/tmp/race_ci.$$                                   # rj132422 - per-checkin spool dir (subdir = NOT sticky, svc can replace files)
 
   RCSNAME=${RCSDIR#$RCSHOST":"}/$FILEDIR/RCS/$FILENAME_EXT,v
 
@@ -122,12 +124,12 @@
 # Copy source (in tmp directory on mdev server) to tmp directory on remote server
 #########################################################################################
 
-  # rm as the service account (whitelisted) to clear any svc-owned leftover in sticky /tmp
-  ssh $RCSHOST "$RCSSUDO rm -f /tmp/$FILENAME_EXT"
-  # push the working copy as YOURSELF (plain scp, no sudo) - /tmp is writable, file is world-readable
-  scp /tmp/$FILENAME_EXT.tmp $RCSHOST":"/tmp/$FILENAME_EXT 2>/dev/null
+  # rj132422 - create the non-sticky spool dir so the service account can replace files in it
+  ssh $RCSHOST "mkdir -p $SPOOL; chmod 777 $SPOOL"
+  # push the working copy as YOURSELF (plain scp, no sudo)
+  scp /tmp/$FILENAME_EXT.tmp $RCSHOST":"$SPOOL/$FILENAME_EXT 2>/dev/null
   # make it writable so the service account (running ci) can update the working copy
-  ssh $RCSHOST chmod 666 /tmp/$FILENAME_EXT
+  ssh $RCSHOST chmod 666 $SPOOL/$FILENAME_EXT
 
 #########################################################################################
 # Determine if file is locked and changed
@@ -136,12 +138,12 @@
 #########################################################################################                
   if [[ -n $(ssh $RCSHOST "$RCSSUDO ls $RCSNAME" 2>/dev/null) ]]
   then                                                      # check for file
-    if [[ -z $(ssh $RCSHOST "$RCSSUDO rlog -L -R $RCSNAME") ]]
+    if [[ -z $(ssh $RCSHOST "$RCSSUDO $RCSBIN/rlog -L -R $RCSNAME") ]]
     then                                                    # check for lock
        echo "ERROR: File not locked - $RCSNAME" >&2
        exit -1
     fi
-    if [[ -z $(ssh $RCSHOST "$RCSSUDO rcsdiff -q /tmp/$FILENAME_EXT $RCSNAME" | head -5) ]]
+    if [[ -z $(ssh $RCSHOST "$RCSSUDO $RCSBIN/rcsdiff -q $SPOOL/$FILENAME_EXT $RCSNAME" | head -5) ]]
     then                                                    # check for changes
       echo "ERROR: No changes in file ${FILENAME_EXT} - still checked out with lock." >&2
       exit -1
@@ -165,7 +167,8 @@
 
   ###rsh $RCSHOST -e /prod/util/share/bin/initci -u -m\"$DESC_ARG\" -t\"-$DESC_ARG\" /tmp/$FILENAME_EXT $RCSNAME
 
-  ssh $RCSHOST "$RCSSUDO ci -u -m\"$DESC_ARG\" -t\"-$DESC_ARG\" /tmp/$FILENAME_EXT $RCSNAME"
+  # rj132422 - race_ci wrapper sets clean author from SUDO_USER
+  ssh $RCSHOST "$RCSSUDO $RCSBIN/race_ci -u -m\"$DESC_ARG\" -t\"-$DESC_ARG\" $SPOOL/$FILENAME_EXT $RCSNAME"
   
 #########################################################################################
 # Remove rollback file in stage
@@ -182,13 +185,13 @@
     rm -f $STGDIR/$FILEDIR/$FILENAME_EXT
   fi
   #echo "\n Creating new stage from prod RCS: co -p of the just-committed revision"
-  ssh $RCSHOST "$RCSSUDO co -p $RCSNAME" > $STGDIR/$FILEDIR/$FILENAME_EXT   # pull committed rev to stage (co is whitelisted)
+  ssh $RCSHOST "$RCSSUDO $RCSBIN/co -p $RCSNAME" > $STGDIR/$FILEDIR/$FILENAME_EXT   # pull committed rev to stage (read only, no wrapper)
   chmod ug+wx $STGDIR/$FILEDIR/$FILENAME_EXT
 
 #########################################################################################
 # remove prod/tmp and mdev/tmp files
 #########################################################################################
-  ssh $RCSHOST "$RCSSUDO rm -f /tmp/$FILENAME_EXT"     # remove prod/tmp file
+  ssh $RCSHOST "rm -rf $SPOOL"                          # rj132422 - remove the whole spool dir (non-sticky, owner can clear it)
   rm  /tmp/$FILENAME_EXT.tmp                              # remove mdev tmp
 
 #########################################################################################

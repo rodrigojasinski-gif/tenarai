@@ -74,7 +74,6 @@
 
   RCSSVC=svc-apd-race-prd@production.int         # rj132422 - service account that owns the repo
   RCSBIN=/usr/local/bin                          # rj132422 - RCS install dir on prod (full path needed to match sudoers)
-  RCSUSER=${LOGNAME%%@*}                          # rj132422 - clean RCS id (strip @domain) for lock/author
 
   RCSNAME=${RCSDIR#$RCSHOST":"}/$2/RCS/$1,v      # set RCS file name
 
@@ -97,9 +96,9 @@
 
 #################################################################################
 # Check Out source
-# rj132422 - run co on the prod repo host as the service account; output to stdout
+# rj132422 - run race_co wrapper on prod; it sets a clean LOGNAME from SUDO_USER
 #################################################################################
-  ssh $RCSHOST sudo -u $RCSSVC LOGNAME=$RCSUSER USER=$RCSUSER $RCSBIN/co -p -q $LARG $RARG $RCSNAME
+  ssh $RCSHOST sudo -u $RCSSVC $RCSBIN/race_co -p -q $LARG $RARG $RCSNAME
 
 #################################################################################
 # END
