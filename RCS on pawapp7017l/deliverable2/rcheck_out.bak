@@ -32,7 +32,7 @@
       exit -1
   fi
 
-# rj132422 - linux prod repo host (it was racercs)
+# rj132422 - linux prod repo host (was racercs)
 export RCSDIR=pawapp7017l.production.int:/prod/race
 export STGDIR=/stage/race
 

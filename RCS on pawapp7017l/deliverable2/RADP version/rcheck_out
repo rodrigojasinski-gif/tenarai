@@ -1,24 +1,26 @@
-#! /bin/ksh
+#! /bin/ksh 
 #$Id: rcheck_out,v 1.5 2021/07/03 01:45:23 pg2697 Exp $
 ###############################################################################
-# SCRIPT NAME: rcheck_out
+# SCRIPT NAME: rcheck_out                                          
 # SCRIPT DESC: Script used to check out objects from prod RCS directory to
-#              development working directory.
-#
-# gw 03/28/07 - modify to access prod server alias racercs
+#              development working directory.  
+# 
+# gw 03/28/07 - modify to access prod server alias racercs 
 # pg 09/15/2014 - Oracle 11G Migration
-# rj132422 - linux: prod repo host is pawapp7017l; co runs on prod (see check_out.ksh)
 ###############################################################################
+# PG: next two lines for my testing
+#echo "==================================================rcheck_out in mdev directory======================================================"
+#set -xv
 
 #########################################################################################
 # throws error if this is run in PROD
 #########################################################################################
   if [ $ACT_LVL = "mdev" ]
-    then
+    then 
       echo "You are running on MDEV server. OK to proceed with check_out."
     else
       echo "ERROR! This may only be run on MDEV server. ABENDING."
-      exit -1
+      exit -1 
   fi
 
 #########################################################################################
@@ -32,15 +34,14 @@
       exit -1
   fi
 
-# rj132422 - linux prod repo host (it was racercs)
-export RCSDIR=pawapp7017l.production.int:/prod/race
+export RCSDIR=racercs:/prod/race                 ##previously => export RCSDIR=race:/prod/race
 export STGDIR=/stage/race
 
   LARG=""                                        # -l is Lock flag
   RARG=""                                        # -r is Revision number flag
   VARG=""                                        # -v is Version label flag
 
-  while getopts "lr:v:" ARG                      # rj132422 - dropped leading - for linux ksh93
+  while getopts -"lr:v:" ARG                     # parse parmeters
     do
       if [ $ARG = "l" ]                          # set -l value
         then
@@ -79,7 +80,7 @@ export STGDIR=/stage/race
    else
      CHECKOUT_OK=-1
   fi
-
+   
   #########################################################################################
   # display File Summary information
   #########################################################################################
@@ -89,7 +90,7 @@ export STGDIR=/stage/race
      mv $1.tmp $1
      chmod +x $1
      rstatus $1 $2
-   else
+   else 
      rm -f $1.tmp
    fi
 
