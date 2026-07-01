@@ -180,7 +180,7 @@
 # Remote copy prod tmp file (new checked_in version) into stage directory
 # Change permissions of file in stage
 #########################################################################################
-  if dev test -a $STGDIR/$FILEDIR/$FILENAME_EXT       # rj132422 - stage ops via dev() (svc-apd-race-dev)
+  if dev test -e $STGDIR/$FILEDIR/$FILENAME_EXT       # rj132422 - stage ops via dev() (svc-apd-race-dev)
   then
     dev rm -f $STGDIR/$FILEDIR/rollback/$FILENAME_EXT
     #echo "\n Backup previous stage: copying $STGDIR/$FILEDIR/$FILENAME_EXT to $STGDIR/$FILEDIR/rollback"
