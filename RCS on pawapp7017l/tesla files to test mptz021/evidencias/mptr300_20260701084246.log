@@ -1,0 +1,4074 @@
+    Start  mptr300   Wed Jul 1 08:42:46 AM PDT 2026
+\n\n**********************************************************************************
+Restart Step was NOT included in the job execution. Job will run from the beginning.
+**********************************************************************************\n\n
+\n\n**************************************************************************************************************
+Calling:  oem_ref.ksh    Datetime: 07/01/26 08:42:46   Script: /tmp/mptr300_oem_ref.ksh_run
+**************************************************************************************************************\n\n
+RCS : oem_ref.ksh,v 1.39 2024/01/17 23:23:23 pg2697 Exp $
++ print ProcessId '=' 1028435
+ProcessId = 1028435
++ trap 'oem_abndalrt.ksh $?' err
++ basename /tmp/mptr300_oem_ref.ksh_run .ksh_run
++ PROCNAME=mptr300_oem_ref
++ export PROCNAME
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ export MPTUSERID
++ basename /mdev/race/oem/log/mptr300_20260701084246.log
++ LOGFILE=mptr300_20260701084246.log
++ export LOGFILE
++ print '\n\n Build environment variables'
+
+
+ Build environment variables
++ . oem_job.ksh
++ echo 'RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $'
+RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /mdev/race/oem/log/mptr300_20260701084246.log
++ LOGFILE=mptr300_20260701084246.log
++ REFORMATJOB=mptr300
++ UPDATEJOB=mptr300
++ WORKFILE=mptr300_oem_job.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr300',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr300_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_LOG_DIR',                                       p_log_filename  => 'mptr300_20260701084246.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=/mdev/race/oem/log/mptr300_20260701084246.db.log
++ [ -s /mdev/race/oem/log/mptr300_20260701084246.db.log ]
++ cat /mdev/race/oem/log/mptr300_20260701084246.db.log
++ 1>> /mdev/race/oem/log/mptr300_20260701084246.log
+
+mptr300,mptr301,090,US,TES,tes,zmpt301a,090,US,tes_us,tesus,,pkg_oem_ref_047,,Y,Y,N,,,N,
+
++ rm /mdev/race/oem/log/mptr300_20260701084246.db.log
++ WORKFILE=/mdev/race/oem/tmp/mptr300_oem_job.tmp
++ export WORKFILE
++ cut -f1 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ REFORMATJOB=mptr300
++ export REFORMATJOB
++ [ -z mptr300 ]
++ cut -f2 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ UPDATEJOB=mptr301
++ export UPDATEJOB
++ cut -f3 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBOEM=090
++ export JOBOEM
++ cut -f4 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBCTRY=US
++ export JOBCTRY
++ cut -f5 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBOEMNAME=TES
++ export JOBOEMNAME
++ cut -f6 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ OEMABBRLOWER=tes
++ export OEMABBRLOWER
++ cut -f7 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBPARM=zmpt301a
++ export JOBPARM
++ cut -f8 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ FORMATOEM=090
++ export FORMATOEM
++ cut -f9 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ FORMATCTRY=US
++ export FORMATCTRY
++ cut -f10 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBFILE_OEMCTRY=tes_us
++ export JOBFILE_OEMCTRY
++ cut -f11 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ REPORTSUFFIX=tesus
++ export REPORTSUFFIX
++ cut -f12 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ REVERSE_SUPER_JOBPARM=''
++ export REVERSE_SUPER_JOBPARM
++ cut -f13 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ PACKAGE_NAME_1=pkg_oem_ref_047
++ export PACKAGE_NAME_1
++ cut -f14 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ PACKAGE_NAME_2=''
++ export PACKAGE_NAME_2
++ cut -f15 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ DUPLICATE_PARTS_EXPECTED_FLAG=Y
++ export DUPLICATE_PARTS_EXPECTED_FLAG
++ cut -f16 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ REFORMAT_BUILDS_RTRANS_FLAG=Y
++ export REFORMAT_BUILDS_RTRANS_FLAG
++ cut -f17 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ OBSOLETE_JOB_FLAG=N
++ export OBSOLETE_JOB_FLAG
++ cut -f18 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ PREPROCESS_SCRIPT_NAME=''
++ export PREPROCESS_SCRIPT_NAME
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+SET SERVEROUTPUT ON SIZE 1000000
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr300',                                                           p_log_directory => 'RACE_OEM_LOG_DIR',                                                        p_log_filename  => 'mptr300_20260701084246.db.log',                                                           p_debug_level   => '0');
+QUIT;
+%
+2>& 1
++ DB_LOG=/mdev/race/oem/log/mptr300_20260701084246.db.log
++ [ -s /mdev/race/oem/log/mptr300_20260701084246.db.log ]
++ cat /mdev/race/oem/log/mptr300_20260701084246.db.log
++ 1>> /mdev/race/oem/log/mptr300_20260701084246.log
+
+Start mptr300 pkg_oem_ref_utilities.p_check_gtmp_indexes
+
+
+ End  mptr300 pkg_oem_ref_utilities.p_check_gtmp_indexes
++ rm /mdev/race/oem/log/mptr300_20260701084246.db.log
++ . oem_job_notify.ksh
++ echo 'RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $'
+RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /mdev/race/oem/log/mptr300_20260701084246.log
++ LOGFILE=mptr300_20260701084246.log
++ WORKFILE=mptr300_oem_job_notify.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_notify.p_oem_job_notify_sel_01(p_job  =>          'mptr300',                                                        p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                     p_tmp_filename  => 'mptr300_oem_job_notify.tmp',                                                       p_log_directory => 'RACE_OEM_LOG_DIR',                                                     p_log_filename  => 'mptr300_20260701084246.log');
+QUIT;
+%
+2>& 1
++ WORKFILE=/mdev/race/oem/tmp/mptr300_oem_job_notify.tmp
++ cut -f2 -d^
++ cat /mdev/race/oem/tmp/mptr300_oem_job_notify.tmp
++ SEND_EMAIL_FLAG=''
++ cut -f3 -d^
++ cat /mdev/race/oem/tmp/mptr300_oem_job_notify.tmp
++ EMAIL_ADDRESS_LIST=''
++ cut -f4 -d^
++ cat /mdev/race/oem/tmp/mptr300_oem_job_notify.tmp
++ EMAIL_BODY=''
++ cut -f5 -d^
++ cat /mdev/race/oem/tmp/mptr300_oem_job_notify.tmp
++ RESET_SEND_EMAIL_FLAG=''
++ [ -z '' ]
++ echo 'Notification NOT Required'
+Notification NOT Required
++ echo ' '
+ 
++ . oem_job_datafile.ksh
++ print 'RCS : oem_job_datafile.ksh,v 1.7 2008/10/09 22:16:34 jw97143 Exp $'
+RCS : oem_job_datafile.ksh,v 1.7 2008/10/09 22:16:34 jw97143 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /mdev/race/oem/log/mptr300_20260701084246.log
++ LOGFILE=mptr300_20260701084246.log
++ WORKFILE=mptr300_oem_job_datafile.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_datafile.p_oem_job_datafile_sel_04(p_reformat_job  => 'mptr300',                                                         p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                          p_tmp_filename  => 'mptr300_oem_job_datafile.tmp',                                                            p_log_directory => 'RACE_OEM_LOG_DIR',                                                          p_log_filename  => 'mptr300_20260701084246.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=/mdev/race/oem/log/mptr300_20260701084246.db.log
++ [ -s /mdev/race/oem/log/mptr300_20260701084246.db.log ]
++ cat /mdev/race/oem/log/mptr300_20260701084246.db.log
++ 1>> /mdev/race/oem/log/mptr300_20260701084246.log
+
+1^mptr299_raw_tesla_price.dat^mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat^xtab_oem_ref_mptr300_tes_price^^N^A^,^^mptr300_araw_tes_us_price.dat^^1^07/01/2026^^^^
+
+2^mptr299_raw_tesla_catlg.dat^mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat^xtab_oem_ref_mptr300_tes_catlg^^N^A^,^^mptr300_araw_tes_us_catlg.dat^^1^07/01/2026^^^^
+
+3^mptr299_raw_tesla_super.dat^mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat^xtab_oem_ref_mptr300_tes_super^^N^A^,^^mptr300_araw_tes_us_super.dat^^1^07/01/2026^^^^
+
++ rm /mdev/race/oem/log/mptr300_20260701084246.db.log
++ WORKFILE=/mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ export WORKFILE
++ STEPNAME=Step010R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ print '\n\n START ---> mptr300_oem_ref Step010R - Locate and transfer ALL Input Files - ' 07/01/26 08:42:47 ' <--- START\n\n'
+
+
+ START ---> mptr300_oem_ref Step010R - Locate and transfer ALL Input Files -  07/01/26 08:42:47  <--- START
+
+
++ oem_job_status_update.ksh R 'Step010R oem_job_datafile_prep.ksh'
++ FILE_SEQUENCE=1
++ export FILE_SEQUENCE
++ [ '' '=' Step010R ]
++ true
++ sed -n -e 1p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr299_raw_tesla_price.dat
++ export INPUT_FILE_NAME
++ [ -z mptr299_raw_tesla_price.dat ]
++ sed -n -e 1p
++ cut -f3 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 1p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr300_tes_price
++ export XTAB_TABLE_NAME
++ sed -n -e 1p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 1p
++ cut -f6 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 1p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 1p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 1p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 1p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr300_araw_tes_us_price.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 1p
++ cut -f11 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_SOURCE_FILE_NAME=''
++ export FTP_SOURCE_FILE_NAME
++ eval FTP_SOURCE_FILE_NAME=
++ FTP_SOURCE_FILE_NAME=''
++ sed -n -e 1p
++ cut -f14 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PARM_FILE_NAME=''
++ export FTP_PARM_FILE_NAME
++ sed -n -e 1p
++ cut -f16 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ ENCODING_CHARSET=''
++ export ENCODING_CHARSET
++ . oem_job_datafile_prep.ksh
++ echo '\n*** Begin oem_job_datafile_prep.ksh mptr299_raw_tesla_price.dat ***\n'
+\n*** Begin oem_job_datafile_prep.ksh mptr299_raw_tesla_price.dat ***\n
++ trap 'oem_abndalrt.ksh $?' err
++ STEP010_FILEOUT=/mdev/race/oem/dat/mptr300_araw_tes_us_price.dat
++ [ ! -z '' ]
++ echo mptr299_raw_tesla_price.dat
++ awk -F . '{ print $NF }'
++ [[ dat = 'dat(0)' ]]
++ INPUT_FILE_NAME_EXPANDED=/mdev/race/oem/dat/mptr299_raw_tesla_price.dat
++ export INPUT_FILE_NAME_EXPANDED
++ [ -s /mdev/race/oem/dat/mptr299_raw_tesla_price.dat ]
++ [ N '=' M ]
++ echo '\n*** Option 4 None of the above?  Then Input File /mdev/race/oem/dat/mptr299_raw_tesla_price.dat HAS TO BE on the Novell directory.'
+\n*** Option 4 None of the above?  Then Input File /mdev/race/oem/dat/mptr299_raw_tesla_price.dat HAS TO BE on the Novell directory.
++ . oem_job_process_mitchell_ftp_file.ksh GETMIT
++ echo '\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh mptr299_raw_tesla_price.dat ***\n\n'
+\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh mptr299_raw_tesla_price.dat ***\n\n
++ trap 'oem_abndalrt.ksh $?' err
++ FILE_ACTION=GETMIT
++ [ 1 -lt 1 ]
++ [ US '=' PR ]
++ FTPSITE_DIRECTORY=/ftp1/Business_Partners/tes_us/mdev/incoming
++ [ GETMIT '=' GETMIT ]
++ echo 'Using Fixed Folder for Novell/NT to Mitchell FTP.'
+Using Fixed Folder for Novell/NT to Mitchell FTP.
++ FTP_BUSINESS_PATH=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming
++ export FTP_BUSINESS_PATH
++ FTPSITE_DIRECTORY=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming
++ FILE_ACTION=GETIT
++ echo '\nDoes the input file name contain a wildcard?\n'
+\nDoes the input file name contain a wildcard?\n
++ expr mptr299_raw_tesla_price.dat : '.*[?*]'
+0
++ FTP_FILELIST=/mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat_ftplist.tmp
++ ssh -nq ftp-ssh.mitchell.com 'ls -1 /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/*.*'
++ 1> /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat_ftplist.tmp
++ RECORD_NUMBER=1
++ true
++ sed -n -e 1p
++ cut -f1
++ 0< /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat_ftplist.tmp
++ WORK_FTP_DIR_FILE_NAME=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_catlg.dat
++ [ -z /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_catlg.dat ]
++ basename /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_catlg.dat
++ WORK_FTP_XFR_FILE_NAME=mptr299_raw_tesla_catlg.dat
++ echo mptr299_raw_tesla_catlg.dat
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_FTP_XFR_FILE_NAME_LOWER=mptr299_raw_tesla_catlg.dat
++ WORK_INP_FILE_NAME=mptr299_raw_tesla_price.dat
++ echo mptr299_raw_tesla_price.dat
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_INP_FILE_NAME_LOWER=mptr299_raw_tesla_price.dat
++ [ mptr299_raw_tesla_catlg.dat '=' mptr299_raw_tesla_price.dat ]
++ echo '\nFile names do not match . . . increment record number'
+\nFile names do not match . . . increment record number
++ expr 1 + 1
++ RECORD_NUMBER=2
++ true
++ sed -n -e 2p
++ cut -f1
++ 0< /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat_ftplist.tmp
++ WORK_FTP_DIR_FILE_NAME=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_price.dat
++ [ -z /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_price.dat ]
++ basename /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_price.dat
++ WORK_FTP_XFR_FILE_NAME=mptr299_raw_tesla_price.dat
++ echo mptr299_raw_tesla_price.dat
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_FTP_XFR_FILE_NAME_LOWER=mptr299_raw_tesla_price.dat
++ WORK_INP_FILE_NAME=mptr299_raw_tesla_price.dat
++ echo mptr299_raw_tesla_price.dat
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_INP_FILE_NAME_LOWER=mptr299_raw_tesla_price.dat
++ [ mptr299_raw_tesla_price.dat '=' mptr299_raw_tesla_price.dat ]
++ INPUT_FILE_NAME=mptr299_raw_tesla_price.dat
++ export INPUT_FILE_NAME
++ break
++ [ GETIT '=' GETIT ]
++ [ mptr299_raw_tesla_price.dat '=' mptr299_raw_tesla_price.dat ]
++ FTP_XFR_FILE_NAME=/mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat
++ rm -f /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat
++ echo '\nPreparing to scp file to /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat\n'
+\nPreparing to scp file to /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat\n
++ scp ftp-ssh.mitchell.com:/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_price.dat /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat
++ [ ! -s /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat ]
++ echo '\nInput file pulled from Mitchell FTP Site is good\n'
+\nInput file pulled from Mitchell FTP Site is good\n
++ echo mptr299_raw_tesla_price.dat
++ awk -F . '{ print $NF }'
++ [[ dat = g01 ]]
++ echo mptr299_raw_tesla_price.dat
++ awk -F . '{ print $NF }'
++ FILE_SUFFIX=.dat
++ export FILE_SUFFIX
++ echo '\nFILE_SUFFIX: .dat\n'
+\nFILE_SUFFIX: .dat\n
++ [[ .dat = .zip ]]
++ [[ .dat = .ZIP ]]
++ cp /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat /mdev/race/oem/dat/mptr300_araw_tes_us_price.dat
++ awk ' {print $1}'
++ wc -c /mdev/race/oem/dat/mptr300_araw_tes_us_price.dat
++ RECCNT1=34205267
++ [ 34205267 '=' 0 ]
++ echo $'\\nCopied or gunzip\'d file /mdev/race/oem/dat/mptr300_araw_tes_us_price.dat is good\\n'
+\nCopied or gunzip'd file /mdev/race/oem/dat/mptr300_araw_tes_us_price.dat is good\n
++ [ GETIT '=' BACKUP ]
++ expr 1 + 1
++ FILE_SEQUENCE=2
++ true
++ sed -n -e 2p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr299_raw_tesla_catlg.dat
++ export INPUT_FILE_NAME
++ [ -z mptr299_raw_tesla_catlg.dat ]
++ sed -n -e 2p
++ cut -f3 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 2p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr300_tes_catlg
++ export XTAB_TABLE_NAME
++ sed -n -e 2p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 2p
++ cut -f6 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 2p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 2p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 2p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 2p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr300_araw_tes_us_catlg.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 2p
++ cut -f11 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_SOURCE_FILE_NAME=''
++ export FTP_SOURCE_FILE_NAME
++ eval FTP_SOURCE_FILE_NAME=
++ FTP_SOURCE_FILE_NAME=''
++ sed -n -e 2p
++ cut -f14 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PARM_FILE_NAME=''
++ export FTP_PARM_FILE_NAME
++ sed -n -e 2p
++ cut -f16 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ ENCODING_CHARSET=''
++ export ENCODING_CHARSET
++ . oem_job_datafile_prep.ksh
++ echo '\n*** Begin oem_job_datafile_prep.ksh mptr299_raw_tesla_catlg.dat ***\n'
+\n*** Begin oem_job_datafile_prep.ksh mptr299_raw_tesla_catlg.dat ***\n
++ trap 'oem_abndalrt.ksh $?' err
++ STEP010_FILEOUT=/mdev/race/oem/dat/mptr300_araw_tes_us_catlg.dat
++ [ ! -z '' ]
++ echo mptr299_raw_tesla_catlg.dat
++ awk -F . '{ print $NF }'
++ [[ dat = 'dat(0)' ]]
++ INPUT_FILE_NAME_EXPANDED=/mdev/race/oem/dat/mptr299_raw_tesla_catlg.dat
++ export INPUT_FILE_NAME_EXPANDED
++ [ -s /mdev/race/oem/dat/mptr299_raw_tesla_catlg.dat ]
++ [ N '=' M ]
++ echo '\n*** Option 4 None of the above?  Then Input File /mdev/race/oem/dat/mptr299_raw_tesla_catlg.dat HAS TO BE on the Novell directory.'
+\n*** Option 4 None of the above?  Then Input File /mdev/race/oem/dat/mptr299_raw_tesla_catlg.dat HAS TO BE on the Novell directory.
++ . oem_job_process_mitchell_ftp_file.ksh GETMIT
++ echo '\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh mptr299_raw_tesla_catlg.dat ***\n\n'
+\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh mptr299_raw_tesla_catlg.dat ***\n\n
++ trap 'oem_abndalrt.ksh $?' err
++ FILE_ACTION=GETMIT
++ [ 1 -lt 1 ]
++ [ US '=' PR ]
++ FTPSITE_DIRECTORY=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/tes_us/mdev/incoming
++ [ GETMIT '=' GETMIT ]
++ echo 'Using Fixed Folder for Novell/NT to Mitchell FTP.'
+Using Fixed Folder for Novell/NT to Mitchell FTP.
++ FTP_BUSINESS_PATH=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming
++ export FTP_BUSINESS_PATH
++ FTPSITE_DIRECTORY=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming
++ FILE_ACTION=GETIT
++ echo '\nDoes the input file name contain a wildcard?\n'
+\nDoes the input file name contain a wildcard?\n
++ expr mptr299_raw_tesla_catlg.dat : '.*[?*]'
+0
++ FTP_FILELIST=/mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_catlg.dat_ftplist.tmp
++ ssh -nq ftp-ssh.mitchell.com 'ls -1 /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/*.*'
++ 1> /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_catlg.dat_ftplist.tmp
++ RECORD_NUMBER=1
++ true
++ sed -n -e 1p
++ cut -f1
++ 0< /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_catlg.dat_ftplist.tmp
++ WORK_FTP_DIR_FILE_NAME=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_catlg.dat
++ [ -z /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_catlg.dat ]
++ basename /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_catlg.dat
++ WORK_FTP_XFR_FILE_NAME=mptr299_raw_tesla_catlg.dat
++ echo mptr299_raw_tesla_catlg.dat
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_FTP_XFR_FILE_NAME_LOWER=mptr299_raw_tesla_catlg.dat
++ WORK_INP_FILE_NAME=mptr299_raw_tesla_catlg.dat
++ echo mptr299_raw_tesla_catlg.dat
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_INP_FILE_NAME_LOWER=mptr299_raw_tesla_catlg.dat
++ [ mptr299_raw_tesla_catlg.dat '=' mptr299_raw_tesla_catlg.dat ]
++ INPUT_FILE_NAME=mptr299_raw_tesla_catlg.dat
++ export INPUT_FILE_NAME
++ break
++ [ GETIT '=' GETIT ]
++ [ mptr299_raw_tesla_catlg.dat '=' mptr299_raw_tesla_catlg.dat ]
++ FTP_XFR_FILE_NAME=/mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_catlg.dat
++ rm -f /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_catlg.dat
++ echo '\nPreparing to scp file to /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_catlg.dat\n'
+\nPreparing to scp file to /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_catlg.dat\n
++ scp ftp-ssh.mitchell.com:/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_catlg.dat /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_catlg.dat
++ [ ! -s /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_catlg.dat ]
++ echo '\nInput file pulled from Mitchell FTP Site is good\n'
+\nInput file pulled from Mitchell FTP Site is good\n
++ echo mptr299_raw_tesla_catlg.dat
++ awk -F . '{ print $NF }'
++ [[ dat = g01 ]]
++ echo mptr299_raw_tesla_catlg.dat
++ awk -F . '{ print $NF }'
++ FILE_SUFFIX=.dat
++ export FILE_SUFFIX
++ echo '\nFILE_SUFFIX: .dat\n'
+\nFILE_SUFFIX: .dat\n
++ [[ .dat = .zip ]]
++ [[ .dat = .ZIP ]]
++ cp /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_catlg.dat /mdev/race/oem/dat/mptr300_araw_tes_us_catlg.dat
++ wc -c /mdev/race/oem/dat/mptr300_araw_tes_us_catlg.dat
++ awk ' {print $1}'
++ RECCNT1=257397592
++ [ 257397592 '=' 0 ]
++ echo $'\\nCopied or gunzip\'d file /mdev/race/oem/dat/mptr300_araw_tes_us_catlg.dat is good\\n'
+\nCopied or gunzip'd file /mdev/race/oem/dat/mptr300_araw_tes_us_catlg.dat is good\n
++ [ GETIT '=' BACKUP ]
++ expr 2 + 1
++ FILE_SEQUENCE=3
++ true
++ sed -n -e 3p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr299_raw_tesla_super.dat
++ export INPUT_FILE_NAME
++ [ -z mptr299_raw_tesla_super.dat ]
++ sed -n -e 3p
++ cut -f3 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 3p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr300_tes_super
++ export XTAB_TABLE_NAME
++ cut -f5 -d^
++ sed -n -e 3p
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 3p
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ cut -f6 -d^
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 3p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 3p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 3p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 3p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr300_araw_tes_us_super.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 3p
++ cut -f11 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_SOURCE_FILE_NAME=''
++ export FTP_SOURCE_FILE_NAME
++ eval FTP_SOURCE_FILE_NAME=
++ FTP_SOURCE_FILE_NAME=''
++ sed -n -e 3p
++ cut -f14 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PARM_FILE_NAME=''
++ export FTP_PARM_FILE_NAME
++ sed -n -e 3p
++ cut -f16 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ ENCODING_CHARSET=''
++ export ENCODING_CHARSET
++ . oem_job_datafile_prep.ksh
++ echo '\n*** Begin oem_job_datafile_prep.ksh mptr299_raw_tesla_super.dat ***\n'
+\n*** Begin oem_job_datafile_prep.ksh mptr299_raw_tesla_super.dat ***\n
++ trap 'oem_abndalrt.ksh $?' err
++ STEP010_FILEOUT=/mdev/race/oem/dat/mptr300_araw_tes_us_super.dat
++ [ ! -z '' ]
++ echo mptr299_raw_tesla_super.dat
++ awk -F . '{ print $NF }'
++ [[ dat = 'dat(0)' ]]
++ INPUT_FILE_NAME_EXPANDED=/mdev/race/oem/dat/mptr299_raw_tesla_super.dat
++ export INPUT_FILE_NAME_EXPANDED
++ [ -s /mdev/race/oem/dat/mptr299_raw_tesla_super.dat ]
++ [ N '=' M ]
++ echo '\n*** Option 4 None of the above?  Then Input File /mdev/race/oem/dat/mptr299_raw_tesla_super.dat HAS TO BE on the Novell directory.'
+\n*** Option 4 None of the above?  Then Input File /mdev/race/oem/dat/mptr299_raw_tesla_super.dat HAS TO BE on the Novell directory.
++ . oem_job_process_mitchell_ftp_file.ksh GETMIT
++ echo '\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh mptr299_raw_tesla_super.dat ***\n\n'
+\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh mptr299_raw_tesla_super.dat ***\n\n
++ trap 'oem_abndalrt.ksh $?' err
++ FILE_ACTION=GETMIT
++ [ 1 -lt 1 ]
++ [ US '=' PR ]
++ FTPSITE_DIRECTORY=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/tes_us/mdev/incoming
++ [ GETMIT '=' GETMIT ]
++ echo 'Using Fixed Folder for Novell/NT to Mitchell FTP.'
+Using Fixed Folder for Novell/NT to Mitchell FTP.
++ FTP_BUSINESS_PATH=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming
++ export FTP_BUSINESS_PATH
++ FTPSITE_DIRECTORY=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming
++ FILE_ACTION=GETIT
++ echo '\nDoes the input file name contain a wildcard?\n'
+\nDoes the input file name contain a wildcard?\n
++ expr mptr299_raw_tesla_super.dat : '.*[?*]'
+0
++ FTP_FILELIST=/mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat_ftplist.tmp
++ ssh -nq ftp-ssh.mitchell.com 'ls -1 /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/*.*'
++ 1> /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat_ftplist.tmp
++ RECORD_NUMBER=1
++ true
++ sed -n -e 1p
++ cut -f1
++ 0< /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat_ftplist.tmp
++ WORK_FTP_DIR_FILE_NAME=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_catlg.dat
++ [ -z /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_catlg.dat ]
++ basename /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_catlg.dat
++ WORK_FTP_XFR_FILE_NAME=mptr299_raw_tesla_catlg.dat
++ echo mptr299_raw_tesla_catlg.dat
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_FTP_XFR_FILE_NAME_LOWER=mptr299_raw_tesla_catlg.dat
++ WORK_INP_FILE_NAME=mptr299_raw_tesla_super.dat
++ echo mptr299_raw_tesla_super.dat
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_INP_FILE_NAME_LOWER=mptr299_raw_tesla_super.dat
++ [ mptr299_raw_tesla_catlg.dat '=' mptr299_raw_tesla_super.dat ]
++ echo '\nFile names do not match . . . increment record number'
+\nFile names do not match . . . increment record number
++ expr 1 + 1
++ RECORD_NUMBER=2
++ true
++ sed -n -e 2p
++ cut -f1
++ 0< /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat_ftplist.tmp
++ WORK_FTP_DIR_FILE_NAME=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_price.dat
++ [ -z /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_price.dat ]
++ basename /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_price.dat
++ WORK_FTP_XFR_FILE_NAME=mptr299_raw_tesla_price.dat
++ echo mptr299_raw_tesla_price.dat
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_FTP_XFR_FILE_NAME_LOWER=mptr299_raw_tesla_price.dat
++ WORK_INP_FILE_NAME=mptr299_raw_tesla_super.dat
++ echo mptr299_raw_tesla_super.dat
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_INP_FILE_NAME_LOWER=mptr299_raw_tesla_super.dat
++ [ mptr299_raw_tesla_price.dat '=' mptr299_raw_tesla_super.dat ]
++ echo '\nFile names do not match . . . increment record number'
+\nFile names do not match . . . increment record number
++ expr 2 + 1
++ RECORD_NUMBER=3
++ true
++ sed -n -e 3p
++ cut -f1
++ 0< /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat_ftplist.tmp
++ WORK_FTP_DIR_FILE_NAME=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_super.dat
++ [ -z /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_super.dat ]
++ basename /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_super.dat
++ WORK_FTP_XFR_FILE_NAME=mptr299_raw_tesla_super.dat
++ echo mptr299_raw_tesla_super.dat
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_FTP_XFR_FILE_NAME_LOWER=mptr299_raw_tesla_super.dat
++ WORK_INP_FILE_NAME=mptr299_raw_tesla_super.dat
++ echo mptr299_raw_tesla_super.dat
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_INP_FILE_NAME_LOWER=mptr299_raw_tesla_super.dat
++ [ mptr299_raw_tesla_super.dat '=' mptr299_raw_tesla_super.dat ]
++ INPUT_FILE_NAME=mptr299_raw_tesla_super.dat
++ export INPUT_FILE_NAME
++ break
++ [ GETIT '=' GETIT ]
++ [ mptr299_raw_tesla_super.dat '=' mptr299_raw_tesla_super.dat ]
++ FTP_XFR_FILE_NAME=/mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat
++ rm -f /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat
++ echo '\nPreparing to scp file to /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat\n'
+\nPreparing to scp file to /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat\n
++ scp ftp-ssh.mitchell.com:/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_raw_tesla_super.dat /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat
++ [ ! -s /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat ]
++ echo '\nInput file pulled from Mitchell FTP Site is good\n'
+\nInput file pulled from Mitchell FTP Site is good\n
++ echo mptr299_raw_tesla_super.dat
++ awk -F . '{ print $NF }'
++ [[ dat = g01 ]]
++ echo mptr299_raw_tesla_super.dat
++ awk -F . '{ print $NF }'
++ FILE_SUFFIX=.dat
++ export FILE_SUFFIX
++ echo '\nFILE_SUFFIX: .dat\n'
+\nFILE_SUFFIX: .dat\n
++ [[ .dat = .zip ]]
++ [[ .dat = .ZIP ]]
++ cp /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat /mdev/race/oem/dat/mptr300_araw_tes_us_super.dat
++ wc -c /mdev/race/oem/dat/mptr300_araw_tes_us_super.dat
++ awk ' {print $1}'
++ RECCNT1=23903446
++ [ 23903446 '=' 0 ]
++ echo $'\\nCopied or gunzip\'d file /mdev/race/oem/dat/mptr300_araw_tes_us_super.dat is good\\n'
+\nCopied or gunzip'd file /mdev/race/oem/dat/mptr300_araw_tes_us_super.dat is good\n
++ [ GETIT '=' BACKUP ]
++ expr 3 + 1
++ FILE_SEQUENCE=4
++ true
++ sed -n -e 4p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=''
++ export INPUT_FILE_NAME
++ [ -z '' ]
++ break
++ STEPNAME=Step020R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ print '\n\n START ---> mptr300_oem_ref Step020R - ASCII Cleanup - ' 07/01/26 08:43:31 ' <--- START\n\n'
+
+
+ START ---> mptr300_oem_ref Step020R - ASCII Cleanup -  07/01/26 08:43:31  <--- START
+
+
++ oem_job_status_update.ksh R 'Step020R ASCII Cleanup'
++ FILE_SEQUENCE=1
++ export FILE_SEQUENCE
++ [ '' '=' Step020R ]
++ true
++ sed -n -e 1p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr299_raw_tesla_price.dat
++ export INPUT_FILE_NAME
++ [ -z mptr299_raw_tesla_price.dat ]
++ sed -n -e 1p
++ cut -f3 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 1p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr300_tes_price
++ export XTAB_TABLE_NAME
++ sed -n -e 1p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 1p
++ cut -f6 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 1p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 1p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 1p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 1p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr300_araw_tes_us_price.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 1p
++ cut -f16 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ ENCODING_CHARSET=''
++ export ENCODING_CHARSET
++ STEP020_FILEIN=/mdev/race/oem/dat/mptr300_araw_tes_us_price.dat
++ export STEP020_FILEIN
++ STEP020_FILEOUT=/mdev/race/oem/tmp/mptr300_step020_tes_us_file_1.tmp
++ export STEP020_FILEOUT
++ STEP020_FILEIN_CONV=/mdev/race/oem/dat/mptr300_araw_tes_us_conv.dat
++ export STEP020_FILEIN_CONV
++ STEP020_FILETMP=/mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_1.tmp
++ export STEP020_FILETMP
++ print '\n\n Input File:  /mdev/race/oem/dat/mptr300_araw_tes_us_price.dat'
+
+
+ Input File:  /mdev/race/oem/dat/mptr300_araw_tes_us_price.dat
++ print '\n\n Output File: /mdev/race/oem/tmp/mptr300_step020_tes_us_file_1.tmp'
+
+
+ Output File: /mdev/race/oem/tmp/mptr300_step020_tes_us_file_1.tmp
++ [ A '=' A ]
++ [ ! -z '' ]
++ print '\n\n Running ascii_cleanup.ksh /mdev/race/oem/dat/mptr300_araw_tes_us_price.dat /mdev/race/oem/tmp/mptr300_step020_tes_us_file_1.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_1.tmp'
+
+
+ Running ascii_cleanup.ksh /mdev/race/oem/dat/mptr300_araw_tes_us_price.dat /mdev/race/oem/tmp/mptr300_step020_tes_us_file_1.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_1.tmp
++ ascii_cleanup.ksh /mdev/race/oem/dat/mptr300_araw_tes_us_price.dat /mdev/race/oem/tmp/mptr300_step020_tes_us_file_1.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_1.tmp
+: ascii_cleanup.ksh,v 1.5 2020/02/21 19:47:23 sg107540 Exp $
+\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+Starting ascii_cleanup.ksh\n
+users@corp.int = users@corp.int
+FILESIZE OK
+\nExiting ascii_cleanup.ksh
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n
++ expr 1 + 1
++ FILE_SEQUENCE=2
++ true
++ sed -n -e 2p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr299_raw_tesla_catlg.dat
++ export INPUT_FILE_NAME
++ [ -z mptr299_raw_tesla_catlg.dat ]
++ sed -n -e 2p
++ cut -f3 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 2p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr300_tes_catlg
++ export XTAB_TABLE_NAME
++ sed -n -e 2p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 2p
++ cut -f6 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 2p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 2p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 2p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 2p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr300_araw_tes_us_catlg.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 2p
++ cut -f16 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ ENCODING_CHARSET=''
++ export ENCODING_CHARSET
++ STEP020_FILEIN=/mdev/race/oem/dat/mptr300_araw_tes_us_catlg.dat
++ export STEP020_FILEIN
++ STEP020_FILEOUT=/mdev/race/oem/tmp/mptr300_step020_tes_us_file_2.tmp
++ export STEP020_FILEOUT
++ STEP020_FILEIN_CONV=/mdev/race/oem/dat/mptr300_araw_tes_us_conv.dat
++ export STEP020_FILEIN_CONV
++ STEP020_FILETMP=/mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_2.tmp
++ export STEP020_FILETMP
++ print '\n\n Input File:  /mdev/race/oem/dat/mptr300_araw_tes_us_catlg.dat'
+
+
+ Input File:  /mdev/race/oem/dat/mptr300_araw_tes_us_catlg.dat
++ print '\n\n Output File: /mdev/race/oem/tmp/mptr300_step020_tes_us_file_2.tmp'
+
+
+ Output File: /mdev/race/oem/tmp/mptr300_step020_tes_us_file_2.tmp
++ [ A '=' A ]
++ [ ! -z '' ]
++ print '\n\n Running ascii_cleanup.ksh /mdev/race/oem/dat/mptr300_araw_tes_us_catlg.dat /mdev/race/oem/tmp/mptr300_step020_tes_us_file_2.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_2.tmp'
+
+
+ Running ascii_cleanup.ksh /mdev/race/oem/dat/mptr300_araw_tes_us_catlg.dat /mdev/race/oem/tmp/mptr300_step020_tes_us_file_2.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_2.tmp
++ ascii_cleanup.ksh /mdev/race/oem/dat/mptr300_araw_tes_us_catlg.dat /mdev/race/oem/tmp/mptr300_step020_tes_us_file_2.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_2.tmp
+: ascii_cleanup.ksh,v 1.5 2020/02/21 19:47:23 sg107540 Exp $
+\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+Starting ascii_cleanup.ksh\n
+users@corp.int = users@corp.int
+FILESIZE OK
+\nExiting ascii_cleanup.ksh
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n
++ expr 2 + 1
++ FILE_SEQUENCE=3
++ true
++ sed -n -e 3p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr299_raw_tesla_super.dat
++ export INPUT_FILE_NAME
++ [ -z mptr299_raw_tesla_super.dat ]
++ sed -n -e 3p
++ cut -f3 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 3p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr300_tes_super
++ export XTAB_TABLE_NAME
++ sed -n -e 3p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 3p
++ cut -f6 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 3p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 3p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 3p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 3p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr300_araw_tes_us_super.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 3p
++ cut -f16 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ ENCODING_CHARSET=''
++ export ENCODING_CHARSET
++ STEP020_FILEIN=/mdev/race/oem/dat/mptr300_araw_tes_us_super.dat
++ export STEP020_FILEIN
++ STEP020_FILEOUT=/mdev/race/oem/tmp/mptr300_step020_tes_us_file_3.tmp
++ export STEP020_FILEOUT
++ STEP020_FILEIN_CONV=/mdev/race/oem/dat/mptr300_araw_tes_us_conv.dat
++ export STEP020_FILEIN_CONV
++ STEP020_FILETMP=/mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_3.tmp
++ export STEP020_FILETMP
++ print '\n\n Input File:  /mdev/race/oem/dat/mptr300_araw_tes_us_super.dat'
+
+
+ Input File:  /mdev/race/oem/dat/mptr300_araw_tes_us_super.dat
++ print '\n\n Output File: /mdev/race/oem/tmp/mptr300_step020_tes_us_file_3.tmp'
+
+
+ Output File: /mdev/race/oem/tmp/mptr300_step020_tes_us_file_3.tmp
++ [ A '=' A ]
++ [ ! -z '' ]
++ print '\n\n Running ascii_cleanup.ksh /mdev/race/oem/dat/mptr300_araw_tes_us_super.dat /mdev/race/oem/tmp/mptr300_step020_tes_us_file_3.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_3.tmp'
+
+
+ Running ascii_cleanup.ksh /mdev/race/oem/dat/mptr300_araw_tes_us_super.dat /mdev/race/oem/tmp/mptr300_step020_tes_us_file_3.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_3.tmp
++ ascii_cleanup.ksh /mdev/race/oem/dat/mptr300_araw_tes_us_super.dat /mdev/race/oem/tmp/mptr300_step020_tes_us_file_3.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_3.tmp
+: ascii_cleanup.ksh,v 1.5 2020/02/21 19:47:23 sg107540 Exp $
+\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+Starting ascii_cleanup.ksh\n
+users@corp.int = users@corp.int
+FILESIZE OK
+\nExiting ascii_cleanup.ksh
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n
++ expr 3 + 1
++ FILE_SEQUENCE=4
++ true
++ sed -n -e 4p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=''
++ export INPUT_FILE_NAME
++ [ -z '' ]
++ break
++ STEPNAME=Step030R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ print '\n\nSTART ---> mptr300_oem_ref Step030R - delimit to fixed file conversion and xtab creation - ' 07/01/26 08:43:44 ' <--- START\n\n'
+
+
+START ---> mptr300_oem_ref Step030R - delimit to fixed file conversion and xtab creation -  07/01/26 08:43:44  <--- START
+
+
++ oem_job_status_update.ksh R 'Step030R dlmt2fxd Process'
++ FILE_SEQUENCE=1
++ export FILE_SEQUENCE
++ [ '' '=' Step030R ]
++ true
++ sed -n -e 1p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr299_raw_tesla_price.dat
++ export INPUT_FILE_NAME
++ [ -z mptr299_raw_tesla_price.dat ]
++ sed -n -e 1p
++ cut -f3 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 1p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr300_tes_price
++ export XTAB_TABLE_NAME
++ sed -n -e 1p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 1p
++ cut -f6 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 1p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 1p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 1p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 1p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr300_araw_tes_us_price.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 1p
++ cut -f11 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_SOURCE_FILE_NAME=''
++ export FTP_SOURCE_FILE_NAME
++ eval FTP_SOURCE_FILE_NAME=
++ FTP_SOURCE_FILE_NAME=''
++ sed -n -e 1p
++ cut -f12 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FILE_UPDATE_FREQUENCY=1
++ export SOURCE_FILE_UPDATE_FREQUENCY
++ sed -n -e 1p
++ cut -f13 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FILE_UPDATE_DATE=07/01/2026
++ export SOURCE_FILE_UPDATE_DATE
++ sed -n -e 1p
++ cut -f14 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PARM_FILE_NAME=''
++ export FTP_PARM_FILE_NAME
++ STEP030_FILEIN=/mdev/race/oem/tmp/mptr300_step020_tes_us_file_1.tmp
++ export STEP030_FILEIN
++ STEP030_FILEOUT=/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat
++ export STEP030_FILEOUT
++ STEP030_PREVRAW=/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat_prevraw.dat
++ export STEP030_PREVRAW
++ print $'\\n\\n Create previous raw from last run\'s raw.dat file'
+
+
+ Create previous raw from last run's raw.dat file
++ [ -f /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat ]
++ cp -p /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat_prevraw.dat
++ print '\n\n Input File:  /mdev/race/oem/tmp/mptr300_step020_tes_us_file_1.tmp'
+
+
+ Input File:  /mdev/race/oem/tmp/mptr300_step020_tes_us_file_1.tmp
++ print '\n\n Output File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat'
+
+
+ Output File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat
++ [ ! -z '' ]
++ print 'Copy input file to output file to create new xtab dat.'
+Copy input file to output file to create new xtab dat.
++ cp /mdev/race/oem/tmp/mptr300_step020_tes_us_file_1.tmp /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat
++ DIFF_FILE=/mdev/race/oem/tmp/mptr300_step030_tesus.diff
++ print '\n\n'
+
+
+
++ print 'Current  Input File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat'
+Current  Input File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat
++ print 'Previous Input File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat_prevraw.dat'
+Previous Input File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat_prevraw.dat
++ [ -f /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat_prevraw.dat ]
++ trap - err
++ diff /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat_prevraw.dat /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat
++ 1> /mdev/race/oem/tmp/mptr300_step030_tesus.diff
++ [ ! -s /mdev/race/oem/tmp/mptr300_step030_tesus.diff ]
++ . oem_job_email_same_file_msg.ksh
++ echo 'begin of oem_job_email_same_file_msg.ksh'
+begin of oem_job_email_same_file_msg.ksh
++ MAIL_TEXT=/mdev/race/oem/tmp/mptr300_email_text.tmp
++ export MAIL_TEXT
++ TEST_MAIL_TO=Rpt.OEM.Developers@Mitchell.com
++ export TEST_MAIL_TO
++ PROD_MAIL_TO='Rpt.OEM.Developers@Mitchell.com; RaceDataOps@Mitchell.com; Rpt.OEM.Data.Analyst@Mitchell.com; Susan.Grimes@mitchell.com'
++ export PROD_MAIL_TO
++ printf 'No difference found between current data file and previous one. \n'
++ 1> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> mptr299_raw_tesla_price.dat \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'NOTE: This is an expected email for a job that is being rerun. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Files used in comparison:\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '-->  Current:  /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[23]: printf: -->  Current  /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_t: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '--> Previous:  /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat_prevraw.dat \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[24]: printf: --> Previous  /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_t: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Additional info: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '--> File Location:  N \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[28]: printf: --> File Location  N \n: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '--> Frequency this file is expected to change is: 1 months. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[29]: printf: --> Frequency this file is expected to change is 1 months. \n: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '--> Date that the input file last changed was:  07/01/2026 \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[30]: printf: --> Date that the input file last changed was  07/01/2026 \n: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Next Steps: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '1. Was the correct job executed? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '2. Does Provider send more than one file? If so, are ALL files resulting in same file warning? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   (e.g. Tesla sends price and super file. The prices are changed frequently. '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Supersessions rarely change.) \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If ALL triggered same file warning, send email to OEM contact noting: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o While processing your recently staged files, our process detected that the files are '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'exactly the same as the ones that you last provided. (i.e. No price changes, no parts added or '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'dropped.) \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o Is this to be expected or have the wrong files been staged? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If one file of multiple files triggered same file warning but other file(s) did not, '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf $'this means that \'as a whole\', the data DID change for the run. It is probably OKAY to proceed, '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'with the update although contacting the OEM is still recommended should the file remain the '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'same for a long period of time. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '3. If file location = ‘  ’, this job is using another reformat’s file. Was THAT job run prior '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'to this? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '4. If file location = ‘N’, was file saved to prod3nt directory and named correctly? Also, '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'check the date of the file to what is on prod3nt. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '5. If file location = ‘X’, does the file on the OEMs server have correct name and has date of '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'this runs file changed from the date of the last runs file? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '6. If file location = ‘M’, does the file on Mitchells server have correct name and has date of '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'this runs file changed from the date of the last runs file? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If so, send email to OEM contact noting: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o While processing your recently staged price file, our process detected that this file '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'is exactly the same as the one that you last provided. (i.e. No price changes, no parts added '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'or dropped.) \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o Is this to be expected or has the wrong file been staged? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If not correct name, send email to OEM requesting new file be staged: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o We are noticing the name associated to your file does not match what our process is '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'expecting:  --> mptr299_raw_tesla_price.dat \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If not recent date, send email to OEM requesting new file be staged: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o We are noticing the date associated to your file is not current. Has the proper file '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'been staged? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'NOTE: If OEM confirms no change in data file, proceed with update. \n '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '      If OEM says file should contain changes, \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf $'      o Verify the file they provided contains changes they\'re aware of. \\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '      o Make sure we staged/processed the new file correctly. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf $'      o You may need to request they restage/resend their file, if you don\'t see the changes. '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Mark 1st run as bad. Reorder file. Mark file received. Rerun job from top. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ [ dawapp7017l '=' dawapp7017l ]
++ mailx -s 'Test system warning! mptr300: Same input file being processed!' Rpt.OEM.Developers@Mitchell.com
++ 0< /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'end of oem_job_email_same_file_msg.ksh'
+end of oem_job_email_same_file_msg.ksh+ trap 'oem_abndalrt.ksh $?' err
++ expr 1 + 1
++ FILE_SEQUENCE=2
++ true
++ sed -n -e 2p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr299_raw_tesla_catlg.dat
++ export INPUT_FILE_NAME
++ [ -z mptr299_raw_tesla_catlg.dat ]
++ cut -f3 -d^
++ sed -n -e 2p
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 2p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr300_tes_catlg
++ export XTAB_TABLE_NAME
++ sed -n -e 2p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 2p
++ cut -f6 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 2p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 2p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 2p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 2p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr300_araw_tes_us_catlg.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 2p
++ cut -f11 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_SOURCE_FILE_NAME=''
++ export FTP_SOURCE_FILE_NAME
++ eval FTP_SOURCE_FILE_NAME=
++ FTP_SOURCE_FILE_NAME=''
++ sed -n -e 2p
++ cut -f12 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FILE_UPDATE_FREQUENCY=1
++ export SOURCE_FILE_UPDATE_FREQUENCY
++ sed -n -e 2p
++ cut -f13 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FILE_UPDATE_DATE=07/01/2026
++ export SOURCE_FILE_UPDATE_DATE
++ sed -n -e 2p
++ cut -f14 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PARM_FILE_NAME=''
++ export FTP_PARM_FILE_NAME
++ STEP030_FILEIN=/mdev/race/oem/tmp/mptr300_step020_tes_us_file_2.tmp
++ export STEP030_FILEIN
++ STEP030_FILEOUT=/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat
++ export STEP030_FILEOUT
++ STEP030_PREVRAW=/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat_prevraw.dat
++ export STEP030_PREVRAW
++ print $'\\n\\n Create previous raw from last run\'s raw.dat file'
+
+
+ Create previous raw from last run's raw.dat file
++ [ -f /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat ]
++ cp -p /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat_prevraw.dat
++ print '\n\n Input File:  /mdev/race/oem/tmp/mptr300_step020_tes_us_file_2.tmp'
+
+
+ Input File:  /mdev/race/oem/tmp/mptr300_step020_tes_us_file_2.tmp
++ print '\n\n Output File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat'
+
+
+ Output File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat
++ [ ! -z '' ]
++ print 'Copy input file to output file to create new xtab dat.'
+Copy input file to output file to create new xtab dat.
++ cp /mdev/race/oem/tmp/mptr300_step020_tes_us_file_2.tmp /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat
++ DIFF_FILE=/mdev/race/oem/tmp/mptr300_step030_tesus.diff
++ print '\n\n'
+
+
+
++ print 'Current  Input File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat'
+Current  Input File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat
++ print 'Previous Input File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat_prevraw.dat'
+Previous Input File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat_prevraw.dat
++ [ -f /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat_prevraw.dat ]
++ trap - err
++ diff /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat_prevraw.dat /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat
++ 1> /mdev/race/oem/tmp/mptr300_step030_tesus.diff
++ [ ! -s /mdev/race/oem/tmp/mptr300_step030_tesus.diff ]
++ . oem_job_email_same_file_msg.ksh
++ echo 'begin of oem_job_email_same_file_msg.ksh'
+begin of oem_job_email_same_file_msg.ksh
++ MAIL_TEXT=/mdev/race/oem/tmp/mptr300_email_text.tmp
++ export MAIL_TEXT
++ TEST_MAIL_TO=Rpt.OEM.Developers@Mitchell.com
++ export TEST_MAIL_TO
++ PROD_MAIL_TO='Rpt.OEM.Developers@Mitchell.com; RaceDataOps@Mitchell.com; Rpt.OEM.Data.Analyst@Mitchell.com; Susan.Grimes@mitchell.com'
++ export PROD_MAIL_TO
++ printf 'No difference found between current data file and previous one. \n'
++ 1> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> mptr299_raw_tesla_catlg.dat \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'NOTE: This is an expected email for a job that is being rerun. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Files used in comparison:\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '-->  Current:  /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[23]: printf: -->  Current  /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_t: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '--> Previous:  /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat_prevraw.dat \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[24]: printf: --> Previous  /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_t: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Additional info: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '--> File Location:  N \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[28]: printf: --> File Location  N \n: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '--> Frequency this file is expected to change is: 1 months. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[29]: printf: --> Frequency this file is expected to change is 1 months. \n: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '--> Date that the input file last changed was:  07/01/2026 \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[30]: printf: --> Date that the input file last changed was  07/01/2026 \n: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Next Steps: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '1. Was the correct job executed? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '2. Does Provider send more than one file? If so, are ALL files resulting in same file warning? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   (e.g. Tesla sends price and super file. The prices are changed frequently. '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Supersessions rarely change.) \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If ALL triggered same file warning, send email to OEM contact noting: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o While processing your recently staged files, our process detected that the files are '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'exactly the same as the ones that you last provided. (i.e. No price changes, no parts added or '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'dropped.) \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o Is this to be expected or have the wrong files been staged? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If one file of multiple files triggered same file warning but other file(s) did not, '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf $'this means that \'as a whole\', the data DID change for the run. It is probably OKAY to proceed, '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'with the update although contacting the OEM is still recommended should the file remain the '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'same for a long period of time. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '3. If file location = ‘  ’, this job is using another reformat’s file. Was THAT job run prior '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'to this? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '4. If file location = ‘N’, was file saved to prod3nt directory and named correctly? Also, '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'check the date of the file to what is on prod3nt. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '5. If file location = ‘X’, does the file on the OEMs server have correct name and has date of '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'this runs file changed from the date of the last runs file? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '6. If file location = ‘M’, does the file on Mitchells server have correct name and has date of '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'this runs file changed from the date of the last runs file? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If so, send email to OEM contact noting: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o While processing your recently staged price file, our process detected that this file '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'is exactly the same as the one that you last provided. (i.e. No price changes, no parts added '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'or dropped.) \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o Is this to be expected or has the wrong file been staged? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If not correct name, send email to OEM requesting new file be staged: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o We are noticing the name associated to your file does not match what our process is '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'expecting:  --> mptr299_raw_tesla_catlg.dat \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If not recent date, send email to OEM requesting new file be staged: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o We are noticing the date associated to your file is not current. Has the proper file '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'been staged? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'NOTE: If OEM confirms no change in data file, proceed with update. \n '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '      If OEM says file should contain changes, \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf $'      o Verify the file they provided contains changes they\'re aware of. \\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '      o Make sure we staged/processed the new file correctly. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf $'      o You may need to request they restage/resend their file, if you don\'t see the changes. '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Mark 1st run as bad. Reorder file. Mark file received. Rerun job from top. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ [ dawapp7017l '=' dawapp7017l ]
++ mailx -s 'Test system warning! mptr300: Same input file being processed!' Rpt.OEM.Developers@Mitchell.com
++ 0< /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'end of oem_job_email_same_file_msg.ksh'
+end of oem_job_email_same_file_msg.ksh+ trap 'oem_abndalrt.ksh $?' err
++ expr 2 + 1
++ FILE_SEQUENCE=3
++ true
++ sed -n -e 3p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr299_raw_tesla_super.dat
++ export INPUT_FILE_NAME
++ [ -z mptr299_raw_tesla_super.dat ]
++ sed -n -e 3p
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ cut -f3 -d^
++ XTAB_FILE_NAME=mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 3p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr300_tes_super
++ export XTAB_TABLE_NAME
++ sed -n -e 3p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 3p
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ cut -f6 -d^
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 3p
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ cut -f7 -d^
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 3p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 3p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 3p
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ cut -f10 -d^
++ BACKUP_SOURCE_FILE_NAME=mptr300_araw_tes_us_super.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 3p
++ cut -f11 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_SOURCE_FILE_NAME=''
++ export FTP_SOURCE_FILE_NAME
++ eval FTP_SOURCE_FILE_NAME=
++ FTP_SOURCE_FILE_NAME=''
++ sed -n -e 3p
++ cut -f12 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FILE_UPDATE_FREQUENCY=1
++ export SOURCE_FILE_UPDATE_FREQUENCY
++ sed -n -e 3p
++ cut -f13 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FILE_UPDATE_DATE=07/01/2026
++ export SOURCE_FILE_UPDATE_DATE
++ sed -n -e 3p
++ cut -f14 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PARM_FILE_NAME=''
++ export FTP_PARM_FILE_NAME
++ STEP030_FILEIN=/mdev/race/oem/tmp/mptr300_step020_tes_us_file_3.tmp
++ export STEP030_FILEIN
++ STEP030_FILEOUT=/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat
++ export STEP030_FILEOUT
++ STEP030_PREVRAW=/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat_prevraw.dat
++ export STEP030_PREVRAW
++ print $'\\n\\n Create previous raw from last run\'s raw.dat file'
+
+
+ Create previous raw from last run's raw.dat file
++ [ -f /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat ]
++ cp -p /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat_prevraw.dat
++ print '\n\n Input File:  /mdev/race/oem/tmp/mptr300_step020_tes_us_file_3.tmp'
+
+
+ Input File:  /mdev/race/oem/tmp/mptr300_step020_tes_us_file_3.tmp
++ print '\n\n Output File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat'
+
+
+ Output File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat
++ [ ! -z '' ]
++ print 'Copy input file to output file to create new xtab dat.'
+Copy input file to output file to create new xtab dat.
++ cp /mdev/race/oem/tmp/mptr300_step020_tes_us_file_3.tmp /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat
++ DIFF_FILE=/mdev/race/oem/tmp/mptr300_step030_tesus.diff
++ print '\n\n'
+
+
+
++ print 'Current  Input File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat'
+Current  Input File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat
++ print 'Previous Input File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat_prevraw.dat'
+Previous Input File: /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat_prevraw.dat
++ [ -f /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat_prevraw.dat ]
++ trap - err
++ diff /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat_prevraw.dat /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat
++ 1> /mdev/race/oem/tmp/mptr300_step030_tesus.diff
++ [ ! -s /mdev/race/oem/tmp/mptr300_step030_tesus.diff ]
++ . oem_job_email_same_file_msg.ksh
++ echo 'begin of oem_job_email_same_file_msg.ksh'
+begin of oem_job_email_same_file_msg.ksh
++ MAIL_TEXT=/mdev/race/oem/tmp/mptr300_email_text.tmp
++ export MAIL_TEXT
++ TEST_MAIL_TO=Rpt.OEM.Developers@Mitchell.com
++ export TEST_MAIL_TO
++ PROD_MAIL_TO='Rpt.OEM.Developers@Mitchell.com; RaceDataOps@Mitchell.com; Rpt.OEM.Data.Analyst@Mitchell.com; Susan.Grimes@mitchell.com'
++ export PROD_MAIL_TO
++ printf 'No difference found between current data file and previous one. \n'
++ 1> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> mptr299_raw_tesla_super.dat \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'NOTE: This is an expected email for a job that is being rerun. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Files used in comparison:\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '-->  Current:  /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[23]: printf: -->  Current  /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_t: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '--> Previous:  /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat_prevraw.dat \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[24]: printf: --> Previous  /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_t: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Additional info: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '--> File Location:  N \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[28]: printf: --> File Location  N \n: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '--> Frequency this file is expected to change is: 1 months. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[29]: printf: --> Frequency this file is expected to change is 1 months. \n: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '--> Date that the input file last changed was:  07/01/2026 \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
+/tmp/mptr300_oem_ref.ksh_run[307]: .: oem_job_email_same_file_msg.ksh[30]: printf: --> Date that the input file last changed was  07/01/2026 \n: unknown option
+Usage: printf [ options ] format [string ...]
+ Help: printf [ --help | --man ] 2>&1
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Next Steps: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '1. Was the correct job executed? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '2. Does Provider send more than one file? If so, are ALL files resulting in same file warning? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   (e.g. Tesla sends price and super file. The prices are changed frequently. '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Supersessions rarely change.) \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If ALL triggered same file warning, send email to OEM contact noting: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o While processing your recently staged files, our process detected that the files are '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'exactly the same as the ones that you last provided. (i.e. No price changes, no parts added or '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'dropped.) \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o Is this to be expected or have the wrong files been staged? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If one file of multiple files triggered same file warning but other file(s) did not, '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf $'this means that \'as a whole\', the data DID change for the run. It is probably OKAY to proceed, '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'with the update although contacting the OEM is still recommended should the file remain the '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'same for a long period of time. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '3. If file location = ‘  ’, this job is using another reformat’s file. Was THAT job run prior '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'to this? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '4. If file location = ‘N’, was file saved to prod3nt directory and named correctly? Also, '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'check the date of the file to what is on prod3nt. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '5. If file location = ‘X’, does the file on the OEMs server have correct name and has date of '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'this runs file changed from the date of the last runs file? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '6. If file location = ‘M’, does the file on Mitchells server have correct name and has date of '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'this runs file changed from the date of the last runs file? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If so, send email to OEM contact noting: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o While processing your recently staged price file, our process detected that this file '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'is exactly the same as the one that you last provided. (i.e. No price changes, no parts added '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'or dropped.) \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o Is this to be expected or has the wrong file been staged? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If not correct name, send email to OEM requesting new file be staged: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o We are noticing the name associated to your file does not match what our process is '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'expecting:  --> mptr299_raw_tesla_super.dat \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '   --> If not recent date, send email to OEM requesting new file be staged: \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '       o We are noticing the date associated to your file is not current. Has the proper file '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'been staged? \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'NOTE: If OEM confirms no change in data file, proceed with update. \n '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '      If OEM says file should contain changes, \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf $'      o Verify the file they provided contains changes they\'re aware of. \\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '      o Make sure we staged/processed the new file correctly. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf $'      o You may need to request they restage/resend their file, if you don\'t see the changes. '
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'Mark 1st run as bad. Reorder file. Mark file received. Rerun job from top. \n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf '\n'
++ 1>> /mdev/race/oem/tmp/mptr300_email_text.tmp
++ [ dawapp7017l '=' dawapp7017l ]
++ mailx -s 'Test system warning! mptr300: Same input file being processed!' Rpt.OEM.Developers@Mitchell.com
++ 0< /mdev/race/oem/tmp/mptr300_email_text.tmp
++ printf 'end of oem_job_email_same_file_msg.ksh'
+end of oem_job_email_same_file_msg.ksh+ trap 'oem_abndalrt.ksh $?' err
++ expr 3 + 1
++ FILE_SEQUENCE=4
++ true
++ sed -n -e 4p
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ cut -f2 -d^
++ INPUT_FILE_NAME=''
++ export INPUT_FILE_NAME
++ [ -z '' ]
++ break
++ STEPNAME=Step040R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ print '\n\nSTART ---> mptr300_oem_ref Step040R - Check for Preprocess Script - ' 07/01/26 08:43:50 ' <--- START\n\n'
+
+
+START ---> mptr300_oem_ref Step040R - Check for Preprocess Script -  07/01/26 08:43:50  <--- START
+
+
++ oem_job_status_update.ksh R 'Step040R Check for Preprocess Script'
++ [ -z '' ]
++ break
++ STEPNAME=Step049R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ print '\n\nSTART ---> mptr300_oem_ref Step049R - Price Format Checker - ' 07/01/26 08:43:50 ' <--- START\n\n'
+
+
+START ---> mptr300_oem_ref Step049R - Price Format Checker -  07/01/26 08:43:50  <--- START
+
+
++ oem_job_status_update.ksh R 'Step049R p_oem_ref_price_check'
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET print ON;
+SET FEEDBACK OFF;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_price_check.p_main_price_check(p_reformat_job       => 'mptr300',                                                          p_log_directory      => 'RACE_OEM_LOG_DIR',                                                           p_log_filename       => 'mptr300_20260701084246.log',                                                              p_debug_level        => '0',                                                     p_dbms_profiler_flag => 'N');
+QUIT;
+%
+2>& 1
+SP2-0158: unknown SET option "print"
++ STEPNAME=Step050R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ print '\n\nSTART ---> mptr300_oem_ref Step050R - 1st reformat - ' 07/01/26 08:43:51 ' <--- START\n\n'
+
+
+START ---> mptr300_oem_ref Step050R - 1st reformat -  07/01/26 08:43:51  <--- START
+
+
++ oem_job_status_update.ksh R 'Step050R pkg_oem_ref_047'
++ TRANS_FILE=mptr300_step050_transout.tmp
++ RTRANS_FILE=mptr300_step050_rtransout.tmp
++ date +%C%y%m%d%H%M%S
++ REPORT_FILE=mptr300a_reftesus_20260701084351.rpt
++ rm -f '/mdev/race/oem/tmp/mptr300_xtab_oem_ref_*.bad'
++ rm -f /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_catlg.dis /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_price.dis
++ rm -f /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_catlg.log /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_price.log /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_super.log
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET print ON;
+SET FEEDBACK OFF;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_047.p_main_reformat_records(p_reformat_job       => 'mptr300',                                                         p_log_directory      => 'RACE_OEM_LOG_DIR',                                                          p_log_filename       => 'mptr300_20260701084246.log',                                                             p_trans_directory    => 'RACE_OEM_TMP_DIR',                                                          p_trans_filename     => 'mptr300_step050_transout.tmp',                                                          p_rtrans_directory   => 'RACE_OEM_TMP_DIR',                                                          p_rtrans_filename    => 'mptr300_step050_rtransout.tmp',                                                         p_report_directory   => 'RACE_OEM_RPT_DIR',                                                          p_report_filename    => 'mptr300a_reftesus_20260701084351.rpt',                                                         p_debug_level        => '0',                                                    p_dbms_profiler_flag => 'N');
+QUIT;
+%
+2>& 1
+SP2-0158: unknown SET option "print"
++ STEPNAME=Step051R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ print '\n\nSTART ---> mptr300_oem_ref Step051R - Report Distribution - ' 07/01/26 08:45:15 ' <--- START\n\n'
+
+
+START ---> mptr300_oem_ref Step051R - Report Distribution -  07/01/26 08:45:15  <--- START
+
+
++ oem_job_status_update.ksh R 'Step051R Report Distribution'
++ email_rpt.ksh mptr300a
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr300a_reftesus_20260701084351.txt from /mdev/race/oem/tmp.
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:45:15 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:45:15 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr300a is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
++ rpt_log_retention.ksh mptr300a
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=mptr300a
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:45:15 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:45:15 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/oem/rpt/mptr300a_reftesus_20260601102550.rpt (due to retention)
+\n End rpt_log_retention.ksh
++ STEPNAME=Step055R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ print '\n\nSTART ---> mptr300_oem_ref Step055R - 2nd reformat, if needed - ' 07/01/26 08:45:15 ' <--- START\n\n'
+
+
+START ---> mptr300_oem_ref Step055R - 2nd reformat, if needed -  07/01/26 08:45:15  <--- START
+
+
++ oem_job_status_update.ksh R 'Step055R '
++ [ ! -z '' ]
++ STEPNAME=Step060R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ print '\n\nSTART ---> mptr300_oem_ref Step060R - XTAB Bad File Checker' 07/01/26 08:45:15 ' <--- START\n\n'
+
+
+START ---> mptr300_oem_ref Step060R - XTAB Bad File Checker 07/01/26 08:45:15  <--- START
+
+
++ FILE_OF_XTABNAME=mptr300_xtabname.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_datafile.p_oem_job_datafile_sel_02(p_reformat_job  => 'mptr300',                                                              p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                               p_tmp_filename  => 'mptr300_xtabname.tmp',                                                         p_log_directory => 'RACE_OEM_LOG_DIR',                                                               p_log_filename  => 'mptr300_20260701084246.log');
+QUIT;
+%
+2>& 1
++ XTABNAME_FILE_ROW=1
++ export XTABNAME_FILE_ROW
++ true
+                                            + sed -n -e 1p
++ cut -f1 -d^
++ 0< /mdev/race/oem/tmp/mptr300_xtabname.tmp
++ XTABNAME=xtab_oem_ref_mptr300_tes_catlg
++ export XTABNAME
++ [ -z xtab_oem_ref_mptr300_tes_catlg ]
++ BADFILE_NAME=/mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_catlg.bad
++ [ -s /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_catlg.bad ]
++ expr 1 + 1
++ XTABNAME_FILE_ROW=2
++ true
++ sed -n -e 2p
++ cut -f1 -d^
++ 0< /mdev/race/oem/tmp/mptr300_xtabname.tmp
++ XTABNAME=xtab_oem_ref_mptr300_tes_super
++ export XTABNAME
++ [ -z xtab_oem_ref_mptr300_tes_super ]
++ BADFILE_NAME=/mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_super.bad
++ [ -s /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_super.bad ]
++ expr 2 + 1
++ XTABNAME_FILE_ROW=3
++ true
++ sed -n -e 3p
++ cut -f1 -d^
++ 0< /mdev/race/oem/tmp/mptr300_xtabname.tmp
++ XTABNAME=xtab_oem_ref_mptr300_tes_price
++ export XTABNAME
++ [ -z xtab_oem_ref_mptr300_tes_price ]
++ BADFILE_NAME=/mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_price.bad
++ [ -s /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_price.bad ]
++ expr 3 + 1
++ XTABNAME_FILE_ROW=4
++ true
++ sed -n -e 4p
++ cut -f1 -d^
++ 0< /mdev/race/oem/tmp/mptr300_xtabname.tmp
++ XTABNAME=''
++ export XTABNAME
++ [ -z '' ]
++ break
++ STEPNAME=Step100R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ print '\n\nSTART ---> mptr300_oem_ref Step100R - Create XTAB backup(s) - ' 07/01/26 08:45:15 ' <--- START\n\n'
+
+
+START ---> mptr300_oem_ref Step100R - Create XTAB backup(s) -  07/01/26 08:45:15  <--- START
+
+
++ oem_job_status_update.ksh R 'Step100R Backup External Table Flat Files'
++ FILE_SEQUENCE=1
++ export FILE_SEQUENCE
++ [ '' '=' Step100R ]
++ true
++ sed -n -e 1p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr299_raw_tesla_price.dat
++ export INPUT_FILE_NAME
++ [ -z mptr299_raw_tesla_price.dat ]
++ sed -n -e 1p
++ cut -f3 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 1p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr300_tes_price
++ export XTAB_TABLE_NAME
++ sed -n -e 1p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 1p
++ cut -f6 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 1p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 1p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 1p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 1p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr300_araw_tes_us_price.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 1p
++ cut -f11 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_SOURCE_FILE_NAME=''
++ export FTP_SOURCE_FILE_NAME
++ eval FTP_SOURCE_FILE_NAME=
++ FTP_SOURCE_FILE_NAME=''
++ sed -n -e 1p
++ cut -f14 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PARM_FILE_NAME=''
++ export FTP_PARM_FILE_NAME
++ sed -n -e 1p
++ cut -f15 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ DELETE_PROGRAM_NAME=''
++ export DELETE_PROGRAM_NAME
++ PREVRAW_FILE=/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat_prevraw.dat
++ [ -f /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat_prevraw.dat ]
++ setgdg.ksh '/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat(+01)' NEW 3
++ BACKUP_FILE=/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat.g52
++ cp -p /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat_prevraw.dat /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat.g52
++ rm /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_price_raw.dat_prevraw.dat
++ [ N '=' M ]
++ [ '' '=' delete_sftp_file.pl ]
++ expr 1 + 1
++ FILE_SEQUENCE=2
++ true
++ sed -n -e 2p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr299_raw_tesla_catlg.dat
++ export INPUT_FILE_NAME
++ [ -z mptr299_raw_tesla_catlg.dat ]
++ sed -n -e 2p
++ cut -f3 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 2p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr300_tes_catlg
++ export XTAB_TABLE_NAME
++ sed -n -e 2p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 2p
++ cut -f6 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 2p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 2p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 2p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 2p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr300_araw_tes_us_catlg.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 2p
++ cut -f11 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_SOURCE_FILE_NAME=''
++ export FTP_SOURCE_FILE_NAME
++ eval FTP_SOURCE_FILE_NAME=
++ FTP_SOURCE_FILE_NAME=''
++ sed -n -e 2p
++ cut -f14 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PARM_FILE_NAME=''
++ export FTP_PARM_FILE_NAME
++ sed -n -e 2p
++ cut -f15 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ DELETE_PROGRAM_NAME=''
++ export DELETE_PROGRAM_NAME
++ PREVRAW_FILE=/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat_prevraw.dat
++ [ -f /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat_prevraw.dat ]
++ setgdg.ksh '/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat(+01)' NEW 3
++ BACKUP_FILE=/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat.g52
++ cp -p /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat_prevraw.dat /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat.g52
++ rm /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_catlg_raw.dat_prevraw.dat
++ [ N '=' M ]
++ [ '' '=' delete_sftp_file.pl ]
++ expr 2 + 1
++ FILE_SEQUENCE=3
++ true
++ sed -n -e 3p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr299_raw_tesla_super.dat
++ export INPUT_FILE_NAME
++ [ -z mptr299_raw_tesla_super.dat ]
++ sed -n -e 3p
++ cut -f3 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 3p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr300_tes_super
++ export XTAB_TABLE_NAME
++ sed -n -e 3p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 3p
++ cut -f6 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 3p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 3p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 3p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 3p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr300_araw_tes_us_super.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 3p
++ cut -f11 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_SOURCE_FILE_NAME=''
++ export FTP_SOURCE_FILE_NAME
++ eval FTP_SOURCE_FILE_NAME=
++ FTP_SOURCE_FILE_NAME=''
++ sed -n -e 3p
++ cut -f14 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ FTP_PARM_FILE_NAME=''
++ export FTP_PARM_FILE_NAME
++ sed -n -e 3p
++ cut -f15 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ DELETE_PROGRAM_NAME=''
++ export DELETE_PROGRAM_NAME
++ PREVRAW_FILE=/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat_prevraw.dat
++ [ -f /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat_prevraw.dat ]
++ setgdg.ksh '/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat(+01)' NEW 3
++ BACKUP_FILE=/mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat.g53
++ cp -p /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat_prevraw.dat /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat.g53
++ rm /mdev/race/oem/dat/mptr300_xtab_oem_ref_mptr300_tes_super_raw.dat_prevraw.dat
++ [ N '=' M ]
++ [ '' '=' delete_sftp_file.pl ]
++ expr 3 + 1
++ FILE_SEQUENCE=4
++ true
++ sed -n -e 4p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp
++ INPUT_FILE_NAME=''
++ export INPUT_FILE_NAME
++ [ -z '' ]
++ break
+\n\n**************************************************************************************************************
+Finished: oem_ref.ksh    Datetime: 07/01/26 08:45:18   Script: /tmp/mptr300_oem_ref.ksh_run
+**************************************************************************************************************\n\n
+\n\n**********************************************************************************
+Restart Step was NOT included in the job execution. Job will run from the beginning.
+**********************************************************************************\n\n
+\n\n**************************************************************************************************************
+Calling:  oem_ref_trans_check_and_split.ksh    Datetime: 07/01/26 08:45:18   Script: /tmp/mptr300_oem_ref_trans_check_and_split.ksh_run
+**************************************************************************************************************\n\n
+RCS : oem_ref_trans_check_and_split.ksh,v 1.15 2020/08/26 00:54:25 pg2697 Exp $
+print ProcessId = $$
++ print ProcessId '=' 1029430
+ProcessId = 1029430
+#****************************************************************************************
+#      NOTE:  This script is very similiar to oem_ref_trans_split_only.ksh
+#   Changes here should also be considered in oem_ref_trans_split_only.ksh.
+#****************************************************************************************
+trap 'oem_abndalrt.ksh $?' err
++ trap 'oem_abndalrt.ksh $?' err
+export PROCNAME=$(basename $0 .ksh_run)
++ basename /tmp/mptr300_oem_ref_trans_check_and_split.ksh_run .ksh_run
++ PROCNAME=mptr300_oem_ref_trans_check_and_split
++ export PROCNAME
+#****************************************************************************************
+#  Build environment variables for the job (based on jobname)
+#****************************************************************************************
+. oem_job.ksh 
++ . oem_job.ksh
+#!/bin/ksh
+echo "RCS $Id: oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $"
+#*****************************************************************************************
+# PROCNAME oem_job.ksh
+# PURPOSE  Retreive and build UNIX Environment Variables from Oracle Tables
+#          Used by RACE OEM Parts Reformat and Update jobs
+#*****************************************************************************************
+trap 'oem_abndalrt.ksh $?' err
+MPTUSERID=`cat ${RACE}/prm/zmptpass.prm`
+LOGFILE=$(basename ${JOBLOGNAME})
+#*****************************************************************************************
+#  Build UNIX environment variables for the job (based on jobname)
+#*****************************************************************************************
+REFORMATJOB=${JOBNAME}
+UPDATEJOB=${JOBNAME}
+WORKFILE=${JOBNAME}_oem_job.tmp
+#-----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => '${JOBNAME}',    \
+                                      p_tmp_directory => '${OBJ_TMPDIR}', \
+                                      p_tmp_filename  => '${WORKFILE}',   \
+                                      p_log_directory => '${OBJ_LOGDIR}', \
+                                      p_log_filename  => '${LOGFILE%.log}.db.log');
+QUIT;
+%
+
+# rj132422 - This code was added to avoid race condition between db and shell due the nfs
+DB_LOG=${LOGDIR}/${LOGFILE%.log}.db.log
+if [ -s "$DB_LOG" ]; then
+    cat "$DB_LOG" >> "${LOGDIR}/${LOGFILE}"
+    rm  "$DB_LOG"
+fi
+
+#-----------------------------------------------------------------------------------------
+export WORKFILE=${RACE}/tmp/${WORKFILE}
+
+#If the ReformatJob Environment variable isn't defined, abend the process
+export REFORMATJOB=`cat ${WORKFILE}                   | cut -f1  -d","`
+if [ -z "${REFORMATJOB}" ]
+then
+   abndalrt.ksh environment_not_found_in_oem_job_table.tmp
+fi
+export UPDATEJOB=`cat ${WORKFILE}                     | cut -f2  -d","`
+export JOBOEM=`cat ${WORKFILE}                        | cut -f3  -d","`
+export JOBCTRY=`cat ${WORKFILE}                       | cut -f4  -d","`
+export JOBOEMNAME=`cat ${WORKFILE}                    | cut -f5  -d","`
+export OEMABBRLOWER=`cat ${WORKFILE}                  | cut -f6  -d","`
+export JOBPARM=`cat ${WORKFILE}                       | cut -f7  -d","`
+export FORMATOEM=`cat ${WORKFILE}                     | cut -f8  -d","`
+export FORMATCTRY=`cat ${WORKFILE}                    | cut -f9  -d","`
+export JOBFILE_OEMCTRY=`cat ${WORKFILE}               | cut -f10 -d","`
+export REPORTSUFFIX=`cat ${WORKFILE}                  | cut -f11 -d","`
+export REVERSE_SUPER_JOBPARM=`cat ${WORKFILE}         | cut -f12 -d","`
+export PACKAGE_NAME_1=`cat ${WORKFILE}                | cut -f13 -d","`
+export PACKAGE_NAME_2=`cat ${WORKFILE}                | cut -f14 -d","`
+export DUPLICATE_PARTS_EXPECTED_FLAG=`cat ${WORKFILE} | cut -f15 -d","`
+export REFORMAT_BUILDS_RTRANS_FLAG=`cat ${WORKFILE}   | cut -f16 -d","`
+export OBSOLETE_JOB_FLAG=`cat ${WORKFILE}             | cut -f17 -d","`
+export PREPROCESS_SCRIPT_NAME=`cat ${WORKFILE}        | cut -f18 -d","`
+
+
+##########################################################################################
+# The various Oracle Package call by the OEM system use Global Temporary Tables.
+# For some reason (only in the test system at this point in time), the indexes on these
+# Global Tempoary Tables are missing.
+# The missing indexes result in slooooow processing and often aren't discovered missing
+# right away.  To curtail this problem, run a quick check to see if the indexes exist.
+# When an index for a Global Temporary Table is not found, it will be created.
+##########################################################################################
+#-----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+SET SERVEROUTPUT ON SIZE 1000000
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => '${JOBNAME}',       \
+                                                    p_log_directory => '${OBJ_LOGDIR}',    \
+                                                    p_log_filename  => '${LOGFILE%.log}.db.log',       \
+                                                    p_debug_level   => '${RACE_DEBUG_LEVEL}');
+QUIT;
+%
+
+# rj132422 - This code was added to avoid race condition between db and shell due the nfs
+DB_LOG=${LOGDIR}/${LOGFILE%.log}.db.log
+if [ -s "$DB_LOG" ]; then
+    cat "$DB_LOG" >> "${LOGDIR}/${LOGFILE}"
+    rm  "$DB_LOG"
+fi
+#-----------------------------------------------------------------------------------------
+
+#*****************************************************************************************
+# END oem_job.ksh
+#*****************************************************************************************
++ echo 'RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $'
+RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $
++ trap 'oem_abndalrt.ksh $?' err
+cat ${RACE}/prm/zmptpass.prm
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /mdev/race/oem/log/mptr300_20260701084246.log
++ LOGFILE=mptr300_20260701084246.log
++ REFORMATJOB=mptr300
++ UPDATEJOB=mptr300
++ WORKFILE=mptr300_oem_job.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr300',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr300_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_LOG_DIR',                                       p_log_filename  => 'mptr300_20260701084246.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=/mdev/race/oem/log/mptr300_20260701084246.db.log
++ [ -s /mdev/race/oem/log/mptr300_20260701084246.db.log ]
++ cat /mdev/race/oem/log/mptr300_20260701084246.db.log
++ 1>> /mdev/race/oem/log/mptr300_20260701084246.log
+
+mptr300,mptr301,090,US,TES,tes,zmpt301a,090,US,tes_us,tesus,,pkg_oem_ref_047,,Y,Y,N,,,N,
+
++ rm /mdev/race/oem/log/mptr300_20260701084246.db.log
++ WORKFILE=/mdev/race/oem/tmp/mptr300_oem_job.tmp
++ export WORKFILE
+cat ${WORKFILE}                   | cut -f1  -d","
++ cut -f1 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ REFORMATJOB=mptr300
++ export REFORMATJOB
++ [ -z mptr300 ]
+cat ${WORKFILE}                     | cut -f2  -d","
++ cut -f2 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ UPDATEJOB=mptr301
++ export UPDATEJOB
+cat ${WORKFILE}                        | cut -f3  -d","
++ cut -f3 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBOEM=090
++ export JOBOEM
+cat ${WORKFILE}                       | cut -f4  -d","
++ cut -f4 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBCTRY=US
++ export JOBCTRY
+cat ${WORKFILE}                    | cut -f5  -d","
++ cut -f5 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBOEMNAME=TES
++ export JOBOEMNAME
+cat ${WORKFILE}                  | cut -f6  -d","
++ cut -f6 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ OEMABBRLOWER=tes
++ export OEMABBRLOWER
+cat ${WORKFILE}                       | cut -f7  -d","
++ cut -f7 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBPARM=zmpt301a
++ export JOBPARM
+cat ${WORKFILE}                     | cut -f8  -d","
++ cut -f8 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ FORMATOEM=090
++ export FORMATOEM
+cat ${WORKFILE}                    | cut -f9  -d","
++ cut -f9 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ FORMATCTRY=US
++ export FORMATCTRY
+cat ${WORKFILE}               | cut -f10 -d","
++ cut -f10 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBFILE_OEMCTRY=tes_us
++ export JOBFILE_OEMCTRY
+cat ${WORKFILE}                  | cut -f11 -d","
++ cut -f11 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ REPORTSUFFIX=tesus
++ export REPORTSUFFIX
+cat ${WORKFILE}         | cut -f12 -d","
++ cut -f12 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ REVERSE_SUPER_JOBPARM=''
++ export REVERSE_SUPER_JOBPARM
+cat ${WORKFILE}                | cut -f13 -d","
++ cut -f13 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ PACKAGE_NAME_1=pkg_oem_ref_047
++ export PACKAGE_NAME_1
+cat ${WORKFILE}                | cut -f14 -d","
++ cut -f14 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ PACKAGE_NAME_2=''
++ export PACKAGE_NAME_2
+cat ${WORKFILE} | cut -f15 -d","
++ cut -f15 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ DUPLICATE_PARTS_EXPECTED_FLAG=Y
++ export DUPLICATE_PARTS_EXPECTED_FLAG
+cat ${WORKFILE}   | cut -f16 -d","
++ cut -f16 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ REFORMAT_BUILDS_RTRANS_FLAG=Y
++ export REFORMAT_BUILDS_RTRANS_FLAG
+cat ${WORKFILE}             | cut -f17 -d","
++ cut -f17 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ OBSOLETE_JOB_FLAG=N
++ export OBSOLETE_JOB_FLAG
+cat ${WORKFILE}        | cut -f18 -d","
++ cut -f18 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ PREPROCESS_SCRIPT_NAME=''
++ export PREPROCESS_SCRIPT_NAME
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+SET SERVEROUTPUT ON SIZE 1000000
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr300',                                                           p_log_directory => 'RACE_OEM_LOG_DIR',                                                        p_log_filename  => 'mptr300_20260701084246.db.log',                                                           p_debug_level   => '0');
+QUIT;
+%
+2>& 1
++ DB_LOG=/mdev/race/oem/log/mptr300_20260701084246.db.log
++ [ -s /mdev/race/oem/log/mptr300_20260701084246.db.log ]
++ cat /mdev/race/oem/log/mptr300_20260701084246.db.log
++ 1>> /mdev/race/oem/log/mptr300_20260701084246.log
+
+Start mptr300 pkg_oem_ref_utilities.p_check_gtmp_indexes
+
+
+ End  mptr300 pkg_oem_ref_utilities.p_check_gtmp_indexes
++ rm /mdev/race/oem/log/mptr300_20260701084246.db.log
+#****************************************************************************************
+
+
+#STEP Step200R
+ export STEPNAME=Step200R
++ STEPNAME=Step200R
++ export STEPNAME
+ echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step200R' 07/01/26 08:45:18 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step200R 07/01/26 08:45:18  <--- START\n\n
+ oem_job_status_update.ksh "R" "${STEPNAME} Sort RTRANS if file exists"
++ oem_job_status_update.ksh R 'Step200R Sort RTRANS if file exists'
+ #***************************************************************************************
+ #  Program: SORT  - Sorts "R" TRANS if file exists
+ #  Move RTRANS file to location expected by oem_upd.ksh
+ #***************************************************************************************
+ RTRANS_SORTIN=${RACE}/tmp/${JOBNAME}_step050_rtransout.tmp
++ RTRANS_SORTIN=/mdev/race/oem/tmp/mptr300_step050_rtransout.tmp
+ RTRANS_SORTOUT=${RACE}/dat/${JOBNAME}_rtrans.tmp
++ RTRANS_SORTOUT=/mdev/race/oem/dat/mptr300_rtrans.tmp
+ if [ -f ${RTRANS_SORTIN} ]
+ then     
+   #      +------------+------------+----------+-----------+
+   #      | YYYY desc  | MM/DD desc | Old Part | New Part  |
+   #      +------------+------------+----------+-----------+
+   sort -u -k1.63,1.66r -k1.57,1.61r -k1.7,1.31 -k1.32,1.56 -o ${RTRANS_SORTOUT} ${RTRANS_SORTIN}
+ fi
+
+
++ [ -f /mdev/race/oem/tmp/mptr300_step050_rtransout.tmp ]
++ sort -u -k1.63,1.66r -k1.57,1.61r -k1.7,1.31 -k1.32,1.56 -o /mdev/race/oem/dat/mptr300_rtrans.tmp /mdev/race/oem/tmp/mptr300_step050_rtransout.tmp
+#STEP Step205R
+  export STEPNAME=Step205R
++ STEPNAME=Step205R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step205R' 07/01/26 08:45:18 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step205R 07/01/26 08:45:18  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} pkg_oem_ref_trans_dupes_rpt"
++ oem_job_status_update.ksh R 'Step205R pkg_oem_ref_trans_dupes_rpt'
+  #**************************************************************************************
+  #  Program: pkg_oem_ref_trans_dupes_rpt
+  #**************************************************************************************
+  INPUT_FILENAME=${JOBNAME}_step050_transout.tmp
++ INPUT_FILENAME=mptr300_step050_transout.tmp
+  OUTPUT_FILENAME=${JOBNAME}_step205_transout.tmp
++ OUTPUT_FILENAME=mptr300_step205_transout.tmp
+#----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET ECHO ON;
+SET FEEDBACK OFF;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_fix_trans_cleanup.p_main_procedure(p_reformat_job       => '${REFORMATJOB}',      \
+                                                        p_log_directory      => '${OBJ_LOGDIR}',       \
+                                                        p_log_filename       => '${LOGFILE}',          \
+                                                        p_input_directory    => '${OBJ_TMPDIR}',       \
+                                                        p_input_filename     => '${INPUT_FILENAME}',   \
+                                                        p_output_directory   => '${OBJ_TMPDIR}',       \
+                                                        p_output_filename    => '${OUTPUT_FILENAME}',  \
+                                                        p_debug_level        => '${RACE_DEBUG_LEVEL}', \
+                                                        p_dbms_profiler_flag => '${RACE_DBMS_PROFILER_FLAG}');
+QUIT;
+%
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET ECHO ON;
+SET FEEDBACK OFF;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_fix_trans_cleanup.p_main_procedure(p_reformat_job       => 'mptr300',                                                              p_log_directory      => 'RACE_OEM_LOG_DIR',                                                               p_log_filename       => 'mptr300_20260701084246.log',                                                                  p_input_directory    => 'RACE_OEM_TMP_DIR',                                                               p_input_filename     => 'mptr300_step050_transout.tmp',                                                           p_output_directory   => 'RACE_OEM_TMP_DIR',                                                               p_output_filename    => 'mptr300_step205_transout.tmp',                                                          p_debug_level        => '0',                                                         p_dbms_profiler_flag => 'N');
+QUIT;
+%
+2>& 1
+#----------------------------------------------------------------------------------------
+
+
+#STEP Step210R
+  export STEPNAME=Step210R
++ STEPNAME=Step210R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step210R' 07/01/26 08:45:23 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step210R 07/01/26 08:45:23  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} pkg_oem_ref_trans_dupes_rpt"
++ oem_job_status_update.ksh R 'Step210R pkg_oem_ref_trans_dupes_rpt'
+  #**************************************************************************************
+  #  Program: pkg_oem_ref_trans_dupes_rpt
+  #**************************************************************************************
+  INPUT_FILENAME=${JOBNAME}_step205_transout.tmp
+
++ INPUT_FILENAME=mptr300_step205_transout.tmp
+  REPORT_FILE=${JOBNAME}y_dup${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
+
++ date +%C%y%m%d%H%M%S
++ REPORT_FILE=mptr300y_duptesus_20260701084523.rpt
+#----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET ECHO ON;
+SET FEEDBACK OFF;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_trans_dupes_rpt.p_main_procedure(p_reformat_job       => '${REFORMATJOB}',      \
+                                                      p_log_directory      => '${OBJ_LOGDIR}',       \
+                                                      p_log_filename       => '${LOGFILE}',          \
+                                                      p_input_directory    => '${OBJ_TMPDIR}',       \
+                                                      p_input_filename     => '${INPUT_FILENAME}',   \
+                                                      p_report_directory   => '${OBJ_RPTDIR}',       \
+                                                      p_report_filename    => '${REPORT_FILE}', \
+                                                      p_debug_level        => '${RACE_DEBUG_LEVEL}', \
+                                                      p_dbms_profiler_flag => '${RACE_DBMS_PROFILER_FLAG}');
+QUIT;
+%
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET ECHO ON;
+SET FEEDBACK OFF;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_trans_dupes_rpt.p_main_procedure(p_reformat_job       => 'mptr300',                                                            p_log_directory      => 'RACE_OEM_LOG_DIR',                                                             p_log_filename       => 'mptr300_20260701084246.log',                                                                p_input_directory    => 'RACE_OEM_TMP_DIR',                                                             p_input_filename     => 'mptr300_step205_transout.tmp',                                                         p_report_directory   => 'RACE_OEM_RPT_DIR',                                                             p_report_filename    => 'mptr300y_duptesus_20260701084523.rpt',                                                       p_debug_level        => '0',                                                       p_dbms_profiler_flag => 'N');
+QUIT;
+%
+2>& 1
+#----------------------------------------------------------------------------------------
+
+#STEP Step211R
+  export STEPNAME=Step211R
++ STEPNAME=Step211R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step211R' 07/01/26 08:45:24 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step211R 07/01/26 08:45:24  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} Report Distribution"
++ oem_job_status_update.ksh R 'Step211R Report Distribution'
+  #**************************************************************************************
+  #  Emails and Handles Retention for Report(s) created in previous step  
+  #**************************************************************************************
+  email_rpt.ksh "${JOBNAME}y"              
++ email_rpt.ksh mptr300y
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr300y_duptesus_20260701084523.txt from /mdev/race/oem/tmp.
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:45:24 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:45:24 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr300y is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+  rpt_log_retention.ksh "${JOBNAME}y"
+
++ rpt_log_retention.ksh mptr300y
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=mptr300y
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:45:24 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:45:24 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/oem/rpt/mptr300y_duptesus_20260603102555.rpt (due to retention)
+\n End rpt_log_retention.ksh
+  
+#STEP Step215R
+  export STEPNAME=Step215R
++ STEPNAME=Step215R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step215R' 07/01/26 08:45:24 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step215R 07/01/26 08:45:24  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} Sort by Transcode, Old Part, New Part, Price desc, Description desc"
++ oem_job_status_update.ksh R 'Step215R Sort by Transcode, Old Part, New Part, Price desc, Description desc'
+  #**************************************************************************************
+  #  Program: Sort
+  #**************************************************************************************
+  TRANS_SORTIN=${RACE}/tmp/${JOBNAME}_step205_transout.tmp
++ TRANS_SORTIN=/mdev/race/oem/tmp/mptr300_step205_transout.tmp
+  TRANS_SORTOUT=${RACE}/tmp/${JOBNAME}_step215_transout_sorted.tmp
++ TRANS_SORTOUT=/mdev/race/oem/tmp/mptr300_step215_transout_sorted.tmp
+  #           +---------+----------+-----------+------------+-----------------+
+  #           |Transcode| Old Part |  New Part | Price Desc | Description Desc|
+  #           +---------+----------+-----------+------------+-----------------+
+  sort -T /tmp -k1.1,1.1 -k1.7,1.31 -k1.32,1.56 -k1.57,1.71r -k1.88,1.167r -o ${TRANS_SORTOUT} ${TRANS_SORTIN}
+
+
++ sort -T /tmp -k1.1,1.1 -k1.7,1.31 -k1.32,1.56 -k1.57,1.71r -k1.88,1.167r -o /mdev/race/oem/tmp/mptr300_step215_transout_sorted.tmp /mdev/race/oem/tmp/mptr300_step205_transout.tmp
+#STEP Step216R
+  export STEPNAME=Step216R
++ STEPNAME=Step216R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step216R' 07/01/26 08:45:28 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step216R 07/01/26 08:45:28  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} mpt_elim_dup_old_new_part.awk"
++ oem_job_status_update.ksh R 'Step216R mpt_elim_dup_old_new_part.awk'
+  #**************************************************************************************
+  #  Program: mpt_elim_dup_old_new_part.awk
+  #**************************************************************************************
+  SORTED_FILEIN=${RACE}/tmp/${JOBNAME}_step215_transout_sorted.tmp
++ SORTED_FILEIN=/mdev/race/oem/tmp/mptr300_step215_transout_sorted.tmp
+  REFORMAT_FILEOUT=${RACE}/tmp/${JOBNAME}_step216_ref_${JOBFILE_OEMCTRY}.tmp
++ REFORMAT_FILEOUT=/mdev/race/oem/tmp/mptr300_step216_ref_tes_us.tmp
+  
+  if [ "${DUPLICATE_PARTS_EXPECTED_FLAG}" = "Y" ]
+  then
+    export sort_type=tcd_old_part_new_part
+    cat ${SORTED_FILEIN} | awk -f ${RACE}/bin/mpt_elim_dup_old_new_part.awk > ${REFORMAT_FILEOUT}
+  else
+     cp ${SORTED_FILEIN} ${REFORMAT_FILEOUT}
+  fi 
+
+
++ [ Y '=' Y ]
++ sort_type=tcd_old_part_new_part
++ export sort_type
++ awk -f /mdev/race/oem/bin/mpt_elim_dup_old_new_part.awk
++ cat /mdev/race/oem/tmp/mptr300_step215_transout_sorted.tmp
++ 1> /mdev/race/oem/tmp/mptr300_step216_ref_tes_us.tmp
+#STEP Step220R
+  export STEPNAME=Step220R
++ STEPNAME=Step220R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step220R' 07/01/26 08:45:28 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step220R 07/01/26 08:45:28  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} Extract the P and N transaction records"
++ oem_job_status_update.ksh R 'Step220R Extract the P and N transaction records'
+  #**************************************************************************************
+  #  Check the newly reformated transaction file for looping supersessions - remove loops
+  #**************************************************************************************
+
+  . oem_rpt_validate_supers.ksh
++ . oem_rpt_validate_supers.ksh
+#!/bin/ksh
+echo "RCS $Id: oem_rpt_validate_supers.ksh,v 1.14 2020/08/26 00:55:48 pg2697 Exp $"
+#set -xv
+print ProcessId = $$
+#****************************************************************************************
+#  Description: Run process to validate supersessions and create reports
+#****************************************************************************************
+trap 'oem_abndalrt.ksh $?' err
+export PROCNAME=$(basename $0 .ksh_run)
+#****************************************************************************************
+#  Build environment variables for the job (based on jobname)
+#****************************************************************************************
+. oem_job.ksh
+#****************************************************************************************
+
+#STEP Step510
+  export STEPNAME=Step510
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Extract the P and N records"
+  #**************************************************************************************
+  #                                          Extract the P and N records
+  #**************************************************************************************
+  REFORMAT_WORKOUT=${RACE}/tmp/${JOBNAME}_step510_oemrecs.tmp
+  if [ ${JOBNAME} = ${REFORMATJOB} ]
+  then
+     #**************************************************************************************
+     # Reformat Job? Only extract N records (From Step216R)
+     #**************************************************************************************
+     REFORMAT_FILEIN=${RACE}/tmp/${JOBNAME}_step216_ref_${JOBFILE_OEMCTRY}.tmp
+     awk '{ if (substr($0,1,1)=="N") print $0 }' ${REFORMAT_FILEIN} > ${REFORMAT_WORKOUT}
+  else
+     #**************************************************************************************
+     # Update Job? Only extract N and P records
+     #**************************************************************************************
+     REFORMAT_FILEIN=$(setgdg.ksh "${RACE}/dat/${REFORMATJOB}_ref_${JOBFILE_OEMCTRY}.dat(0)")
+     awk '{ if (substr($0,1,1)=="P") print $0 }' ${REFORMAT_FILEIN} >  ${REFORMAT_WORKOUT}
+     awk '{ if (substr($0,1,1)=="N") print $0 }' ${REFORMAT_FILEIN} >> ${REFORMAT_WORKOUT}
+  fi
+
+
+#STEP Step515
+  export STEPNAME=Step515
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Sort unique"
+  #**************************************************************************************
+  #                                          Sort unique 
+  #**************************************************************************************
+  SORTFILE_FILEIN=${RACE}/tmp/${JOBNAME}_step510_oemrecs.tmp
+  SORT_FILEOUT=${RACE}/tmp/${JOBNAME}_step515_oemrecs_sort.tmp
+  rm -f $SORT_FILEOUT
+  #      +----------+
+  #      |OLD & NEW |
+  #      +----------+
+  sort -u -k1.7,1.56 -o ${SORT_FILEOUT} ${SORTFILE_FILEIN}
+
+
+#STEP Step530
+  export STEPNAME=Step530
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} pkg_oem_rpt_validate_supers"
+  #**************************************************************************************
+  #                                          pkg_oem_rpt_validate_supers
+  #  Execute Supersession Validation Program - Check the chains for loops
+  #                                            and for "middle" parts with pricing
+  #**************************************************************************************
+  INPUT_FILENAME=${JOBNAME}_step515_oemrecs_sort.tmp
+  OUTPUT_HTRANS=${JOBNAME}_step530_htrans_${JOBFILE_OEMCTRY}.tmp
+  OUTPUT_PTRANS=${JOBNAME}_step530_ptrans_${JOBFILE_OEMCTRY}.tmp
+  OUTPUT_RTRANS=${JOBNAME}_step530_rtrans_${JOBFILE_OEMCTRY}.tmp
+  OUTPUT_NTRANS=${JOBNAME}_step530_ntrans_${JOBFILE_OEMCTRY}.tmp    # Used when checking for loops OEM Reformat File
+
+  if [ ${JOBNAME} = ${REFORMATJOB} ]
+  then
+    REPORT_FILENAME=${JOBNAME}n_sup${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
+  else
+    REPORT_FILENAME=${JOBNAME}a_sup${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
+  fi
+
+#----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_rpt_validate_supers.p_main_procedure(p_this_job           => '${JOBNAME}',          \
+                                                      p_reformat_job       => '${REFORMATJOB}',      \
+                                                      p_log_directory      => '${OBJ_LOGDIR}',       \
+                                                      p_log_filename       => '${LOGFILE}',          \
+                                                      p_input_directory    => '${OBJ_TMPDIR}',       \
+                                                      p_input_filename     => '${INPUT_FILENAME}',   \
+                                                      p_output_directory   => '${OBJ_TMPDIR}',       \
+                                                      p_output_htrans      => '${OUTPUT_HTRANS}',    \
+                                                      p_output_ptrans      => '${OUTPUT_PTRANS}',    \
+                                                      p_output_rtrans      => '${OUTPUT_RTRANS}',    \
+                                                      p_output_ntrans      => '${OUTPUT_NTRANS}',    \
+                                                      p_report_directory   => '${OBJ_RPTDIR}',       \
+                                                      p_report_filename    => '${REPORT_FILENAME}',  \
+                                                      p_debug_level        => '${RACE_DEBUG_LEVEL}', \
+                                                      p_dbms_profiler_flag => '${RACE_DBMS_PROFILER_FLAG}');
+QUIT;
+%
+#----------------------------------------------------------------------------------------
+
+
+#STEP Step531R
+  export STEPNAME=Step531R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Report Distribution"
+  #**************************************************************************************
+  #  Emails and Handles Retention for Report(s) created in previous step  
+  #**************************************************************************************
+  if [ ${JOBNAME} = ${REFORMATJOB} ]
+  then
+    email_rpt.ksh "${JOBNAME}n"
+    rpt_log_retention.ksh "${JOBNAME}n" 
+    
+  else
+    email_rpt.ksh "${JOBNAME}a" 
+    rpt_log_retention.ksh "${JOBNAME}a" 
+  fi
+
+
+#STEP Step570
+  export STEPNAME=Step570
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Save files"
+  #**************************************************************************************
+  #   REFORMAT - Save ntrans
+  #   UPDATE   - Save rtrans, htrans, and ptrans files
+  #**************************************************************************************
+  if [ ${JOBNAME} = ${REFORMATJOB} ]
+  then
+               cp ${RACE}/tmp/${JOBNAME}_step530_ntrans_${JOBFILE_OEMCTRY}.tmp \
+    $(setgdg.ksh "${RACE}/dat/${JOBNAME}_looping_oem_ntrans_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
+  else
+               cp ${RACE}/tmp/${JOBNAME}_step530_htrans_${JOBFILE_OEMCTRY}.tmp \
+    $(setgdg.ksh "${RACE}/dat/${JOBNAME}_validate_htrans_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
+               cp ${RACE}/tmp/${JOBNAME}_step530_rtrans_${JOBFILE_OEMCTRY}.tmp \
+    $(setgdg.ksh "${RACE}/dat/${JOBNAME}_validate_rtrans_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
+               cp ${RACE}/tmp/${JOBNAME}_step530_ptrans_${JOBFILE_OEMCTRY}.tmp \
+    $(setgdg.ksh "${RACE}/dat/${JOBNAME}_validate_ptrans_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
+  fi
+
+
+#STEP Step599
+  export STEPNAME=Step599
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  #************************************************************************************************
+  #  Delete temporary datasets 
+  #************************************************************************************************
+  if [ ${JOBNAME} = ${REFORMATJOB} ]
+  then
+    rm -f ${RACE}/tmp/${JOBNAME}_step5*
+  else
+    rm -f ${RACE}/tmp/${JOBNAME}*
+  fi
+  
+#**************************************************************************************************
+# END oem_rpt_validate_supers.ksh
+#**************************************************************************************************
++ echo 'RCS : oem_rpt_validate_supers.ksh,v 1.14 2020/08/26 00:55:48 pg2697 Exp $'
+RCS : oem_rpt_validate_supers.ksh,v 1.14 2020/08/26 00:55:48 pg2697 Exp $
++ print ProcessId '=' 1029430
+ProcessId = 1029430
++ trap 'oem_abndalrt.ksh $?' err
++ basename /tmp/mptr300_oem_ref_trans_check_and_split.ksh_run .ksh_run
++ PROCNAME=mptr300_oem_ref_trans_check_and_split
++ export PROCNAME
++ . oem_job.ksh
+#!/bin/ksh
+echo "RCS $Id: oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $"
+#*****************************************************************************************
+# PROCNAME oem_job.ksh
+# PURPOSE  Retreive and build UNIX Environment Variables from Oracle Tables
+#          Used by RACE OEM Parts Reformat and Update jobs
+#*****************************************************************************************
+trap 'oem_abndalrt.ksh $?' err
+MPTUSERID=`cat ${RACE}/prm/zmptpass.prm`
+LOGFILE=$(basename ${JOBLOGNAME})
+#*****************************************************************************************
+#  Build UNIX environment variables for the job (based on jobname)
+#*****************************************************************************************
+REFORMATJOB=${JOBNAME}
+UPDATEJOB=${JOBNAME}
+WORKFILE=${JOBNAME}_oem_job.tmp
+#-----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => '${JOBNAME}',    \
+                                      p_tmp_directory => '${OBJ_TMPDIR}', \
+                                      p_tmp_filename  => '${WORKFILE}',   \
+                                      p_log_directory => '${OBJ_LOGDIR}', \
+                                      p_log_filename  => '${LOGFILE%.log}.db.log');
+QUIT;
+%
+
+# rj132422 - This code was added to avoid race condition between db and shell due the nfs
+DB_LOG=${LOGDIR}/${LOGFILE%.log}.db.log
+if [ -s "$DB_LOG" ]; then
+    cat "$DB_LOG" >> "${LOGDIR}/${LOGFILE}"
+    rm  "$DB_LOG"
+fi
+
+#-----------------------------------------------------------------------------------------
+export WORKFILE=${RACE}/tmp/${WORKFILE}
+
+#If the ReformatJob Environment variable isn't defined, abend the process
+export REFORMATJOB=`cat ${WORKFILE}                   | cut -f1  -d","`
+if [ -z "${REFORMATJOB}" ]
+then
+   abndalrt.ksh environment_not_found_in_oem_job_table.tmp
+fi
+export UPDATEJOB=`cat ${WORKFILE}                     | cut -f2  -d","`
+export JOBOEM=`cat ${WORKFILE}                        | cut -f3  -d","`
+export JOBCTRY=`cat ${WORKFILE}                       | cut -f4  -d","`
+export JOBOEMNAME=`cat ${WORKFILE}                    | cut -f5  -d","`
+export OEMABBRLOWER=`cat ${WORKFILE}                  | cut -f6  -d","`
+export JOBPARM=`cat ${WORKFILE}                       | cut -f7  -d","`
+export FORMATOEM=`cat ${WORKFILE}                     | cut -f8  -d","`
+export FORMATCTRY=`cat ${WORKFILE}                    | cut -f9  -d","`
+export JOBFILE_OEMCTRY=`cat ${WORKFILE}               | cut -f10 -d","`
+export REPORTSUFFIX=`cat ${WORKFILE}                  | cut -f11 -d","`
+export REVERSE_SUPER_JOBPARM=`cat ${WORKFILE}         | cut -f12 -d","`
+export PACKAGE_NAME_1=`cat ${WORKFILE}                | cut -f13 -d","`
+export PACKAGE_NAME_2=`cat ${WORKFILE}                | cut -f14 -d","`
+export DUPLICATE_PARTS_EXPECTED_FLAG=`cat ${WORKFILE} | cut -f15 -d","`
+export REFORMAT_BUILDS_RTRANS_FLAG=`cat ${WORKFILE}   | cut -f16 -d","`
+export OBSOLETE_JOB_FLAG=`cat ${WORKFILE}             | cut -f17 -d","`
+export PREPROCESS_SCRIPT_NAME=`cat ${WORKFILE}        | cut -f18 -d","`
+
+
+##########################################################################################
+# The various Oracle Package call by the OEM system use Global Temporary Tables.
+# For some reason (only in the test system at this point in time), the indexes on these
+# Global Tempoary Tables are missing.
+# The missing indexes result in slooooow processing and often aren't discovered missing
+# right away.  To curtail this problem, run a quick check to see if the indexes exist.
+# When an index for a Global Temporary Table is not found, it will be created.
+##########################################################################################
+#-----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+SET SERVEROUTPUT ON SIZE 1000000
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => '${JOBNAME}',       \
+                                                    p_log_directory => '${OBJ_LOGDIR}',    \
+                                                    p_log_filename  => '${LOGFILE%.log}.db.log',       \
+                                                    p_debug_level   => '${RACE_DEBUG_LEVEL}');
+QUIT;
+%
+
+# rj132422 - This code was added to avoid race condition between db and shell due the nfs
+DB_LOG=${LOGDIR}/${LOGFILE%.log}.db.log
+if [ -s "$DB_LOG" ]; then
+    cat "$DB_LOG" >> "${LOGDIR}/${LOGFILE}"
+    rm  "$DB_LOG"
+fi
+#-----------------------------------------------------------------------------------------
+
+#*****************************************************************************************
+# END oem_job.ksh
+#*****************************************************************************************
++ echo 'RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $'
+RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $
++ trap 'oem_abndalrt.ksh $?' err
+cat ${RACE}/prm/zmptpass.prm
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /mdev/race/oem/log/mptr300_20260701084246.log
++ LOGFILE=mptr300_20260701084246.log
++ REFORMATJOB=mptr300
++ UPDATEJOB=mptr300
++ WORKFILE=mptr300_oem_job.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr300',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr300_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_LOG_DIR',                                       p_log_filename  => 'mptr300_20260701084246.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=/mdev/race/oem/log/mptr300_20260701084246.db.log
++ [ -s /mdev/race/oem/log/mptr300_20260701084246.db.log ]
++ cat /mdev/race/oem/log/mptr300_20260701084246.db.log
++ 1>> /mdev/race/oem/log/mptr300_20260701084246.log
+
+mptr300,mptr301,090,US,TES,tes,zmpt301a,090,US,tes_us,tesus,,pkg_oem_ref_047,,Y,Y,N,,,N,
+
++ rm /mdev/race/oem/log/mptr300_20260701084246.db.log
++ WORKFILE=/mdev/race/oem/tmp/mptr300_oem_job.tmp
++ export WORKFILE
+cat ${WORKFILE}                   | cut -f1  -d","
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ cut -f1 -d,
++ REFORMATJOB=mptr300
++ export REFORMATJOB
++ [ -z mptr300 ]
+cat ${WORKFILE}                     | cut -f2  -d","
++ cut -f2 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ UPDATEJOB=mptr301
++ export UPDATEJOB
+cat ${WORKFILE}                        | cut -f3  -d","
++ cut -f3 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBOEM=090
++ export JOBOEM
+cat ${WORKFILE}                       | cut -f4  -d","
++ cut -f4 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBCTRY=US
++ export JOBCTRY
+cat ${WORKFILE}                    | cut -f5  -d","
++ cut -f5 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBOEMNAME=TES
++ export JOBOEMNAME
+cat ${WORKFILE}                  | cut -f6  -d","
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ cut -f6 -d,
++ OEMABBRLOWER=tes
++ export OEMABBRLOWER
+cat ${WORKFILE}                       | cut -f7  -d","
++ cut -f7 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ JOBPARM=zmpt301a
++ export JOBPARM
+cat ${WORKFILE}                     | cut -f8  -d","
++ cut -f8 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ FORMATOEM=090
++ export FORMATOEM
+cat ${WORKFILE}                    | cut -f9  -d","
++ cut -f9 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ FORMATCTRY=US
++ export FORMATCTRY
+cat ${WORKFILE}               | cut -f10 -d","
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ cut -f10 -d,
++ JOBFILE_OEMCTRY=tes_us
++ export JOBFILE_OEMCTRY
+cat ${WORKFILE}                  | cut -f11 -d","
++ cut -f11 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ REPORTSUFFIX=tesus
++ export REPORTSUFFIX
+cat ${WORKFILE}         | cut -f12 -d","
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ cut -f12 -d,
++ REVERSE_SUPER_JOBPARM=''
++ export REVERSE_SUPER_JOBPARM
+cat ${WORKFILE}                | cut -f13 -d","
++ cut -f13 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ PACKAGE_NAME_1=pkg_oem_ref_047
++ export PACKAGE_NAME_1
+cat ${WORKFILE}                | cut -f14 -d","
++ cut -f14 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ PACKAGE_NAME_2=''
++ export PACKAGE_NAME_2
+cat ${WORKFILE} | cut -f15 -d","
++ cut -f15 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ DUPLICATE_PARTS_EXPECTED_FLAG=Y
++ export DUPLICATE_PARTS_EXPECTED_FLAG
+cat ${WORKFILE}   | cut -f16 -d","
++ cut -f16 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ REFORMAT_BUILDS_RTRANS_FLAG=Y
++ export REFORMAT_BUILDS_RTRANS_FLAG
+cat ${WORKFILE}             | cut -f17 -d","
++ cut -f17 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ OBSOLETE_JOB_FLAG=N
++ export OBSOLETE_JOB_FLAG
+cat ${WORKFILE}        | cut -f18 -d","
++ cut -f18 -d,
++ cat /mdev/race/oem/tmp/mptr300_oem_job.tmp
++ PREPROCESS_SCRIPT_NAME=''
++ export PREPROCESS_SCRIPT_NAME
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+SET SERVEROUTPUT ON SIZE 1000000
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr300',                                                           p_log_directory => 'RACE_OEM_LOG_DIR',                                                        p_log_filename  => 'mptr300_20260701084246.db.log',                                                           p_debug_level   => '0');
+QUIT;
+%
+2>& 1
++ DB_LOG=/mdev/race/oem/log/mptr300_20260701084246.db.log
++ [ -s /mdev/race/oem/log/mptr300_20260701084246.db.log ]
++ cat /mdev/race/oem/log/mptr300_20260701084246.db.log
++ 1>> /mdev/race/oem/log/mptr300_20260701084246.log
+
+Start mptr300 pkg_oem_ref_utilities.p_check_gtmp_indexes
+
+
+ End  mptr300 pkg_oem_ref_utilities.p_check_gtmp_indexes
++ rm /mdev/race/oem/log/mptr300_20260701084246.db.log
++ STEPNAME=Step510
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step510' 07/01/26 08:45:29 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step510 07/01/26 08:45:29  <--- START\n\n
++ oem_job_status_update.ksh R 'Step510 Extract the P and N records'
++ REFORMAT_WORKOUT=/mdev/race/oem/tmp/mptr300_step510_oemrecs.tmp
++ [ mptr300 '=' mptr300 ]
++ REFORMAT_FILEIN=/mdev/race/oem/tmp/mptr300_step216_ref_tes_us.tmp
++ awk '{ if (substr($0,1,1)=="N") print $0 }' /mdev/race/oem/tmp/mptr300_step216_ref_tes_us.tmp
++ 1> /mdev/race/oem/tmp/mptr300_step510_oemrecs.tmp
++ STEPNAME=Step515
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step515' 07/01/26 08:45:29 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step515 07/01/26 08:45:29  <--- START\n\n
++ oem_job_status_update.ksh R 'Step515 Sort unique'
++ SORTFILE_FILEIN=/mdev/race/oem/tmp/mptr300_step510_oemrecs.tmp
++ SORT_FILEOUT=/mdev/race/oem/tmp/mptr300_step515_oemrecs_sort.tmp
++ rm -f /mdev/race/oem/tmp/mptr300_step515_oemrecs_sort.tmp
++ sort -u -k1.7,1.56 -o /mdev/race/oem/tmp/mptr300_step515_oemrecs_sort.tmp /mdev/race/oem/tmp/mptr300_step510_oemrecs.tmp
++ STEPNAME=Step530
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step530' 07/01/26 08:45:29 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step530 07/01/26 08:45:29  <--- START\n\n
++ oem_job_status_update.ksh R 'Step530 pkg_oem_rpt_validate_supers'
++ INPUT_FILENAME=mptr300_step515_oemrecs_sort.tmp
++ OUTPUT_HTRANS=mptr300_step530_htrans_tes_us.tmp
++ OUTPUT_PTRANS=mptr300_step530_ptrans_tes_us.tmp
++ OUTPUT_RTRANS=mptr300_step530_rtrans_tes_us.tmp
++ OUTPUT_NTRANS=mptr300_step530_ntrans_tes_us.tmp
++ [ mptr300 '=' mptr300 ]
++ date +%C%y%m%d%H%M%S
++ REPORT_FILENAME=mptr300n_suptesus_20260701084529.rpt
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_rpt_validate_supers.p_main_procedure(p_this_job           => 'mptr300',                                                                p_reformat_job       => 'mptr300',                                                            p_log_directory      => 'RACE_OEM_LOG_DIR',                                                             p_log_filename       => 'mptr300_20260701084246.log',                                                                p_input_directory    => 'RACE_OEM_TMP_DIR',                                                             p_input_filename     => 'mptr300_step515_oemrecs_sort.tmp',                                                         p_output_directory   => 'RACE_OEM_TMP_DIR',                                                             p_output_htrans      => 'mptr300_step530_htrans_tes_us.tmp',                                                          p_output_ptrans      => 'mptr300_step530_ptrans_tes_us.tmp',                                                          p_output_rtrans      => 'mptr300_step530_rtrans_tes_us.tmp',                                                          p_output_ntrans      => 'mptr300_step530_ntrans_tes_us.tmp',                                                          p_report_directory   => 'RACE_OEM_RPT_DIR',                                                             p_report_filename    => 'mptr300n_suptesus_20260701084529.rpt',                                                        p_debug_level        => '0',                                                       p_dbms_profiler_flag => 'N');
+QUIT;
+%
+2>& 1
++ STEPNAME=Step531R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step531R' 07/01/26 08:45:30 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step531R 07/01/26 08:45:30  <--- START\n\n
++ oem_job_status_update.ksh R 'Step531R Report Distribution'
++ [ mptr300 '=' mptr300 ]
++ email_rpt.ksh mptr300n
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr300n_suptesus_20260701084529.txt from /mdev/race/oem/tmp.
+Report is empty or does not exist. Report will not be distributed.
++ rpt_log_retention.ksh mptr300n
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=mptr300n
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:45:30 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:45:30 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/oem/rpt/mptr300n_suptesus_20260603102602.rpt (due to retention)
+\n End rpt_log_retention.ksh
++ STEPNAME=Step570
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step570' 07/01/26 08:45:30 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step570 07/01/26 08:45:30  <--- START\n\n
++ oem_job_status_update.ksh R 'Step570 Save files'
++ [ mptr300 '=' mptr300 ]
++ setgdg.ksh '/mdev/race/oem/dat/mptr300_looping_oem_ntrans_tes_us.dat(+1)' NEW 3
++ cp /mdev/race/oem/tmp/mptr300_step530_ntrans_tes_us.tmp /mdev/race/oem/dat/mptr300_looping_oem_ntrans_tes_us.dat.g62
++ STEPNAME=Step599
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step599' 07/01/26 08:45:30 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step599 07/01/26 08:45:30  <--- START\n\n
++ [ mptr300 '=' mptr300 ]
++ rm -f /mdev/race/oem/tmp/mptr300_step510_oemrecs.tmp /mdev/race/oem/tmp/mptr300_step515_oemrecs_sort.tmp /mdev/race/oem/tmp/mptr300_step530_ntrans_tes_us.tmp
+  
+
+#STEP Step222R
+  export STEPNAME=Step222R
++ STEPNAME=Step222R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step222R' 07/01/26 08:45:31 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step222R 07/01/26 08:45:31  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} Drop supersessions reported by pkg_oem_rpt_validate_supers"
++ oem_job_status_update.ksh R 'Step222R Drop supersessions reported by pkg_oem_rpt_validate_supers'
+  #*************************************************************************************************
+  #    *** Drop identified looping supersessions from Reformat File using these 6 steps          ***
+  #    *** NOTE: at the end of this step, the REFORMAT_FILEIN is OVERLAYED                       ***
+  #*************************************************************************************************
+  # 1. awk to create subset of all Reformat Transactions EXCEPT for the ntrans in the Reformat File
+  # 2. awk to create subset of all ntrans records in the Reformat
+  # 3. cat to combine Reformat ntrans with LOOPING Ntrans (identified by pkg_oem_rpt_validate_supers)
+  # 4. awk the 1st 56 bytes of the combined file to identify "duplicated" 'N' supersession records.
+  #    *** This will get rid of BOTH duplicate records from the combined file which is effectively 
+  #        eliminating the identifiable loops from being sent to the Update Job!
+  # 5. sort "other trans" and "reduced ntrans" together to rebuild the "complete" Reformat transaction file
+  #*************************************************************************************************
+  SUPLOOPS_FILEIN=$(setgdg.ksh "${RACE}/dat/${REFORMATJOB}_looping_oem_ntrans_${JOBFILE_OEMCTRY}.dat(0)") 
++ setgdg.ksh '/mdev/race/oem/dat/mptr300_looping_oem_ntrans_tes_us.dat(0)'
++ SUPLOOPS_FILEIN=/mdev/race/oem/dat/mptr300_looping_oem_ntrans_tes_us.dat.g62
+  REFORMAT_FILEIN=${RACE}/tmp/${JOBNAME}_step216_ref_${JOBFILE_OEMCTRY}.tmp                            
++ REFORMAT_FILEIN=/mdev/race/oem/tmp/mptr300_step216_ref_tes_us.tmp
+  REFORMAT_FILEOUT=${RACE}/tmp/${JOBNAME}_step222_ref_${JOBFILE_OEMCTRY}.tmp
++ REFORMAT_FILEOUT=/mdev/race/oem/tmp/mptr300_step222_ref_tes_us.tmp
+  #*************************************************************************************************
+  # 1. Subset for REFORMAT File of all NON-supersession records ('A','C','D','P',etc)
+  MAINREF_OTHERS=${RACE}/tmp/${JOBNAME}_step222_ref_others_${JOBFILE_OEMCTRY}.tmp
++ MAINREF_OTHERS=/mdev/race/oem/tmp/mptr300_step222_ref_others_tes_us.tmp
+  awk '{ if (substr($0,1,1)!="N") print $0 }' ${REFORMAT_FILEIN} > ${MAINREF_OTHERS}
++ awk '{ if (substr($0,1,1)!="N") print $0 }' /mdev/race/oem/tmp/mptr300_step216_ref_tes_us.tmp
++ 1> /mdev/race/oem/tmp/mptr300_step222_ref_others_tes_us.tmp
+  #*************************************************************************************************
+  # 2. Subset for REFORMAT File of all supersession 'N' records
+  MAINREF_NTRANS=${RACE}/tmp/${JOBNAME}_step222_ref_ntrans_${JOBFILE_OEMCTRY}.tmp
++ MAINREF_NTRANS=/mdev/race/oem/tmp/mptr300_step222_ref_ntrans_tes_us.tmp
+  awk '{ if (substr($0,1,1)=="N") print $0 }' ${REFORMAT_FILEIN} > ${MAINREF_NTRANS}
++ awk '{ if (substr($0,1,1)=="N") print $0 }' /mdev/race/oem/tmp/mptr300_step216_ref_tes_us.tmp
++ 1> /mdev/race/oem/tmp/mptr300_step222_ref_ntrans_tes_us.tmp
+  #*************************************************************************************************
+  # 3. cat to Combine Reformat Ntrans with LOOPING Ntrans (identified by pkg_oem_rpt_validate_supers)
+  MERGED_NTRANS=${RACE}/tmp/${JOBNAME}_step222_ntrans_merged_${JOBFILE_OEMCTRY}.tmp
++ MERGED_NTRANS=/mdev/race/oem/tmp/mptr300_step222_ntrans_merged_tes_us.tmp
+  cat ${SUPLOOPS_FILEIN} ${MAINREF_NTRANS} > ${MERGED_NTRANS}   
++ cat /mdev/race/oem/dat/mptr300_looping_oem_ntrans_tes_us.dat.g62 /mdev/race/oem/tmp/mptr300_step222_ref_ntrans_tes_us.tmp
++ 1> /mdev/race/oem/tmp/mptr300_step222_ntrans_merged_tes_us.tmp
+  #*************************************************************************************************
+  # 4. awk the 1st 56 bytes of the combined file to identify "duplicate" 'N' supersession records.
+  #    This will get rid of BOTH duplicate records from the combined file (effectively eliminating the identifiable loops)
+  REDUCED_NTRANS=${RACE}/tmp/${JOBNAME}_step222_reduced_ntrans_${JOBFILE_OEMCTRY}.tmp
++ REDUCED_NTRANS=/mdev/race/oem/tmp/mptr300_step222_reduced_ntrans_tes_us.tmp
+  awk '{ k=substr($0,1,56) ; line[k]=$0 ; freq[k]++ } END { for (x in freq) if (freq[x]==1) print line[x]}' ${MERGED_NTRANS} > ${REDUCED_NTRANS}
++ awk '{ k=substr($0,1,56) ; line[k]=$0 ; freq[k]++ } END { for (x in freq) if (freq[x]==1) print line[x]}' /mdev/race/oem/tmp/mptr300_step222_ntrans_merged_tes_us.tmp
++ 1> /mdev/race/oem/tmp/mptr300_step222_reduced_ntrans_tes_us.tmp
+  #*************************************************************************************************
+  # 5. sort "other trans" and "reduced ntrans" together to rebuild the "complete" Reformat transaction file
+  #                  +---------+----------+-----------+------------+-----------------+
+  #                  |Transcode| Old Part |  New Part |Price Revrsd| Descrip Reversed|
+  #                  +---------+----------+-----------+------------+-----------------+                  
+  SORTIN_BOTH="${MAINREF_OTHERS} ${REDUCED_NTRANS}"
++ SORTIN_BOTH='/mdev/race/oem/tmp/mptr300_step222_ref_others_tes_us.tmp /mdev/race/oem/tmp/mptr300_step222_reduced_ntrans_tes_us.tmp'
+  
+  sort -T ${RACE}/tmp -k1.1,1.1 -k1.7,1.31 -k1.32,1.56 -k1.57,1.71r -k1.88,1.167r -o ${REFORMAT_FILEOUT} ${SORTIN_BOTH}  
+
+
++ sort -T /mdev/race/oem/tmp -k1.1,1.1 -k1.7,1.31 -k1.32,1.56 -k1.57,1.71r -k1.88,1.167r -o /mdev/race/oem/tmp/mptr300_step222_ref_tes_us.tmp /mdev/race/oem/tmp/mptr300_step222_ref_others_tes_us.tmp /mdev/race/oem/tmp/mptr300_step222_reduced_ntrans_tes_us.tmp
+#STEP Step250R
+  export STEPNAME=Step250R
++ STEPNAME=Step250R
++ export STEPNAME
+  echo "    Start " ${STEPNAME} "    "$(date)
++ date
++ echo '    Start ' Step250R '    Wed' Jul 1 08:45:33 AM PDT 2026
+    Start  Step250R     Wed Jul 1 08:45:33 AM PDT 2026
+  oem_job_status_update.ksh "R" "${STEPNAME} pkg_oem_upd_utilities.p_electronic_balancing_check"
++ oem_job_status_update.ksh R 'Step250R pkg_oem_upd_utilities.p_electronic_balancing_check'
+  #********************************************************************************************
+  # Check p_electronic_balancing_check
+  #********************************************************************************************
+#----------------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_upd_utilities.p_electronic_balancing_check(p_jobtype         => 'R',            \
+                                                            p_jobname         => '${JOBNAME}',   \
+                                                            p_log_directory   => '${OBJ_LOGDIR}',\
+                                                            p_log_filename    => '${LOGFILE}',   \
+                                                            p_input_directory => '${OBJ_PRMDIR}',\
+                                                            p_input_filename  => '${JOBPARM}.prm');
+QUIT;
+%
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_upd_utilities.p_electronic_balancing_check(p_jobtype         => 'R',                                                                        p_jobname         => 'mptr300',                                                               p_log_directory   => 'RACE_OEM_LOG_DIR',                                                            p_log_filename    => 'mptr300_20260701084246.log',                                                               p_input_directory => 'RACE_OEM_PRM_DIR',                                                            p_input_filename  => 'zmpt301a.prm');
+QUIT;
+%
+2>& 1
+#----------------------------------------------------------------------------------------------
+
+
+#STEP Step260R
+  export STEPNAME=Step260R
++ STEPNAME=Step260R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step260R' 07/01/26 08:45:33 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step260R 07/01/26 08:45:33  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} Save 3 generations of Reformat Trans File"
++ oem_job_status_update.ksh R 'Step260R Save 3 generations of Reformat Trans File'
+  #**************************************************************************************
+  #  Save 3 generations of the reformated transaction file
+  #**************************************************************************************
+  REFORMAT_FILEIN=${RACE}/tmp/${JOBNAME}_step222_ref_${JOBFILE_OEMCTRY}.tmp
++ REFORMAT_FILEIN=/mdev/race/oem/tmp/mptr300_step222_ref_tes_us.tmp
+  REFORMAT_GDG_OUT=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_ref_${JOBFILE_OEMCTRY}.dat(+01)" NEW 3 )
+
++ setgdg.ksh '/mdev/race/oem/dat/mptr300_ref_tes_us.dat(+01)' NEW 3
++ REFORMAT_GDG_OUT=/mdev/race/oem/dat/mptr300_ref_tes_us.dat.g44
+  cp ${REFORMAT_FILEIN} ${REFORMAT_GDG_OUT}
++ cp /mdev/race/oem/tmp/mptr300_step222_ref_tes_us.tmp /mdev/race/oem/dat/mptr300_ref_tes_us.dat.g44
+  
+  
+#STEP Step270R
+  export STEPNAME=Step270R
++ STEPNAME=Step270R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step270R' 07/01/26 08:45:33 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step270R 07/01/26 08:45:33  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} pkg_oem_ref_part_number_check"
++ oem_job_status_update.ksh R 'Step270R pkg_oem_ref_part_number_check'
+  #**************************************************************************************
+  #  Program: pkg_oem_ref_part_number_check
+  #**************************************************************************************
+  INPUT_FILEPATH=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_ref_${JOBFILE_OEMCTRY}.dat(0)")
++ setgdg.ksh '/mdev/race/oem/dat/mptr300_ref_tes_us.dat(0)'
++ INPUT_FILEPATH=/mdev/race/oem/dat/mptr300_ref_tes_us.dat.g44
+  INPUT_FILENAME=$(basename ${INPUT_FILEPATH})
+
++ basename /mdev/race/oem/dat/mptr300_ref_tes_us.dat.g44
++ INPUT_FILENAME=mptr300_ref_tes_us.dat.g44
+  REPORT_FILE_D=${JOBNAME}d_edt${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ REPORT_FILE_D=mptr300d_edttesus_20260701084533.rpt
+  REPORT_FILE_C=${JOBNAME}c_cmp${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ REPORT_FILE_C=mptr300c_cmptesus_20260701084533.rpt
+  REPORT_FILE_X=${JOBNAME}x_dup${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
+
++ date +%C%y%m%d%H%M%S
++ REPORT_FILE_X=mptr300x_duptesus_20260701084533.rpt
+#----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_part_number_check.p_main_procedure(p_reformat_job                => '${REFORMATJOB}',      \
+                                                        p_log_directory               => '${OBJ_LOGDIR}',       \
+                                                        p_log_filename                => '${LOGFILE}',          \
+                                                        p_input_directory             => '${OBJ_DATDIR}',       \
+                                                        p_input_filename              => '${INPUT_FILENAME}',   \
+                                                        p_report_directory            => '${OBJ_RPTDIR}',       \
+                                                        p_report_file_mask            => '${REPORT_FILE_D}', \
+                                                        p_report_file_comp            => '${REPORT_FILE_C}', \
+                                                        p_report_file_dups            => '${REPORT_FILE_X}', \
+                                                        p_format_part_supplier_number => '${FORMATOEM}',        \
+                                                        p_format_country_abbr         => '${FORMATCTRY}',       \
+                                                        p_debug_level                 => '${RACE_DEBUG_LEVEL}', \
+                                                        p_dbms_profiler_flag          => '${RACE_DBMS_PROFILER_FLAG}');
+QUIT;
+%
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_part_number_check.p_main_procedure(p_reformat_job                => 'mptr300',                                                              p_log_directory               => 'RACE_OEM_LOG_DIR',                                                               p_log_filename                => 'mptr300_20260701084246.log',                                                                  p_input_directory             => 'RACE_OEM_DAT_DIR',                                                               p_input_filename              => 'mptr300_ref_tes_us.dat.g44',                                                           p_report_directory            => 'RACE_OEM_RPT_DIR',                                                               p_report_file_mask            => 'mptr300d_edttesus_20260701084533.rpt',                                                         p_report_file_comp            => 'mptr300c_cmptesus_20260701084533.rpt',                                                         p_report_file_dups            => 'mptr300x_duptesus_20260701084533.rpt',                                                         p_format_part_supplier_number => '090',                                                                p_format_country_abbr         => 'US',                                                               p_debug_level                 => '0',                                                         p_dbms_profiler_flag          => 'N');
+QUIT;
+%
+2>& 1
+
+PL/SQL procedure successfully completed.
+
+#----------------------------------------------------------------------------------------
+
+
+#STEP Step271R
+  export STEPNAME=Step271R
++ STEPNAME=Step271R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step271R' 07/01/26 08:45:39 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step271R 07/01/26 08:45:39  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} Report Distribution"
++ oem_job_status_update.ksh R 'Step271R Report Distribution'
+  #**************************************************************************************
+  #  Emails and Handles Retention for Report(s) created in previous step  
+  #**************************************************************************************
+    
+  email_rpt.ksh "${JOBNAME}d" 
++ email_rpt.ksh mptr300d
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr300d_edttesus_20260701084533.txt from /mdev/race/oem/tmp.
+Report is empty or does not exist. Report will not be distributed.
+  rpt_log_retention.ksh "${JOBNAME}d"  
+
++ rpt_log_retention.ksh mptr300d
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=mptr300d
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:45:39 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:45:39 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/oem/rpt/mptr300d_edttesus_20260529095828.rpt (due to retention)
+\n End rpt_log_retention.ksh
+  email_rpt.ksh "${JOBNAME}c"
++ email_rpt.ksh mptr300c
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr300c_cmptesus_20260701084533.txt from /mdev/race/oem/tmp.
+Report is empty or does not exist. Report will not be distributed.
+  rpt_log_retention.ksh "${JOBNAME}c"  
+
++ rpt_log_retention.ksh mptr300c
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=mptr300c
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:45:39 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:45:39 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/oem/rpt/mptr300c_cmptesus_20260217071933.rpt (due to retention)
+\n End rpt_log_retention.ksh
+  email_rpt.ksh "${JOBNAME}x" 
++ email_rpt.ksh mptr300x
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr300x_duptesus_20260701084533.txt from /mdev/race/oem/tmp.
+Report is empty or does not exist. Report will not be distributed.
+  rpt_log_retention.ksh "${JOBNAME}x"   
+
++ rpt_log_retention.ksh mptr300x
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=mptr300x
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:45:39 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:45:39 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/oem/rpt/mptr300x_duptesus_20260529095828.rpt (due to retention)
+\n End rpt_log_retention.ksh
+  
+  
+#STEP Step280R
+  export STEPNAME=Step280R
++ STEPNAME=Step280R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step280R' 07/01/26 08:45:40 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step280R 07/01/26 08:45:40  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} pkg_oem_ref_actrans_preprocess"
++ oem_job_status_update.ksh R 'Step280R pkg_oem_ref_actrans_preprocess'
+  #**************************************************************************************
+  #  Program: pkg_oem_ref_actrans_preprocess
+  #           Read old ACTRANS records and compare against the new Reformat records
+  #           ACTRANS Old Part Numbers found in Reformat file are processed:
+  #           Transaction type 'N' or 'P' --> drop ACTRANS
+  #                            'A' or 'C' --> and new part number match rewrite ACTRANS
+  #                                           otherwise, drop ACTRANS
+  #                                   'D' --> rewrite ACTRANS
+  #**************************************************************************************
+  ACTRANS_FILEPATH=$(setgdg.ksh "${RACE}/dat/${UPDATEJOB}_actrans_${JOBFILE_OEMCTRY}.dat(0)")              
++ setgdg.ksh '/mdev/race/oem/dat/mptr301_actrans_tes_us.dat(0)'
++ ACTRANS_FILEPATH=/mdev/race/oem/dat/mptr301_actrans_tes_us.dat.g11
+  INPUT_FILE_ACTRANS=$( basename ${ACTRANS_FILEPATH} )                               
+
++ basename /mdev/race/oem/dat/mptr301_actrans_tes_us.dat.g11
++ INPUT_FILE_ACTRANS=mptr301_actrans_tes_us.dat.g11
+  INPUT_FILEPATH=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_ref_${JOBFILE_OEMCTRY}.dat(0)")
++ setgdg.ksh '/mdev/race/oem/dat/mptr300_ref_tes_us.dat(0)'
++ INPUT_FILEPATH=/mdev/race/oem/dat/mptr300_ref_tes_us.dat.g44
+  INPUT_FILE_REF=$( basename ${INPUT_FILEPATH} )     
+
++ basename /mdev/race/oem/dat/mptr300_ref_tes_us.dat.g44
++ INPUT_FILE_REF=mptr300_ref_tes_us.dat.g44
+  OUTPUT_FILE_ACTRANS=${JOBNAME}_step280_actrans_${JOBFILE_OEMCTRY}.tmp
+
++ OUTPUT_FILE_ACTRANS=mptr300_step280_actrans_tes_us.tmp
+  REPORT_FILE_COUNTS=${JOBNAME}t_act${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ REPORT_FILE_COUNTS=mptr300t_acttesus_20260701084540.rpt
+ 
+  
+#----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_actrans_preprocess.p_main_procedure(p_reformat_job        => '${REFORMATJOB}',         \
+                                                         p_log_directory       => '${OBJ_LOGDIR}',          \
+                                                         p_log_filename        => '${LOGFILE}',             \
+                                                         p_input_directory     => '${OBJ_DATDIR}',          \
+                                                         p_input_file_ref      => '${INPUT_FILE_REF}',      \
+                                                         p_input_file_actrans  => '${INPUT_FILE_ACTRANS}',  \
+                                                         p_output_directory    => '${OBJ_TMPDIR}',          \
+                                                         p_output_file_actrans => '${OUTPUT_FILE_ACTRANS}', \
+                                                         p_report_directory    => '${OBJ_RPTDIR}',          \
+                                                         p_report_file_counts  => '${REPORT_FILE_COUNTS}',  \
+                                                         p_debug_level         => '${RACE_DEBUG_LEVEL}',    \
+                                                         p_dbms_profiler_flag  => '${RACE_DBMS_PROFILER_FLAG}');
+QUIT;
+%
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_actrans_preprocess.p_main_procedure(p_reformat_job        => 'mptr300',                                                                  p_log_directory       => 'RACE_OEM_LOG_DIR',                                                                   p_log_filename        => 'mptr300_20260701084246.log',                                                                      p_input_directory     => 'RACE_OEM_DAT_DIR',                                                                   p_input_file_ref      => 'mptr300_ref_tes_us.dat.g44',                                                               p_input_file_actrans  => 'mptr301_actrans_tes_us.dat.g11',                                                           p_output_directory    => 'RACE_OEM_TMP_DIR',                                                                   p_output_file_actrans => 'mptr300_step280_actrans_tes_us.tmp',                                                          p_report_directory    => 'RACE_OEM_RPT_DIR',                                                                   p_report_file_counts  => 'mptr300t_acttesus_20260701084540.rpt',                                                           p_debug_level         => '0',                                                             p_dbms_profiler_flag  => 'N');
+QUIT;
+%
+2>& 1
+
+PL/SQL procedure successfully completed.
+
+#----------------------------------------------------------------------------------------
+
+#STEP Step281R
+  export STEPNAME=Step281R
++ STEPNAME=Step281R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step281R' 07/01/26 08:45:44 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step281R 07/01/26 08:45:44  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} Report Distribution"
++ oem_job_status_update.ksh R 'Step281R Report Distribution'
+  #**************************************************************************************
+  #  Emails and Handles Retention for Report(s) created in previous step  
+  #**************************************************************************************
+  email_rpt.ksh "${JOBNAME}t" 
++ email_rpt.ksh mptr300t
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr300t_acttesus_20260701084540.txt from /mdev/race/oem/tmp.
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:45:45 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:45:44 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr300t is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+  rpt_log_retention.ksh "${JOBNAME}t" 
+
++ rpt_log_retention.ksh mptr300t
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=mptr300t
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:45:45 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:45:45 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/oem/rpt/mptr300t_acttesus_20260529095836.rpt (due to retention)
+\n End rpt_log_retention.ksh
+  
+#STEP Step290R
+  export STEPNAME=Step290R
++ STEPNAME=Step290R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step290R' 07/01/26 08:45:45 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step290R 07/01/26 08:45:45  <--- START\n\n
+  if [ ${JOBNAME} = ${REFORMATJOB} ]
+  then
+    oem_job_status_update.ksh "R" "${STEPNAME} Drop duplicated ACtrans"
+    #*************************************************************************************************
+    #    *** Isolate "new" actrans and merge with "previous" actrans records ... elimiate duplicates
+    # 1. awk to create subset of all transactions except for 'A' and 'C')
+    # 2. awk to create subset of all atrans and all ctrans records in the Reformat File 
+    # 3. sort -u to remove duplicate actrans creating "reduced" actrans
+    # 4. merge and sort NON-actrans with "reduced" actrans 
+    #*************************************************************************************************
+    REFORMAT_FILEIN=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_ref_${JOBFILE_OEMCTRY}.dat(0)")   #From Step260R
+    TEMP_ACTRANS=${RACE}/tmp/${JOBNAME}_step280_actrans_${JOBFILE_OEMCTRY}.tmp             #From Step280R
+    #*************************************************************************************************
+    # 1. awk to create subset of all transaction except for 'A' and 'C'
+    REFTRANS_NOT_ACTRANS=${RACE}/tmp/${JOBNAME}_step290_not_actrans_${JOBFILE_OEMCTRY}.tmp
+    awk '{ if (substr($0,1,1)!="A" && substr($0,1,1)!="C") print $0 }' ${REFORMAT_FILEIN} > ${REFTRANS_NOT_ACTRANS}
+    #*************************************************************************************************
+    # 2. awk to create subset of all ACTrans
+    REFTRANS_ACTRANS=${RACE}/tmp/${JOBNAME}_step290_ref_actrans_${JOBFILE_OEMCTRY}.tmp
+    awk '{ if (substr($0,1,1)=="A" || substr($0,1,1)=="C") print $0 }' ${REFORMAT_FILEIN} > ${REFTRANS_ACTRANS}
+    #*************************************************************************************************
+    # 3. UNIQUE sort together actrans files (this may drop records which is the desired result)
+    SORTIN_BOTH1="${REFTRANS_ACTRANS} ${TEMP_ACTRANS}"
+    ACTRANS_REDUCED=${RACE}/tmp/${JOBNAME}_step290_actrans_reduced_${JOBFILE_OEMCTRY}.tmp
+    #                     +---------+----------+-----------+
+    #                     |Transcode| Old Part | New Part  |
+    #                     +---------+----------+-----------+
+    sort -T ${RACE}/tmp -u -k1.1,1.1 -k1.7,1.31 -k1.32,1.56 -o ${ACTRANS_REDUCED} ${SORTIN_BOTH1}
+    #*************************************************************************************************
+    # 4. sort together actrans and the "other" transactions
+    SORTIN_BOTH2="${ACTRANS_REDUCED} ${REFTRANS_NOT_ACTRANS}"
+    REFORMAT_SORTOUT=${RACE}/tmp/${JOBNAME}_step290_ref_${JOBFILE_OEMCTRY}_sorted.tmp
+    #                  +---------+----------+-----------+------------+-----------------+
+    #                  |Transcode| Old Part |  New Part |Price Revrsd| Descrip Reversed|
+    #                  +---------+----------+-----------+------------+-----------------+                      
+    sort -T ${RACE}/tmp -k1.1,1.1 -k1.7,1.31 -k1.32,1.56 -k1.57,1.71r -k1.88,1.167r -o ${REFORMAT_SORTOUT} ${SORTIN_BOTH2}      
+  fi
+
+
++ [ mptr300 '=' mptr300 ]
++ oem_job_status_update.ksh R 'Step290R Drop duplicated ACtrans'
++ setgdg.ksh '/mdev/race/oem/dat/mptr300_ref_tes_us.dat(0)'
++ REFORMAT_FILEIN=/mdev/race/oem/dat/mptr300_ref_tes_us.dat.g44
++ TEMP_ACTRANS=/mdev/race/oem/tmp/mptr300_step280_actrans_tes_us.tmp
++ REFTRANS_NOT_ACTRANS=/mdev/race/oem/tmp/mptr300_step290_not_actrans_tes_us.tmp
++ awk '{ if (substr($0,1,1)!="A" && substr($0,1,1)!="C") print $0 }' /mdev/race/oem/dat/mptr300_ref_tes_us.dat.g44
++ 1> /mdev/race/oem/tmp/mptr300_step290_not_actrans_tes_us.tmp
++ REFTRANS_ACTRANS=/mdev/race/oem/tmp/mptr300_step290_ref_actrans_tes_us.tmp
++ awk '{ if (substr($0,1,1)=="A" || substr($0,1,1)=="C") print $0 }' /mdev/race/oem/dat/mptr300_ref_tes_us.dat.g44
++ 1> /mdev/race/oem/tmp/mptr300_step290_ref_actrans_tes_us.tmp
++ SORTIN_BOTH1='/mdev/race/oem/tmp/mptr300_step290_ref_actrans_tes_us.tmp /mdev/race/oem/tmp/mptr300_step280_actrans_tes_us.tmp'
++ ACTRANS_REDUCED=/mdev/race/oem/tmp/mptr300_step290_actrans_reduced_tes_us.tmp
++ sort -T /mdev/race/oem/tmp -u -k1.1,1.1 -k1.7,1.31 -k1.32,1.56 -o /mdev/race/oem/tmp/mptr300_step290_actrans_reduced_tes_us.tmp /mdev/race/oem/tmp/mptr300_step290_ref_actrans_tes_us.tmp /mdev/race/oem/tmp/mptr300_step280_actrans_tes_us.tmp
++ SORTIN_BOTH2='/mdev/race/oem/tmp/mptr300_step290_actrans_reduced_tes_us.tmp /mdev/race/oem/tmp/mptr300_step290_not_actrans_tes_us.tmp'
++ REFORMAT_SORTOUT=/mdev/race/oem/tmp/mptr300_step290_ref_tes_us_sorted.tmp
++ sort -T /mdev/race/oem/tmp -k1.1,1.1 -k1.7,1.31 -k1.32,1.56 -k1.57,1.71r -k1.88,1.167r -o /mdev/race/oem/tmp/mptr300_step290_ref_tes_us_sorted.tmp /mdev/race/oem/tmp/mptr300_step290_actrans_reduced_tes_us.tmp /mdev/race/oem/tmp/mptr300_step290_not_actrans_tes_us.tmp
+#STEP Step300R
+  export STEPNAME=Step300R
++ STEPNAME=Step300R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step300R' 07/01/26 08:45:48 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step300R 07/01/26 08:45:48  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} mptz021 Transaction Split Processing"
++ oem_job_status_update.ksh R 'Step300R mptz021 Transaction Split Processing'
+  #**************************************************************************************
+  #  Executes mptz021 - Transaction Split Program
+  #**************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
+
++ DD_PARMSIN=/mdev/race/oem/prm/zmpt301a.prm
++ export DD_PARMSIN
+  # NOTE: Use this "tmp" file because it contains the correct actrans records...
+  #       It is tempting to use the new "ref" (0) file but don't do it.
+  export DD_TRANSIN=${RACE}/tmp/${JOBNAME}_step290_ref_${JOBFILE_OEMCTRY}_sorted.tmp
+
++ DD_TRANSIN=/mdev/race/oem/tmp/mptr300_step290_ref_tes_us_sorted.tmp
++ export DD_TRANSIN
+  export DD_ATRANS=${RACE}/dat/${JOBNAME}_atrans.tmp
++ DD_ATRANS=/mdev/race/oem/dat/mptr300_atrans.tmp
++ export DD_ATRANS
+  export DD_CTRANS=${RACE}/dat/${JOBNAME}_ctrans.tmp
++ DD_CTRANS=/mdev/race/oem/dat/mptr300_ctrans.tmp
++ export DD_CTRANS
+  export DD_NTRANS=${RACE}/dat/${JOBNAME}_ntrans.tmp
++ DD_NTRANS=/mdev/race/oem/dat/mptr300_ntrans.tmp
++ export DD_NTRANS
+  export DD_DTRANS=${RACE}/dat/${JOBNAME}_dtrans.tmp
++ DD_DTRANS=/mdev/race/oem/dat/mptr300_dtrans.tmp
++ export DD_DTRANS
+  export DD_PTRANS=${RACE}/dat/${JOBNAME}_ptrans.tmp
++ DD_PTRANS=/mdev/race/oem/dat/mptr300_ptrans.tmp
++ export DD_PTRANS
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}s_splt${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
+
++ date +%C%y%m%d%H%M%S
++ DD_CNTLRPT=/mdev/race/oem/rpt/mptr300s_splttesus_20260701084548.rpt
++ export DD_CNTLRPT
+  mptz021 2>&1
+
++ mptz021
++ 2>& 1
+Connected user(MFCONNECT) 
+AUDITLOG.DISABLE_UDStamp
+AUDITLOG.DISABLE_UpdateNonWipFix
+AUDITLOG.DISABLE_LOGGING
+WS-EFF-DT=07/01/2026
+ALLOWABLE PERCENT =0100
+LAST REFTBAL RECORD NOT FOUND
+CURRENT REFBAL WILL BE INSERTED
+PART-SUPPLIER-NUMBER : 090
+PART-SUPPLIER-COUNTRY: US
+NAGS-TYPE: N/A       
+   
+EFF DATE OF LAST RUN=07/01/2026
+RUN DATE OF LAST RUN=          
+   
+ 
+*** MEDIA DETAIL ROW NOT FOUND ***
+*** OR VERIFIED_COMMENT IS NOT NULL ***
+*** OR REPLACEMENT FLAG DOES NOT MATCH PARM ***
+#STEP Step301R
+  export STEPNAME=Step301R
++ STEPNAME=Step301R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step301R' 07/01/26 08:46:36 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step301R 07/01/26 08:46:36  <--- START\n\n
+  oem_job_status_update.ksh "R" "${STEPNAME} Report Distribution"
++ oem_job_status_update.ksh R 'Step301R Report Distribution'
+  #**************************************************************************************
+  #  Emails and Handles Retention for Report(s) created in previous step  
+  #**************************************************************************************
+  email_rpt.ksh "${JOBNAME}s"  
++ email_rpt.ksh mptr300s
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr300s_splttesus_20260701084548.txt from /mdev/race/oem/tmp.
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:46:37 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:46:36 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr300s is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+  rpt_log_retention.ksh "${JOBNAME}s" 
+
++ rpt_log_retention.ksh mptr300s
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=mptr300s
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:46:37 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:46:37 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/oem/rpt/mptr300s_splttesus_20260217071946.rpt (due to retention)
+\n End rpt_log_retention.ksh
+#STEP Step999R
+  export STEPNAME=Step999R
++ STEPNAME=Step999R
++ export STEPNAME
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step999R' 07/01/26 08:46:37 ' <--- START\n\n'
+\n\nSTART ---> mptr300_oem_ref_trans_check_and_split Step999R 07/01/26 08:46:37  <--- START\n\n
+  oem_job_status_update.ksh "P" "${STEPNAME} Reformat Job Complete"
++ oem_job_status_update.ksh P 'Step999R Reformat Job Complete'
+  #**************************************************************************************
+  #  Removes job temporary files
+  #**************************************************************************************
+  rm -f ${RACE}/tmp/${JOBNAME}*
+
+
++ rm -f /mdev/race/oem/tmp/mptr300_email_text.tmp /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_catlg.dat /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_catlg.dat_ftplist.tmp /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_price.dat_ftplist.tmp /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat /mdev/race/oem/tmp/mptr300_mptr299_raw_tesla_super.dat_ftplist.tmp /mdev/race/oem/tmp/mptr300_oem_job_datafile.tmp /mdev/race/oem/tmp/mptr300_oem_job_notify.tmp /mdev/race/oem/tmp/mptr300_oem_job.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_file_1.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_file_2.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_file_3.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_1.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_2.tmp /mdev/race/oem/tmp/mptr300_step020_tes_us_filetmp_3.tmp /mdev/race/oem/tmp/mptr300_step030_tesus.diff /mdev/race/oem/tmp/mptr300_step050_rtransout.tmp /mdev/race/oem/tmp/mptr300_step050_transout.tmp /mdev/race/oem/tmp/mptr300_step205_transout.tmp /mdev/race/oem/tmp/mptr300_step215_transout_sorted.tmp /mdev/race/oem/tmp/mptr300_step216_ref_tes_us.tmp /mdev/race/oem/tmp/mptr300_step222_ntrans_merged_tes_us.tmp /mdev/race/oem/tmp/mptr300_step222_reduced_ntrans_tes_us.tmp /mdev/race/oem/tmp/mptr300_step222_ref_ntrans_tes_us.tmp /mdev/race/oem/tmp/mptr300_step222_ref_others_tes_us.tmp /mdev/race/oem/tmp/mptr300_step222_ref_tes_us.tmp /mdev/race/oem/tmp/mptr300_step280_actrans_tes_us.tmp /mdev/race/oem/tmp/mptr300_step290_actrans_reduced_tes_us.tmp /mdev/race/oem/tmp/mptr300_step290_not_actrans_tes_us.tmp /mdev/race/oem/tmp/mptr300_step290_ref_actrans_tes_us.tmp /mdev/race/oem/tmp/mptr300_step290_ref_tes_us_sorted.tmp /mdev/race/oem/tmp/mptr300_xtabname.tmp /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_catlg.dis /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_catlg.log /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_price.dis /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_price.log /mdev/race/oem/tmp/mptr300_xtab_oem_ref_mptr300_tes_super.log
+#****************************************************************************************
+# END oem_ref_trans_check_and_split.ksh
+#****************************************************************************************
+\n\n**************************************************************************************************************
+Finished: oem_ref_trans_check_and_split.ksh    Datetime: 07/01/26 08:46:37   Script: /tmp/mptr300_oem_ref_trans_check_and_split.ksh_run
+**************************************************************************************************************\n\n
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=mptr300_
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Jul 1 08:46:37 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 01 2026 08:46:37 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/oem/log/mptr300_20260603102319.log (due to retention)
+oldest file removed: /mdev/race/oem/log/mptr300_20260603101742.log (due to retention)
+oldest file removed: /mdev/race/oem/log/mptr300_20260603095451.log (due to retention)
+oldest file removed: /mdev/race/oem/log/mptr300_20260601103154.log (due to retention)
+oldest file removed: /mdev/race/oem/log/mptr300_20260601102439.log (due to retention)
+\n End rpt_log_retention.ksh
+    End    mptr300   Wed Jul 1 08:46:38 AM PDT 2026
