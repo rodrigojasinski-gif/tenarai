@@ -26,6 +26,9 @@
 #set -xv
   trap 'exit -1' err
 
+# rj132422 - run dev-side file ops as the account that can write /stage and /mdev
+  dev() { sudo -u svc-apd-race-dev@staging.int "$@"; }
+
 #echo "executing check_in.ksh \n"                       # For testing
 #echo " $1     $2"                                        # For testing
 
@@ -177,16 +180,16 @@
 # Remote copy prod tmp file (new checked_in version) into stage directory
 # Change permissions of file in stage
 #########################################################################################
-  if [[ -a $STGDIR/$FILEDIR/$FILENAME_EXT ]]          # if object exists in stage directory                      
+  if dev test -a $STGDIR/$FILEDIR/$FILENAME_EXT       # rj132422 - stage ops via dev() (svc-apd-race-dev)
   then
-    rm -f $STGDIR/$FILEDIR/rollback/$FILENAME_EXT
-    #echo "\n Backup previous stage: copying $STGDIR/$FILEDIR/$FILENAME_EXT to $STGDIR/$FILEDIR/rollback"      
-    cp -p $STGDIR/$FILEDIR/$FILENAME_EXT $STGDIR/$FILEDIR/rollback 2>/dev/null      # copy to rollback
-    rm -f $STGDIR/$FILEDIR/$FILENAME_EXT
+    dev rm -f $STGDIR/$FILEDIR/rollback/$FILENAME_EXT
+    #echo "\n Backup previous stage: copying $STGDIR/$FILEDIR/$FILENAME_EXT to $STGDIR/$FILEDIR/rollback"
+    dev cp -p $STGDIR/$FILEDIR/$FILENAME_EXT $STGDIR/$FILEDIR/rollback 2>/dev/null      # copy to rollback
+    dev rm -f $STGDIR/$FILEDIR/$FILENAME_EXT
   fi
   #echo "\n Creating new stage from prod RCS: co -p of the just-committed revision"
-  ssh $RCSHOST "$RCSSUDO $RCSBIN/co -p $RCSNAME" > $STGDIR/$FILEDIR/$FILENAME_EXT   # pull committed rev to stage (read only, no wrapper)
-  chmod ug+wx $STGDIR/$FILEDIR/$FILENAME_EXT
+  ssh $RCSHOST "$RCSSUDO $RCSBIN/co -p $RCSNAME" | dev tee $STGDIR/$FILEDIR/$FILENAME_EXT > /dev/null   # rj132422 - write stage as svc-apd-race-dev
+  dev chmod ug+wx $STGDIR/$FILEDIR/$FILENAME_EXT
 
 #########################################################################################
 # remove prod/tmp and mdev/tmp files

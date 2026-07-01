@@ -1,0 +1,8 @@
+#!/bin/bash
+# race_rcs - run RCS rcs as the service account, but record the real developer
+#            (taken from SUDO_USER, stripped of @domain) so lock ops match the locker.
+: "${SUDO_USER:?race_rcs must be invoked via sudo}"
+CLEAN_USER=${SUDO_USER%%@*}
+export USER="$CLEAN_USER"
+export LOGNAME="$CLEAN_USER"
+exec /usr/local/bin/rcs "$@"
