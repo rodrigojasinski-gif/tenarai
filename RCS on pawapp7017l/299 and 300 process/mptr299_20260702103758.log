@@ -1,9 +1,9 @@
-    Start  mptr299   Thu Jul 2 10:16:51 AM PDT 2026
+    Start  mptr299   Thu Jul 2 10:37:58 AM PDT 2026
 \n\n**********************************************************************************
 Restart Step was NOT included in the job execution. Job will run from the beginning.
 **********************************************************************************\n\n
 \n\n**************************************************************************************************************
-Calling:  oem_ref_mptr299_ftp_tesla_source_file.ksh    Datetime: 07/02/26 10:16:51   Script: /tmp/mptr299_oem_ref_mptr299_ftp_tesla_source_file.ksh_run
+Calling:  oem_ref_mptr299_ftp_tesla_source_file.ksh    Datetime: 07/02/26 10:37:58   Script: /tmp/mptr299_oem_ref_mptr299_ftp_tesla_source_file.ksh_run
 **************************************************************************************************************\n\n
 RCS : oem_ref_mptr299_ftp_tesla_source_file.ksh,v 1.6 2024/01/17 23:25:13 pg2697 Exp $
 #*****************************************************************************************
@@ -27,8 +27,8 @@ cat ${RACE}/prm/zmptpass.prm
 + export MPTUSERID
 export LOGFILE=$(basename ${JOBLOGNAME})
 
-+ basename /mdev/race/oem/log/mptr299_20260702101651.log
-+ LOGFILE=mptr299_20260702101651.log
++ basename /mdev/race/oem/log/mptr299_20260702103758.log
++ LOGFILE=mptr299_20260702103758.log
 + export LOGFILE
 #*****************************************************************************************
 #  Build environment variables for the job (based on jobname)
@@ -147,8 +147,8 @@ RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $
 cat ${RACE}/prm/zmptpass.prm
 + cat /mdev/race/oem/prm/zmptpass.prm
 + MPTUSERID=racejob/q1w2e3r4
-+ basename /mdev/race/oem/log/mptr299_20260702101651.log
-+ LOGFILE=mptr299_20260702101651.log
++ basename /mdev/race/oem/log/mptr299_20260702103758.log
++ LOGFILE=mptr299_20260702103758.log
 + REFORMATJOB=mptr299
 + UPDATEJOB=mptr299
 + WORKFILE=mptr299_oem_job.tmp
@@ -162,18 +162,18 @@ SET LINESIZE 100
 SET PAGES 0
 SET TRIMSPOOL ON
 whenever sqlerror exit sql.sqlcode
-    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr299',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr299_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_LOG_DIR',                                       p_log_filename  => 'mptr299_20260702101651.db.log');
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr299',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr299_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_LOG_DIR',                                       p_log_filename  => 'mptr299_20260702103758.db.log');
 QUIT;
 %
 2>& 1
-+ DB_LOG=/mdev/race/oem/log/mptr299_20260702101651.db.log
-+ [ -s /mdev/race/oem/log/mptr299_20260702101651.db.log ]
-+ cat /mdev/race/oem/log/mptr299_20260702101651.db.log
-+ 1>> /mdev/race/oem/log/mptr299_20260702101651.log
++ DB_LOG=/mdev/race/oem/log/mptr299_20260702103758.db.log
++ [ -s /mdev/race/oem/log/mptr299_20260702103758.db.log ]
++ cat /mdev/race/oem/log/mptr299_20260702103758.db.log
++ 1>> /mdev/race/oem/log/mptr299_20260702103758.log
 
 mptr299,mptr299,090,US,TES,tes,,090,US,tes_us,tesus,,FTP Files for mptr300 setup,,Y,N,N,,,N,
 
-+ rm /mdev/race/oem/log/mptr299_20260702101651.db.log
++ rm /mdev/race/oem/log/mptr299_20260702103758.db.log
 + WORKFILE=/mdev/race/oem/tmp/mptr299_oem_job.tmp
 + export WORKFILE
 cat ${WORKFILE}                   | cut -f1  -d","
@@ -188,8 +188,8 @@ cat ${WORKFILE}                     | cut -f2  -d","
 + UPDATEJOB=mptr299
 + export UPDATEJOB
 cat ${WORKFILE}                        | cut -f3  -d","
-+ cat /mdev/race/oem/tmp/mptr299_oem_job.tmp
 + cut -f3 -d,
++ cat /mdev/race/oem/tmp/mptr299_oem_job.tmp
 + JOBOEM=090
 + export JOBOEM
 cat ${WORKFILE}                       | cut -f4  -d","
@@ -213,8 +213,8 @@ cat ${WORKFILE}                       | cut -f7  -d","
 + JOBPARM=''
 + export JOBPARM
 cat ${WORKFILE}                     | cut -f8  -d","
-+ cut -f8 -d,
 + cat /mdev/race/oem/tmp/mptr299_oem_job.tmp
++ cut -f8 -d,
 + FORMATOEM=090
 + export FORMATOEM
 cat ${WORKFILE}                    | cut -f9  -d","
@@ -238,8 +238,8 @@ cat ${WORKFILE}         | cut -f12 -d","
 + REVERSE_SUPER_JOBPARM=''
 + export REVERSE_SUPER_JOBPARM
 cat ${WORKFILE}                | cut -f13 -d","
-+ cut -f13 -d,
 + cat /mdev/race/oem/tmp/mptr299_oem_job.tmp
++ cut -f13 -d,
 + PACKAGE_NAME_1='FTP Files for mptr300 setup'
 + export PACKAGE_NAME_1
 cat ${WORKFILE}                | cut -f14 -d","
@@ -248,8 +248,8 @@ cat ${WORKFILE}                | cut -f14 -d","
 + PACKAGE_NAME_2=''
 + export PACKAGE_NAME_2
 cat ${WORKFILE} | cut -f15 -d","
-+ cat /mdev/race/oem/tmp/mptr299_oem_job.tmp
 + cut -f15 -d,
++ cat /mdev/race/oem/tmp/mptr299_oem_job.tmp
 + DUPLICATE_PARTS_EXPECTED_FLAG=Y
 + export DUPLICATE_PARTS_EXPECTED_FLAG
 cat ${WORKFILE}   | cut -f16 -d","
@@ -278,20 +278,20 @@ SET PAGES 0
 SET TRIMSPOOL ON
 SET SERVEROUTPUT ON SIZE 1000000
 whenever sqlerror exit sql.sqlcode
-    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr299',                                                           p_log_directory => 'RACE_OEM_LOG_DIR',                                                        p_log_filename  => 'mptr299_20260702101651.db.log',                                                           p_debug_level   => '0');
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr299',                                                           p_log_directory => 'RACE_OEM_LOG_DIR',                                                        p_log_filename  => 'mptr299_20260702103758.db.log',                                                           p_debug_level   => '0');
 QUIT;
 %
 2>& 1
-+ DB_LOG=/mdev/race/oem/log/mptr299_20260702101651.db.log
-+ [ -s /mdev/race/oem/log/mptr299_20260702101651.db.log ]
-+ cat /mdev/race/oem/log/mptr299_20260702101651.db.log
-+ 1>> /mdev/race/oem/log/mptr299_20260702101651.log
++ DB_LOG=/mdev/race/oem/log/mptr299_20260702103758.db.log
++ [ -s /mdev/race/oem/log/mptr299_20260702103758.db.log ]
++ cat /mdev/race/oem/log/mptr299_20260702103758.db.log
++ 1>> /mdev/race/oem/log/mptr299_20260702103758.log
 
 Start mptr299 pkg_oem_ref_utilities.p_check_gtmp_indexes
 
 
  End  mptr299 pkg_oem_ref_utilities.p_check_gtmp_indexes
-+ rm /mdev/race/oem/log/mptr299_20260702101651.db.log
++ rm /mdev/race/oem/log/mptr299_20260702103758.db.log
 . oem_job_notify.ksh
 + . oem_job_notify.ksh
 #!/bin/ksh
@@ -400,8 +400,8 @@ RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $
 cat ${RACE}/prm/zmptpass.prm
 + cat /mdev/race/oem/prm/zmptpass.prm
 + MPTUSERID=racejob/q1w2e3r4
-+ basename /mdev/race/oem/log/mptr299_20260702101651.log
-+ LOGFILE=mptr299_20260702101651.log
++ basename /mdev/race/oem/log/mptr299_20260702103758.log
++ LOGFILE=mptr299_20260702103758.log
 + WORKFILE=mptr299_oem_job_notify.tmp
 + sqlplus -s
 + 0<< \%
@@ -413,7 +413,7 @@ SET LINESIZE 100
 SET PAGES 0
 SET TRIMSPOOL ON
 whenever sqlerror exit sql.sqlcode
-    exec pkg_oem_job_notify.p_oem_job_notify_sel_01(p_job  =>          'mptr299',                                                        p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                     p_tmp_filename  => 'mptr299_oem_job_notify.tmp',                                                       p_log_directory => 'RACE_OEM_LOG_DIR',                                                     p_log_filename  => 'mptr299_20260702101651.log');
+    exec pkg_oem_job_notify.p_oem_job_notify_sel_01(p_job  =>          'mptr299',                                                        p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                     p_tmp_filename  => 'mptr299_oem_job_notify.tmp',                                                       p_log_directory => 'RACE_OEM_LOG_DIR',                                                     p_log_filename  => 'mptr299_20260702103758.log');
 QUIT;
 %
 2>& 1
@@ -489,8 +489,8 @@ RCS : oem_job_datafile.ksh,v 1.7 2008/10/09 22:16:34 jw97143 Exp $
 cat ${RACE}/prm/zmptpass.prm
 + cat /mdev/race/oem/prm/zmptpass.prm
 + MPTUSERID=racejob/q1w2e3r4
-+ basename /mdev/race/oem/log/mptr299_20260702101651.log
-+ LOGFILE=mptr299_20260702101651.log
++ basename /mdev/race/oem/log/mptr299_20260702103758.log
++ LOGFILE=mptr299_20260702103758.log
 + WORKFILE=mptr299_oem_job_datafile.tmp
 + sqlplus -s
 + 0<< \%
@@ -502,18 +502,18 @@ SET LINESIZE 100
 SET PAGES 0
 SET TRIMSPOOL ON
 whenever sqlerror exit sql.sqlcode
-    exec pkg_oem_job_datafile.p_oem_job_datafile_sel_04(p_reformat_job  => 'mptr299',                                                         p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                          p_tmp_filename  => 'mptr299_oem_job_datafile.tmp',                                                            p_log_directory => 'RACE_OEM_LOG_DIR',                                                          p_log_filename  => 'mptr299_20260702101651.db.log');
+    exec pkg_oem_job_datafile.p_oem_job_datafile_sel_04(p_reformat_job  => 'mptr299',                                                         p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                          p_tmp_filename  => 'mptr299_oem_job_datafile.tmp',                                                            p_log_directory => 'RACE_OEM_LOG_DIR',                                                          p_log_filename  => 'mptr299_20260702103758.db.log');
 QUIT;
 %
 2>& 1
-+ DB_LOG=/mdev/race/oem/log/mptr299_20260702101651.db.log
-+ [ -s /mdev/race/oem/log/mptr299_20260702101651.db.log ]
-+ cat /mdev/race/oem/log/mptr299_20260702101651.db.log
-+ 1>> /mdev/race/oem/log/mptr299_20260702101651.log
++ DB_LOG=/mdev/race/oem/log/mptr299_20260702103758.db.log
++ [ -s /mdev/race/oem/log/mptr299_20260702103758.db.log ]
++ cat /mdev/race/oem/log/mptr299_20260702103758.db.log
++ 1>> /mdev/race/oem/log/mptr299_20260702103758.log
 
-1^mptr299_xftp_tesla.zipped^^^get_sftp_file.ksh^X^A^^^mptr299_araw_tesla.zip^TeslaData.zip^1^^mptr299_ftp_tes_us.prm^^^
+1^mptr299_xftp_tesla.zipped^^^^X^A^^^mptr299_araw_tesla.zip^TeslaData.zip^1^^mptr299_ftp_tes_us.prm^^^
 
-+ rm /mdev/race/oem/log/mptr299_20260702101651.db.log
++ rm /mdev/race/oem/log/mptr299_20260702103758.db.log
 + WORKFILE=/mdev/race/oem/tmp/mptr299_oem_job_datafile.tmp
 + export WORKFILE
 OEM_JOB_DATAFILE_INFO=${RACE}/tmp/${JOBNAME}_oem_job_datafile.tmp
@@ -534,7 +534,7 @@ sed -n -e "1p"        < ${OEM_JOB_DATAFILE_INFO}| cut -f5  -d"^"
 + sed -n -e 1p
 + cut -f5 -d^
 + 0< /mdev/race/oem/tmp/mptr299_oem_job_datafile.tmp
-+ FTP_PROGRAM_NAME=get_sftp_file.ksh
++ FTP_PROGRAM_NAME=''
 FTP_LOCATION_CODE=`sed -n -e "1p"       < ${OEM_JOB_DATAFILE_INFO}| cut -f6  -d"^"`
 sed -n -e "1p"       < ${OEM_JOB_DATAFILE_INFO}| cut -f6  -d"^"
 + sed -n -e 1p
@@ -573,8 +573,8 @@ sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d"^"
 + export STEPNAME
   echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
 + date '+%m/%d/%y %H:%M:%S'
-+ echo '\n\nSTART ---> mptr299_oem_ref_mptr299_ftp_tesla_source_file Step010R' 07/02/26 10:16:52 ' <--- START\n\n'
-\n\nSTART ---> mptr299_oem_ref_mptr299_ftp_tesla_source_file Step010R 07/02/26 10:16:52  <--- START\n\n
++ echo '\n\nSTART ---> mptr299_oem_ref_mptr299_ftp_tesla_source_file Step010R' 07/02/26 10:37:59 ' <--- START\n\n'
+\n\nSTART ---> mptr299_oem_ref_mptr299_ftp_tesla_source_file Step010R 07/02/26 10:37:59  <--- START\n\n
   oem_job_status_update.ksh "R" "${STEPNAME} oem_ref_mptr299_ftp_tesla_source_file"
 + oem_job_status_update.ksh R 'Step010R oem_ref_mptr299_ftp_tesla_source_file'
   #**************************************************************************************
@@ -743,24 +743,320 @@ fi
 \n*** Begin oem_job_datafile_prep.ksh mptr299_xftp_tesla.zipped ***\n
 + trap 'oem_abndalrt.ksh $?' err
 + STEP010_FILEOUT=/mdev/race/oem/dat/mptr299_araw_tesla.zip
-+ [ ! -z get_sftp_file.ksh ]
-+ echo '\n*** Option 1 Input File is on external FTP site and a special program has been written\n'
-\n*** Option 1 Input File is on external FTP site and a special program has been written\n
-+ FTP_PULL_TARGET=/mdev/race/oem/tmp/mptr299_xftp_tesla.zipped
-+ rm -f /mdev/race/oem/tmp/mptr299_xftp_tesla.zipped
-+ MAIL_TEXT=/mdev/race/oem/tmp/mptr299_email_text.tmp
-+ export MAIL_TEXT
-+ rm -f /mdev/race/oem/tmp/mptr299_email_text.tmp
-+ date +%Y%m%d%H%M%S
-+ SFTP_LOG=/mdev/race/oem/tmp/mptr299_sftp__log_20260702101653.tmp
-+ export SFTP_LOG
-+ get_sftp_file.ksh /mdev/race/oem/prm/mptr299_ftp_tes_us.prm TeslaData.zip /mdev/race/oem/tmp/mptr299_xftp_tesla.zipped
-\nEXECUTING get_sftp_file.ksh
-ProcessId = 1062741
-\nFTP_PARM_FILE:    /mdev/race/oem/prm/mptr299_ftp_tes_us.prm
-SEARCH_STRING:    TeslaData.zip
-FTP_PULL_TARGET:  /mdev/race/oem/tmp/mptr299_xftp_tesla.zipped\n
-OEM_FTP_SITE:      -oIdentityFile=/mdev/race/oem/prm/.ssh/mitchell_oem_sftp_rsa sshacs@tesladata.upload.akamai.com
-HOST_DIR:         908122/EPCESTIMATE\n
-Start FTP Site Filelist Creation   Thu Jul  2 10:16:53 AM PDT 2026
-sftp  -oIdentityFile=/mdev/race/oem/prm/.ssh/mitchell_oem_sftp_rsa sshacs@tesladata.upload.akamai.com >> /mdev/race/oem/tmp/mptr299_sftp__log_20260702101653.tmp <<EOF\n
++ [ ! -z '' ]
++ echo mptr299_xftp_tesla.zipped
++ awk -F . '{ print $NF }'
++ [[ zipped = 'dat(0)' ]]
++ INPUT_FILE_NAME_EXPANDED=/mdev/race/oem/dat/mptr299_xftp_tesla.zipped
++ export INPUT_FILE_NAME_EXPANDED
++ [ -s /mdev/race/oem/dat/mptr299_xftp_tesla.zipped ]
++ [ X '=' M ]
++ echo '\n*** Option 4 None of the above?  Then Input File /mdev/race/oem/dat/mptr299_xftp_tesla.zipped HAS TO BE on the Novell directory.'
+\n*** Option 4 None of the above?  Then Input File /mdev/race/oem/dat/mptr299_xftp_tesla.zipped HAS TO BE on the Novell directory.
++ . oem_job_process_mitchell_ftp_file.ksh GETMIT
+#!/bin/ksh
+#Id: oem_job_process_mitchell_ftp_file.ksh,v 1.3 2007/08/17 22:55:29 jw97143 Exp jw97143 $
+#**************************************************************************************************
+#    oem_job_process_mitchell_ftp_file.ksh
+#**************************************************************************************************
+echo "\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh ${INPUT_FILE_NAME} ***\n\n"
+trap 'oem_abndalrt.ksh $?' err
+FILE_ACTION=$1
+if [ $# -lt 1 ]
+then
+  echo "oem_job_process_mitchell_ftp_file.ksh requires input parameters"
+  echo "   1. FILE_ACTION (GETIT or BACKUP)"
+  oem_abndalrt.ksh oem_job_process_mitchell_ftp_file.ksh.parm.missing
+fi
+#**************************************************************************************************
+
+if [ "${JOBCTRY}" = "PR" ]
+then
+   FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}/puerto_rico/${ACT_LVL}/incoming
+else
+   FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}/${JOBFILE_OEMCTRY}/${ACT_LVL}/incoming
+fi
+
+#**************************************************************************************************
+# Retrieving files migrated from Novell process - rj132422 - 20251022 
+if [ "${FILE_ACTION}" = "GETMIT" ]
+then
+    echo "Using Fixed Folder for Novell/NT to Mitchell FTP."
+
+    export FTP_BUSINESS_PATH=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming
+
+    FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}
+	FILE_ACTION="GETIT"
+    
+fi
+# **************************************************************************************************
+
+###################################################################################################
+#  Determine if the input file is using any wildcards, if so don't worry about the search
+#  for UPPER and/or lower case filenames.
+echo "\nDoes the input file name contain a wildcard?\n"
+if expr "${INPUT_FILE_NAME}" : '.*[?*]'
+then
+  echo "${INPUT_FILE_NAME} contains wildcard."
+  WORK_FTP_XFR_FILE_NAME=${INPUT_FILE_NAME}
+else
+  #  Build a temporary file containing all of the directory/filenames found in the OEM's incoming directory
+  FTP_FILELIST=${RACE}/tmp/${JOBNAME}_${INPUT_FILE_NAME}_ftplist.tmp
+  ssh -nq ${FTP_SITE} "ls -1 ${FTPSITE_DIRECTORY}/*.*" > ${FTP_FILELIST}
+  #  Point to the 1st record in the temporary file
+  RECORD_NUMBER=1
+  while true
+  do
+    #  Determine the directory/filename contained in the current record
+    WORK_FTP_DIR_FILE_NAME=`sed -n -e "${RECORD_NUMBER}p" < ${FTP_FILELIST} | cut -f1`
+    # If WORK_FTP_DIR_FILE_NAME has no length,
+    # then the value of RECORD_NUMBER exceeds the number of records in the file ... get out!
+    if [ -z "${WORK_FTP_DIR_FILE_NAME}" ]
+    then
+      break
+    fi
+    WORK_FTP_XFR_FILE_NAME=$(basename ${WORK_FTP_DIR_FILE_NAME})
+    WORK_FTP_XFR_FILE_NAME_LOWER="`echo ${WORK_FTP_XFR_FILE_NAME} | sed \
+    "/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"`"
+    WORK_INP_FILE_NAME=${INPUT_FILE_NAME}
+    WORK_INP_FILE_NAME_LOWER="`echo ${WORK_INP_FILE_NAME} | sed \
+    "/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"`"
+
+    if [ "${WORK_FTP_XFR_FILE_NAME_LOWER}" = "${WORK_INP_FILE_NAME_LOWER}" ]
+    then
+      export INPUT_FILE_NAME=${WORK_FTP_XFR_FILE_NAME}
+      break
+    fi
+    
+    echo "\nFile names do not match . . . increment record number"
+    RECORD_NUMBER=`expr ${RECORD_NUMBER} + 1`
+  done
+fi
+###################################################################################################
+
+###################################################################################################
+if [ "${FILE_ACTION}" = "GETIT" ]
+then
+  if [ "${INPUT_FILE_NAME}" = "${WORK_FTP_XFR_FILE_NAME}" ]
+  then
+    FTP_XFR_FILE_NAME=${RACE}/tmp/${JOBNAME}_${INPUT_FILE_NAME}
+    # If the file to be transferred already exists, remove it
+    rm -f ${FTP_XFR_FILE_NAME}
+    echo "\nPreparing to scp file to ${FTP_XFR_FILE_NAME}\n"
+    scp ${FTP_SITE}:${FTPSITE_DIRECTORY}/${INPUT_FILE_NAME} ${FTP_XFR_FILE_NAME}
+    # Verify that the file copied exists and that it contains data
+    if [ ! -s ${FTP_XFR_FILE_NAME} ]
+    then
+      echo "\n*********************************************************************************"
+      echo "File that was copied is empty or it does not exist!"
+      echo "Source: ${FTP_SITE}:${FTPSITE_DIRECTORY}/${INPUT_FILE_NAME}"
+      echo "Target: ${FTP_XFR_FILE_NAME}"
+      echo "*********************************************************************************\n"
+      $(abndalrt.ksh 911)
+    else
+      echo "\nInput file pulled from Mitchell FTP Site is good\n"
+    fi
+
+    # Determine if the FTP'd file is zipped (or ZIPped)
+    if [[ $( echo $INPUT_FILE_NAME | awk -F "." '{ print $NF }' ) = "g01" ]]
+    then
+       exit 0                           # exit if first g01
+    fi
+      
+    export FILE_SUFFIX="."$( echo ${INPUT_FILE_NAME} | awk -F "." '{ print $NF }' )
+    echo "\nFILE_SUFFIX: ${FILE_SUFFIX}\n"
+    if [[ "${FILE_SUFFIX}" = ".zip" || "${FILE_SUFFIX}" = ".ZIP" ]]
+    then
+      echo "gunzip -c ${FTP_XFR_FILE_NAME} > ${STEP010_FILEOUT}"
+      gunzip -c ${FTP_XFR_FILE_NAME} > ${STEP010_FILEOUT}
+    else
+      cp ${FTP_XFR_FILE_NAME} ${STEP010_FILEOUT}
+    fi
+
+    RECCNT1=$(wc -c ${STEP010_FILEOUT} | awk ' {print $1}' )
+    if [ "${RECCNT1}" = "0" ]
+    then
+      echo "\n*************************************************"
+      echo "copied or gunzip'd file ${STEP010_FILEOUT} is bad"
+      echo "*************************************************\n"
+      $(oem_abndalrt.ksh 911)
+    else
+      echo "\nCopied or gunzip'd file ${STEP010_FILEOUT} is good\n"
+    fi
+  else
+    echo "\n************************************************************************"
+    echo "Requested FTP File NOT Found: ${FTPSITE_DIRECTORY}/${INPUT_FILE_NAME}"
+    echo "************************************************************************\n"
+    $(oem_abndalrt.ksh ftp_file_not_found)
+  fi
+fi
+###################################################################################################
+
+
+###################################################################################################
+# Remove the Production File
+if [ "${FILE_ACTION}" = "BACKUP" ]
+then
+  if [ "${INPUT_FILE_NAME}" = "${WORK_FTP_XFR_FILE_NAME}" ]
+  then
+    export FTP_SITE_FILE_NAME=${FTPSITE_DIRECTORY}/${INPUT_FILE_NAME}
+    if [ ${THISHOST} = ${PRODHOST} ]
+    then
+      echo "\nPreparing to remove file: ${FTP_SITE_FILE_NAME}\n"
+      ssh -nq ${FTP_SITE} rm -f ${FTP_SITE_FILE_NAME}
+    fi
+  else
+    echo "\n************************************************************************"
+    echo "Requested Site FTP File NOT Found: ${FTP_SITE_FILE_NAME}"
+    echo "************************************************************************\n"
+  fi
+  ###################################################################################################
+  # At this point, a transferred FTP file is sitting in /tmp
+  # Back it up to /dat (WITHOUT the '*' because Novell backup fails with the '*')
+  # Remove the Mitchell FTP Site files
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # Make the file name lower case   
+  INPUT_FILE_NAME_LOWER="`echo ${INPUT_FILE_NAME} | sed \
+  "/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"`"
+  # Remove the '*' 
+  WORK_FTP_FILE_NAME="`echo ${JOBNAME}_${INPUT_FILE_NAME_LOWER} | sed s/*/./`"
+
+  BACKUP_FTP_FILE=${RACE}/dat/${WORK_FTP_FILE_NAME}  
+  EXISTING_FTP_FILE=$( setgdg.ksh "${BACKUP_FTP_FILE}(0)" )
+  NEW_XFR_FTP_FILE=$( setgdg.ksh "${BACKUP_FTP_FILE}(+1)" NEW 2)
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # Backup the existing FTP'd file
+  if [ -e ${EXISTING_FTP_FILE} ]
+  then
+    # Copy to ftp_data on 'Prod3nt\Cdprod02' bkup directory 
+    FTP_LOGFILE=$RACE/tmp/${JOBNAME}_ftp_transfer_log.tmp
+    fileput.exp ${EXISTING_FTP_FILE} ${WORK_FTP_FILE_NAME} ${NOVELL}oem/bkup | tee ${FTP_LOGFILE}
+    # Verify the copy      
+    GOODBYTECOUNT="$(wc -c ${EXISTING_FTP_FILE} | awk '{print $1}')"
+    FTPBYTECOUNT="$(cat ${FTP_LOGFILE} | grep 'Information returned by' | awk '{print $1}')"   
+    if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
+    then
+      echo "Successful ftp ${EXISTING_FTP_FILE}: ftp count = ${GOODBYTECOUNT}"
+    else
+      echo "ftp ${EXISTING_FTP_FILE} failed: ftp says ${FTPBYTECOUNT}, real count is ${GOODBYTECOUNT}"
+      oem_abndalrt.ksh ftp_put
+    fi
+  fi
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # Backup the newly transferred file from /tmp to /dat
+  #P. Becotte added below:
+  echo "INPUT_FILE_NAME= ${INPUT_FILE_NAME}"
+  echo "FTP_XFR_FILE_NAME before re-valuing= ${FTP_XFR_FILE_NAME}"
+  FTP_XFR_FILE_NAME=${RACE}/tmp/${JOBNAME}_${INPUT_FILE_NAME}
+  echo "FTP_XFR_FILE_NAME= ${FTP_XFR_FILE_NAME}"
+  #P. Becotted end of change
+  cp ${FTP_XFR_FILE_NAME} ${NEW_XFR_FTP_FILE}
+  # Copy to ftp_data on 'Prod3nt\Cdprod02' bkup directory 
+  FTP_LOGFILE=$RACE/tmp/${JOBNAME}_ftp_transfer_log_new.tmp   
+  fileput.exp ${NEW_XFR_FTP_FILE} ${WORK_FTP_FILE_NAME} ${NOVELL}oem | tee ${FTP_LOGFILE}
+  GOODBYTECOUNT="$(wc -c ${NEW_XFR_FTP_FILE} | awk '{print $1}')"
+  FTPBYTECOUNT="$(cat ${FTP_LOGFILE} | grep 'Information returned by' | awk '{print $1}')" 
+  if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
+  then
+    echo "Successful ftp ${NEW_XFR_FTP_FILE}: ftp count = ${GOODBYTECOUNT}"
+  else
+    echo "ftp ${NEW_XFR_FTP_FILE} failed: ftp says ${FTPBYTECOUNT}, real count is ${GOODBYTECOUNT}"
+    oem_abndalrt.ksh ftp_put
+  fi
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   
+fi
+###################################################################################################   
+
+#**************************************************************************************************
+# END oem_job_process_mitchell_ftp_file.ksh
+#**************************************************************************************************
++ echo '\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh mptr299_xftp_tesla.zipped ***\n\n'
+\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh mptr299_xftp_tesla.zipped ***\n\n
++ trap 'oem_abndalrt.ksh $?' err
++ FILE_ACTION=GETMIT
++ [ 1 -lt 1 ]
++ [ US '=' PR ]
++ FTPSITE_DIRECTORY=/ftp1/Business_Partners/tes_us/mdev/incoming
++ [ GETMIT '=' GETMIT ]
++ echo 'Using Fixed Folder for Novell/NT to Mitchell FTP.'
+Using Fixed Folder for Novell/NT to Mitchell FTP.
++ FTP_BUSINESS_PATH=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming
++ export FTP_BUSINESS_PATH
++ FTPSITE_DIRECTORY=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming
++ FILE_ACTION=GETIT
++ echo '\nDoes the input file name contain a wildcard?\n'
+\nDoes the input file name contain a wildcard?\n
++ expr mptr299_xftp_tesla.zipped : '.*[?*]'
+0
++ FTP_FILELIST=/mdev/race/oem/tmp/mptr299_mptr299_xftp_tesla.zipped_ftplist.tmp
++ ssh -nq ftp-ssh.mitchell.com 'ls -1 /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/*.*'
++ 1> /mdev/race/oem/tmp/mptr299_mptr299_xftp_tesla.zipped_ftplist.tmp
++ RECORD_NUMBER=1
++ true
+sed -n -e "${RECORD_NUMBER}p" < ${FTP_FILELIST} | cut -f1
++ sed -n -e 1p
++ cut -f1
++ 0< /mdev/race/oem/tmp/mptr299_mptr299_xftp_tesla.zipped_ftplist.tmp
++ WORK_FTP_DIR_FILE_NAME=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/2026-06-26_TeslaData.epcsemiestimate.zip
++ [ -z /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/2026-06-26_TeslaData.epcsemiestimate.zip ]
++ basename /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/2026-06-26_TeslaData.epcsemiestimate.zip
++ WORK_FTP_XFR_FILE_NAME=2026-06-26_TeslaData.epcsemiestimate.zip
+echo ${WORK_FTP_XFR_FILE_NAME} | sed     "/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
++ echo 2026-06-26_TeslaData.epcsemiestimate.zip
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_FTP_XFR_FILE_NAME_LOWER=2026-06-26_tesladata.epcsemiestimate.zip
++ WORK_INP_FILE_NAME=mptr299_xftp_tesla.zipped
+echo ${WORK_INP_FILE_NAME} | sed     "/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ echo mptr299_xftp_tesla.zipped
++ WORK_INP_FILE_NAME_LOWER=mptr299_xftp_tesla.zipped
++ [ 2026-06-26_tesladata.epcsemiestimate.zip '=' mptr299_xftp_tesla.zipped ]
++ echo '\nFile names do not match . . . increment record number'
+\nFile names do not match . . . increment record number
+expr ${RECORD_NUMBER} + 1
++ expr 1 + 1
++ RECORD_NUMBER=2
++ true
+sed -n -e "${RECORD_NUMBER}p" < ${FTP_FILELIST} | cut -f1
++ sed -n -e 2p
++ cut -f1
++ 0< /mdev/race/oem/tmp/mptr299_mptr299_xftp_tesla.zipped_ftplist.tmp
++ WORK_FTP_DIR_FILE_NAME=/prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/2026-06-26_TeslaData.zip
++ [ -z /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/2026-06-26_TeslaData.zip ]
++ basename /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/2026-06-26_TeslaData.zip
++ WORK_FTP_XFR_FILE_NAME=2026-06-26_TeslaData.zip
+echo ${WORK_FTP_XFR_FILE_NAME} | sed     "/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
++ echo 2026-06-26_TeslaData.zip
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_FTP_XFR_FILE_NAME_LOWER=2026-06-26_tesladata.zip
++ WORK_INP_FILE_NAME=mptr299_xftp_tesla.zipped
+echo ${WORK_INP_FILE_NAME} | sed     "/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
++ echo mptr299_xftp_tesla.zipped
++ sed '/.*/y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
++ WORK_INP_FILE_NAME_LOWER=mptr299_xftp_tesla.zipped
++ [ 2026-06-26_tesladata.zip '=' mptr299_xftp_tesla.zipped ]
++ echo '\nFile names do not match . . . increment record number'
+\nFile names do not match . . . increment record number
+expr ${RECORD_NUMBER} + 1
++ expr 2 + 1
++ RECORD_NUMBER=3
++ true
+sed -n -e "${RECORD_NUMBER}p" < ${FTP_FILELIST} | cut -f1
++ sed -n -e 3p
++ cut -f1
++ 0< /mdev/race/oem/tmp/mptr299_mptr299_xftp_tesla.zipped_ftplist.tmp
++ WORK_FTP_DIR_FILE_NAME=''
++ [ -z '' ]
++ break
++ [ GETIT '=' GETIT ]
++ [ mptr299_xftp_tesla.zipped '=' 2026-06-26_TeslaData.zip ]
++ echo '\n************************************************************************'
+\n************************************************************************
++ echo 'Requested FTP File NOT Found: /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_xftp_tesla.zipped'
+Requested FTP File NOT Found: /prod/data/ftp/Business_Partners/mitchell/mdev/oem/incoming/mptr299_xftp_tesla.zipped
++ echo '************************************************************************\n'
+************************************************************************\n
++ oem_abndalrt.ksh ftp_file_not_found
+/stage/race/share/bin/exec_restart.ksh: line 94: 1063192: Killed
