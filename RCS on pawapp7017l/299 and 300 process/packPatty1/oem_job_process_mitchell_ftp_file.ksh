@@ -30,8 +30,10 @@ then
     export FTP_BUSINESS_PATH=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming
 
     FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}
-	FILE_ACTION="GETIT"
-    
+    # rj132422 - adapted from get_sftp_file.ksh (latest + rename): pull the newest incoming file into the internal name
+    FTP_SITE_FILE=$(ssh -nq ${FTP_SITE} "ls -1 ${FTPSITE_DIRECTORY}/*${FTP_SOURCE_FILE_NAME}*" | sed 's#.*/##' | sort | tail -1)
+    scp ${FTP_SITE}:${FTPSITE_DIRECTORY}/${FTP_SITE_FILE} ${STEP010_FILEOUT}
+    return
 fi
 # **************************************************************************************************
 
