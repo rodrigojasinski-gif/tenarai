@@ -1,5 +1,5 @@
 #! /bin/ksh  
-#$Id: prod_move,v 1.11 2021/07/03 01:25:28 pg2697 Exp $ 
+#$Id: prod_move,v 1.11 2021/07/03 01:25:28 pg2697 Exp rj132422 $ 
 ################################################################################
 # prod_move file_name subsys/component                                         #
 # e.g. prod_move mptz021.cbl oem/src                                           # 
