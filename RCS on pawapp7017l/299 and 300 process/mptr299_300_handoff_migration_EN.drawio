@@ -82,6 +82,12 @@
     <mxCell id="ea6" value="GETMIT (ssh/scp)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="a_files" target="a300"><mxGeometry relative="1" as="geometry" /></mxCell>
     <mxCell id="ea7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" edge="1" parent="1" source="a300" target="a301"><mxGeometry relative="1" as="geometry" /></mxCell>
 
+    <!-- OPEN QUESTION: Editorial (Step020R) target -->
+    <mxCell id="q_edit" value="OPEN QUESTION — decide before go-live&#10;&#10;Step020R (Editorial ZIP) — where does it go now?&#10;Was: prod3nt \oem_research  (+ email asking to move it to \\dept01nas\...\PubTeams\Tesla)&#10;Options: Mitchell .../mitchell/&lt;lvl&gt;/oem_research/  OR a dept NAS?&#10;Editorial = people (not an automated job) — pickup location NOT yet confirmed.&#10;Currently DISABLED in okToGO." style="shape=callout;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+      <mxGeometry x="850" y="70" width="330" height="150" as="geometry" />
+    </mxCell>
+    <mxCell id="q_edit_e" value="? target TBD" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;dashed=1;strokeColor=#d79b00;fontColor=#d79b00;fontSize=10;" edge="1" parent="1" source="a_push" target="q_edit"><mxGeometry relative="1" as="geometry" /></mxCell>
+
     <!-- Legend -->
     <mxCell id="leg" value="Legend / Notes:&#10;• Red = prod3nt (down after decommission).  Green = new Mitchell ftp-ssh path.  Dashed/yellow = change still TO DO on the 299 side.&#10;• Handoff files match 1:1 — mptr300 dev log (no prod3nt) pulls exactly the 3 .dat that mptr299 Step040/050/060 produce. Zip (araw_tesla.zip) is Editorial-only, not a 300 input.&#10;• Same incoming folder holds the inbound Tesla zip AND the 3 handoff .dat; GETMIT matches each job by exact INPUT_FILE_NAME (keep original GETMIT — the latest+rename edit must be reverted).&#10;• 300 read side = DONE (confirmed).  299 write side = replace fileput.exp with scp to the Mitchell incoming.  For prod, re-enable Step999R cleanup." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#ffffff;strokeColor=#cccccc;fontSize=11;" vertex="1" parent="1">
       <mxGeometry x="40" y="590" width="990" height="140" as="geometry" />
