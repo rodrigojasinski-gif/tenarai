@@ -56,9 +56,11 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   # Make sure the file exists to transfer to the Network... send email when it is sent
   #**********************************************************************************************
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_transfer_log.tmp
+# rj132422 - entrega paralela do zip pro Novell/prod3nt (Editorial) desligada na migracao (fileput.exp indisponivel)
+if false; then
   if [ -e ${SOURCE_FILE} ]
   then
-    # Copy the source file to the Network      
+    # Copy the source file to the Network
     fileput.exp ${SOURCE_FILE} ${BACKUP_SOURCE_FILE_NAME} ${NOVELL}oem_research | tee ${FTP_LOGFILE}
     # Verify the copy is good       
     GOODBYTECOUNT="$(wc -c ${SOURCE_FILE} | awk '{print $1}')"
@@ -91,7 +93,8 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
     echo "Error: no file to ftp!!\a"
     oem_abndalrt.ksh ftp_file_no_file_found
   fi
- 
+fi
+
 
   #STEP Step030R
   export STEPNAME=Step030R
@@ -138,6 +141,8 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_${STEPNAME}_transfer_log.tmp
   NT_DIR=${NOVELL}oem
   
+# rj132422 - entrega do Price pro Novell/prod3nt = handoff pro mptr300; desligada no teste (fileput.exp indisponivel)
+if false; then
   if [ -e ${PRICE_UX} ]
   then
     ########################################################################################
@@ -160,8 +165,9 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   else
     echo "\n\nError: no ${PRICE_UX} file to ftp!!\n"
     $(abndalrt.ksh 911)
-  fi  
- 
+  fi
+fi
+
 
 
   #STEP Step050R
@@ -180,6 +186,8 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_${STEPNAME}_transfer_log.tmp
   NT_DIR=${NOVELL}oem
   
+# rj132422 - entrega do Supersession pro Novell/prod3nt = handoff pro mptr300; desligada no teste (fileput.exp indisponivel)
+if false; then
   if [ -e ${SUPER_UX} ]
   then
     ########################################################################################
@@ -202,7 +210,8 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   else
     echo "\n\nError: no ${SUPER_UX} file to ftp!!\n"
     $(abndalrt.ksh 911)
-  fi  
+  fi
+fi
 
   #STEP Step060R
   export STEPNAME=Step060R
@@ -234,6 +243,8 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
     ########################################################################################
     # Copy the catalog file to the Network      
     ########################################################################################
+# rj132422 - entrega do Catalog pro Novell/prod3nt = handoff pro mptr300; desligada no teste (mantido o cat acima)
+if false; then
     fileput.exp ${CATLG_UX} ${CATLG_NT} ${NT_DIR} | tee ${FTP_LOGFILE}
     
     ########################################################################################
@@ -248,6 +259,7 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
       echo "File transfer of ${CATLG_UX} to NT ${NT_DIR} failed: ftp says ${FTPBYTECOUNT}, real count is ${GOODBYTECOUNT}"
       $(abndalrt.ksh 911)
     fi
+fi
   else
     echo "\n\nError: no ${CATLG_UX} file to ftp!!\n"
     $(abndalrt.ksh 911)
@@ -262,7 +274,8 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   # STEP DESC:  Removes job-related temporary files including the 
   #             tmp/mptr299 directory. (NOTE: -r flag used with rm command.)
   ##########################################################################
-  rm -rf ${RACE}/tmp/${JOBNAME}*
+# rj132422 - cleanup do tmp desligado no teste para inspecionar os .csv gerados (reativar depois)
+#  rm -rf ${RACE}/tmp/${JOBNAME}*
   
 
 #*****************************************************************************************
