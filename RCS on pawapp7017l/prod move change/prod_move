@@ -43,7 +43,8 @@
   fi
              
   
-  STAG_HOST=dawapp7017l                          # rj132422 - dev/stage host (was radd)
+  STAG_HOST=dawapp7017l.staging.int              # rj132422 - dev/stage host FQDN (was radd)
+  STAG_USER=svc-apd-race-dev@staging.int         # rj132422 - conta no dev p/ ssh -l / scp (chave autorizada)
   PROD_DIR=/prod/race
   STAG_DIR=/stage/race
   SUBSYS=$( echo $2 | awk -F/ '{ print $1 }' )
@@ -95,7 +96,7 @@
 ##############################################################################
 # Determine if file was COPIED into STAGE directory
 ##############################################################################
-  if [[ -z $( ssh $STAG_HOST ls -l $STAG_DIR/$SUBSYS/$OBJECT_DIR/$FILENAME_EXT 2>/dev/null ) ]]
+  if [[ -z $( ssh -l $STAG_USER $STAG_HOST ls -l $STAG_DIR/$SUBSYS/$OBJECT_DIR/$FILENAME_EXT 2>/dev/null ) ]]
   then     
     echo "File is not staged: " $FILENAME_EXT 
     echo "Developer must checkin code."
@@ -155,7 +156,7 @@
 					 rm -f $PROD_DIR/$SUBSYS/$EXEC_LOC/$OBJECT_BASENAME
            chmod ug+wr $PROD_DIR/$SUBSYS/$EXEC_LOC/rollback/$OBJECT_BASENAME					 
       fi 
-      scp $STAG_HOST:$STAG_DIR/$SUBSYS/$EXEC_LOC/$OBJECT_BASENAME $PROD_DIR/$SUBSYS/$EXEC_LOC/$OBJECT_BASENAME 
+      scp $STAG_USER@$STAG_HOST:$STAG_DIR/$SUBSYS/$EXEC_LOC/$OBJECT_BASENAME $PROD_DIR/$SUBSYS/$EXEC_LOC/$OBJECT_BASENAME 
       chmod ug+wr $PROD_DIR/$SUBSYS/$EXEC_LOC/$OBJECT_BASENAME						
 ####C and PC programs
     elif [ $EXTENSION = "c" ] ||  [ $EXTENSION = "pc" ]
@@ -168,7 +169,7 @@
 	       rm -f $PROD_DIR/$SUBSYS/$EXEC_LOC/$EXEC_NAME
 	       chmod ug+wr $PROD_DIR/$SUBSYS/$EXEC_LOC/rollback/$EXEC_NAME 
       fi 
-      scp $STAG_HOST:$STAG_DIR/$SUBSYS/$EXEC_LOC/$EXEC_NAME $PROD_DIR/$SUBSYS/$EXEC_LOC/$EXEC_NAME
+      scp $STAG_USER@$STAG_HOST:$STAG_DIR/$SUBSYS/$EXEC_LOC/$EXEC_NAME $PROD_DIR/$SUBSYS/$EXEC_LOC/$EXEC_NAME
 			chmod ug+wr $PROD_DIR/$SUBSYS/$EXEC_LOC/$EXEC_NAME 
 ####cpy, ksh, mk, awk, exp, pl, prm, ctl -> move object as specified in execution of prod_move 
     else 
