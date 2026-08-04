@@ -1,0 +1,29 @@
+#! /bin/ksh
+#$Id: runlock,v 1.3 2007/03/19 01:02:40 gw8440 Exp gw8440 $
+## modify to access prod server alias racercs gw 03/28/07
+# rj132422 - linux migration: RCS repo now lives on the prod host (the AIX alias racercs is gone)
+
+##export RCSDIR=race:/prod/race
+# rj132422 - no host prefix when we are already on prod, so rel_lock.ksh runs rcs -u locally
+if [ "$ACT_LVL" = "prod" ]
+then
+   export RCSDIR=/prod/race
+else
+   export RCSDIR=pawapp7017l.production.int:/prod/race
+fi
+
+
+ if [ $# = "0" ]
+    then
+      echo  Usage: runlock filename subsystem_name/component_name "\007" >&2
+      exit -2
+  fi
+
+echo ========================= summary =====================================
+rel_lock.ksh  $1 $2
+
+ if [ $? = 0 ]              # good return code from rel_lock
+  then
+    echo File is now unlocked.
+  fi
+echo =======================================================================

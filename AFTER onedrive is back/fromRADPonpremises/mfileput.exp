@@ -1,0 +1,181 @@
+#!/usr/bin/expect --
+# transfers multiple files using ftp from Unix to prod3nt
+#
+# requires 3 arguments: source filename mask; source directory; destination directory
+# fourth argument for timeout value (in seconds) is optional - default value is 1800.
+#
+#########################################################################################################
+#
+# 09/13/2006 JLW AIX Migration required the following modifications:
+#                1) FROM: /usr/local/bin/expect TO: /usr/bin/expect
+#                2) "Connection refused" and "Unknown host" start with UPPER case
+#                3) IBM required modification of line FROM: -re "\n230 (\[^\r]*)\r\n.*\r\nftp> " {}
+#                                                       TO: -re "\n230 (\[^\r]*)\r\n.*ftp> " {}
+#
+#######################################################################################################
+# 07/03/2007:  GW Use environmental variable FTP_SERVER to connect to the network.
+#                 FTP_SERVER is set in the global shared script raceftp.ksh
+#########################################################################################################
+# 09/18/2007: PG  Changed -re statement as script was hanging at ftp> and then timing out.
+#########################################################################################################
+
+set STEP STEP010
+#Check for parameter errors
+
+log_user 0          ;#turn off standard I/O / will use send_user/send_error commands to send standard I/O
+
+#check for correct number of arguments
+if {$argc < 3} {
+   send_error "incorrect number of arguments\n"
+   send_error "usage:  $argv0 \(source_mask | all\) source_directory destination_directory \[ascii \]\n"
+   exit 1 }
+
+# get env variable FTP_SERVER set in shared global script raceftp.ksh 
+if { [catch {set FTP_SERVER $env(FTP_SERVER)} !=0] } {
+      send_error "\nENV VARIABLE FTP_SERVER NOT FOUND\n"; exit 1}
+send_user "\nftp server: $FTP_SERVER\n"
+   
+
+switch -- [lindex $argv 0] \
+  all     { set mask \*
+} default { set mask [lindex $argv 0]\*
+}
+
+set source_dir [lindex $argv 1]
+
+#check to see if source directory exists and is a directory
+if {[file exists $source_dir] == 0} {
+    send_error "failed: argument 2 \($source_dir\) does not exist\n"
+    exit 1
+} elseif {[file isdirectory $source_dir] == 0} {
+          send_error "failed: argument 2 \($source_dir\) is not a directory\n"
+          exit 1 }
+
+#set destination directory
+set dest_dir [lindex $argv 2]
+
+#set transfer mode
+set xfer_mode binary            ;# default to binary transfer mode
+if { $argc > 3 } {
+   set xfer_mode ascii }
+
+set timeout 60            ;# set timeout to 60 seconds
+
+set STEP STEP020
+#Start ftp session
+
+send_user "\nEstablishing ftp connection to $FTP_SERVER\n"
+#spawn ftp -i prod3nt.mitchell.com;  #start ftp connection to prod3nt.mitchell.com.
+spawn ftp -i $FTP_SERVER;  #start ftp connection to $FTP_SERVER.
+expect {
+   timeout {send_error "\ntimed out\n"; exit 1}
+   "Connection refused" {send_error "\nConnection Refused\n"; exit 1}
+   "Unknown host" {send_error "\nUnknown Host Could Not Connect\n"; exit 1}
+   "Name"
+}
+
+
+#for test purposes
+#send_user "Running test script\n"
+
+
+#(replaced 2023/02/16) send "mitchell/ftpxfer\r"
+send "production/ftpxfer-edsys\r"
+expect {
+   timeout {send_error "timed out evaluating login name\n"; exit 1}
+   "Password:"
+}
+
+#(replaced 2023/02/16) send "production\r"
+send "tZ]p<TN{3qm0u(52OZ0F\r"
+  expect {
+   timeout {send_error "timed out evaluating password\n"; exit 1}
+####################################################################################
+# 09/13/2006 JLW IBM Migration
+#   -re "\n230 (\[^\r]*)\r\n.*\r\nftp> " {}
+####################################################################################
+    -re "\n230 (\[^\r]*)\r\n.*ftp> " {}
+    -re "\n.*\r\n(.*)\r\nftp> " {
+       send_error "\nlogin failed\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+send "$xfer_mode\r"       ;#set to $xfer_mode mode
+  expect {
+   timeout {send_error "\ntimed out evaluating $xfer_mode\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\nftp> " {
+       send_user "\nftp command: $xfer_mode\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\nftp> " {
+       send_error "\nfailed: $xfer_mode\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+send "lcd $source_dir\r"      ;#change directory on source
+  expect {
+   timeout {send_error "\ntimed out evaluating source cd\n"; exit 1}
+    -re "\nLocal (\[^\r]*)\r\nftp> " {
+       send_user "\nftp command: lcd $source_dir\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n/(.*)\r\nftp> " {
+       send_error "\nfailed: lcd $source_dir\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+send "cd /cdprod02/ftp_data/$dest_dir\r"      ;#change directory on destination
+  expect {
+   timeout {send_error "\ntimed out evaluating destination cd\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\nftp> " {
+       send_user "\nftp command: cd /cdprod02/ftp_data/$dest_dir\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\nftp> " {
+       send_error "\nfailed: cd /cdprod02/ftp_data/$dest_dir\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+set STEP STEP030
+#transfer multiple files from Unix to prod3nt
+
+set timeout 3600        ;#reset timeout value for transfer command
+
+send_user "\nftp command: mput $mask\n\n"
+send "mput $mask\r"
+
+log_user 1        ;#reset standard I/O control to normal
+
+  expect {
+   timeout {send_error "\ntimed out performing mput\n"; exit 1}
+############################################################################################
+# 09/18/2007: PG  Changed -re statement as script was hanging at ftp> and then timing out.
+#   -re "\nlocal: \[^\n]*\n200.*\n(150.*\n226 .*)\r\nftp> " {}
+############################################################################################
+    -re "\n200.*\n(150.*\n226.*\nlocal:\[^\n])(\[^\r]*)\r\n.*ftp> " {}
+    -re "\n(550 .*denied.)\r\n" {
+       send_error "\nfailed: mput $mask\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+
+log_user 0        ;#give standard I/O control to "send_user / send_error"
+set timeout 60    ;#reset timeout value to 60 seconds
+
+
+set STEP STEP040
+#Close ftp connection and end script
+
+send "quit\r"     ;#close ftp connection
+  expect {
+   timeout {send_error "\ntimed out performing quit\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\n" {
+       send_user "\nftp command: quit\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\n" {
+       send_error "\nfailed: quit\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }

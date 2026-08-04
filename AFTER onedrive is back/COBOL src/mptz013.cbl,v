@@ -1,0 +1,2077 @@
+head	1.6;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.6
+date	2026.07.31.16.59.04;	author rj132422;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2026.07.31.12.23.10;	author rj132422;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2019.01.24.06.46.40;	author pg2697;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2014.05.18.02.19.00;	author pg2697;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2003.02.08.01.19.45;	author pg2697;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.03.12.18.56.46;	author gw8440;	state Exp;
+branches;
+next	;
+
+
+desc
+@ race initial checkin
+@
+
+
+1.6
+log
+@AIX to RHEL conversion
+@
+text
+@      *$SET TRACE ASMLIST COPYLIST PARAS REF 
+       IDENTIFICATION DIVISION.                                         
+       PROGRAM-ID.   MPTZ013.                                           
+       AUTHOR.       PENNY GENOVESE.                                    
+       DATE-WRITTEN. NOVEMBER 01, 1993.                                 
+      ***************************************************************** 
+      *SYSTEM NAME:   EDITORIAL SYSTEMS                                 
+      *APPL NAME:     OEM PARTS UPDATE                                  
+      *PROGRAM NAME:  MPTZ013 - SUPERSESSION REVERSAL PROGRAM           
+      *LANGUAGE:      COBOL II / Oracle                                 
+      *                                                                 
+      *DESCRIPTION:                                                     
+      *  FUNCTION: THIS PGM IS SIMILIAR TO THE SUPERSESSION PGM USED IN 
+      *            THE PARTS UPDATE SYSTEM (MPTZ024) EXCEPT FOR:        
+      *            1) THE TRANSACTION TYPE PROCESED IS "R"              
+      *            2) THE OLD PART, NEW PART, AND EFF DATE IN THE TRANS 
+      *               MUST MATCH AN EXISTING SUPERSESSION REC.          
+      *               (TRANS OLD = PART-NUMBER, 
+      *                TRANS NEW = SUPERSEDING-PART-NUMBER, AND
+      *                TRANS EFF DT = SUPR-EFF-DT OF SUPERSESSION.)      
+      *            3) THE PROGRAM REVERSES THE EXISTING SUPERSESSION    
+      *               BY CHANGING ALL LINES ASSOCIATED TO THE "NEW"     
+      *               PART TO POINT TO THE "OLD" PART; THEREFORE WHEN   
+      *               COMPLETED, ALL ASSOCIATIONS WILL POINT TO "OLD"   
+      *               PART # AND "NEW" PART FOR THIS PART SUPPLIER/COUNTRY 
+      *               WILL NOT EXIST
+      *            4) THE REVERSAL TRANSACTION IS NOT POSTED IN THE     
+      *               ORACLE SUPERSESSION TABLE.                        
+      *            5) THE EXISTING Oracle SUPERSESSION (THAT IT MATCHED 
+      *               on) IS ALSO DELETED.                              
+      *                                                                 
+      *            NOTE - REVERSE TRANSACTION MUST BE SORTED BY EFF. DAT
+      *                   IN DESCENDING ORDER (SO THAT LAST ONE IN GETS 
+      *                   REVERSED FIRST).                              
+      *                                                                 
+      *  INPUT:    CONTROL INFORMATION (PROGRAM PARM FILE)              
+      *            REFORMATTED TRANSACTION FILE                         
+      *                                                                 
+      *  I/O:      Oracle PART_SUPPLIER TABLE
+      *            Oracle PART_SUPPLIER_COUNTRY TABLE
+      *            Oracle SERVICE_CATEGORY_DETAIL TABLE
+      *            Oracle DETAIL_PART_XREF TABLE
+      *            Oracle PART_ALTPART_XREF TABLE
+      *            Oracle ACQ_BATCH_REPORTS TABLE
+      *            Oracle ACQ_BATCH_RESTART TABLE
+      *                                                                 
+      *  OUTPUT:   DATABASE UPDATE CONTROL REPORT                       
+      *                                                                 
+      * SIGNIFICANT PROCESSING NARRATIVE:                               
+      *   PROGRAM USES A CONTROL FILE TO DETERMINE WHICH OEM IS BEING   
+      *   PROCESSED. (THIS IS THE SAME PARM USED BY ALL OEM UPDT PGMS)  
+      *                                                                 
+      *   1) VALIDATES CONTROL FILE PARAMETERS.                         
+      *   2) CHECK IF RESTART ROW FOUND INDICATING RESTART RUN          
+      *   3) READS TRANS RECORD AND VALIDATES THAT SUPERSESSION IS      
+      *      IN Oracle TABLE. (NOTE - TRANS MUST MATCH EXACTLY TO     
+      *      existing SUPERSESSION)                                     
+      *   4) IF VALID TRANSACTION, SUPERSESSION IS PERFORMED.           
+      *      A) OLD PART IS INSERTED                                    
+      *      B) ALL LINES ASSOCIATED TO NEW PART ARE CHANGED TO OLD     
+      *      C) NEW PART ROW IS DELETED                                 
+      *      D) EXISTING SUPERSESSION ROW IS DELETED                    
+      *   5) AT END OF RUN, CONTROL REPORT IS PRODUCED SHOWING Oracle   
+      *      table ACTIVITY AND TRANSACTION ACTIVITY                    
+      *                                                                 
+      *   *  COMMITS PERFORMED EVERY 5000 ROWS (LIMIT IS SET IN WRK STG)
+      *   *  RESTART ROW WRITTEN AT EACH COMMIT POINT. (AT SUCCESSFUL   
+      *         END, IT IS DELETED.))                                   
+      *                                                                 
+      * CALLED PROGRAMS:                                                
+      *            ILBOABNO - ABEND ROUTINE                             
+           CALL "dberrmsg" USING SQLCA ERROR-MESSAGE ERROR-LENGTH.
+      *                                                                 
+      * CONTROL CARD:                                                   
+      *  (SAME CONTROL CARD THAT'S USED IN THE UPDATE PROGRAMS)         
+      *                                                                 
+      *  OEM=XXX,REGN=X,EFFDT=XX/XX/XXXX,REPLACE=X,RUNTYP=XXX,          
+      *       1       2           3              4         5            
+      *                                                                 
+      *  NAGSTYP=XXXXXXXX                                               
+      *             6                                                   
+      *                                                                 
+      *       1 - NUMERIC; PART SUPPLIER NUMBER WHICH YOU ARE PROCESSING 
+      *                                                                 
+      *       2 - ALPHA; PART SUPPLIER COUNTRY OF THE OEM (U = US, C = CAN)
+      *                                                                 
+      *       3 - NUMERIC; PRICE EFFECTIVE DATE AS SPECIFIED BY THE
+      *           OEM  (FORMAT MM/DD/YYYY; MUST BE GREATER THAN LAST RUN
+      *           UNLESS THIS IS REPLACEMENT RUN - THEN MUST = LAST RUN)
+      *                                                                 
+      *       4 - ALPHA; REPLACEMENT INDICATOR (FOR PRICE UPDATE PGM);  
+      *           (N = NEW RUN, PRICES WILL BE UPDATED - CURRENT MOVED  
+      *           TO PREVIOUS THEN TRANSACTION PRICE MOVED TO CURRENT;  
+      *           Y = REPLACEMENT RUN, TRANSACTION PRICE MOVED DIRECTLY 
+      *           OVER CURRENT PRICE; USED FOR CORRECTING MISPRICING.)  
+      *                                                                 
+      *       5 - ALPHA; TYPE OF RUN (OEM = OEM, SUP = SUPPLIMENTAL)    
+      *           (USED BY REPORT PROGRAM MPTZ007)                      
+      *                                                                 
+      *       6 - ALPHA; TYPE OF NAGS RUN (FOR NAGS RUN, EITHER "IMPORT"
+      *           OR "DOMESTIC"; ANY OTHER RUNS, "N/A")                 
+      *           (PRINTED IN HEADING - JUST TO DISTINGUISH BETWEEN THE 
+      *            IMPORT AND DOMESTIC RUN REPORTS)                     
+      *                                                                 
+      * MODIFICATION LOG:                                               
+      * --DATE-- -BY- ------DESCRIPTION---------------------------------
+      * 01/23/2019  BY:   PENNY GENOVESE
+      *             DESC: No code change. Added mod note so pgm could be
+      *                   recompiled with new version of mptb002.cpy.
+      * ----------------------------------------------------------------
+      * 05/17/2014  BY:   PENNY GENOVESE
+      *             DESC: NO CODE CHANGES MADE. ADDED MOD NOTE SO THAT 
+      *                   PROGRAM COULD BE RECOMPILED FOR ORACLE 11G /
+      *                   IBM 770 MIGRATION.
+      * ----------------------------------------------------------------
+      * 02/07/03 BY:   PENNY GENOVESE
+      *          DESC: ADDED LOGIC TO HANDLE SCENARIO WHERE OLD PART
+      *                ALREADY EXISTS. (OCCURS WHEN THERE'S A LOOPING
+      *                SUPER IN THE DATABASE.)                          
+      *           
+      * 01/03/02 BY:   GAIL WALDER
+      *          DESC: MODIFIED DUE TO NEW SUPERSESSION LOGIC:
+      *                CHECK FOR DUPLICATE 'PARTS-TO-BE-REVERSED'
+      *                (TR-NEW-PART-NUM).
+      *                PROCESS THE FIRST INSTANCE IN A SERIES OF DUPLICATES,
+      *                BYPASS REVERSING THE REST OF THE DUPLICATES. 
+      *                THE FIRST TRANSACTION'S TR-OLD-PART-NUM BECOMES 
+      *                THE SUPERSEDING PART.
+      * ----------------------------------------------------------------
+      * 02/19/01 BY:   GAIL WALDER
+      *          DESC: 1. MODIFIED FOR CORRECTION DETAIL_PART_XREF COUNTS
+      *                   WHEN UPDATING OLD PART WITH SUPERSESSION PART DATA
+      *                2. ADDED ALTERNATE PART IMPACT COUNTS WHEN UPDATING
+      *                   OLD PART WITH SUPERSESSION PART DATA
+      * --------------------------------------------------------------------
+      * 02/14/01  BY: MARINA BOGOPOLSKY
+      *           DESC: ADDED Y1500-SQL-PROCEDURE-ERROR PARAGRAPH
+      * ----------------------------------------------------------------
+      * 08/24/00 BY:   GAIL WALDER
+      *          DESC: RACE II REVISIONS:
+      *                1. CONVERTED FOR NEW ERD STRUCTURE AND 
+      *                   PART TABLE DEFAULTS
+      *                2. ADDED INITIALIZE FOR RETURNED VARIABLES
+      *                   IN SELECT PROCEDURE CALLS
+      * --------------------------------------------------------------------
+      * 08/24/00 BY:   GAIL WALDER
+      *          DESC: RACE II REVISIONS:
+      *                1. CONVERTED FOR NEW DATABASE STRUCTURE
+      *                2. CONVERTED EMBEDDED SQL TO PACKAGE/PROCEDURE CALLS
+      *                3. CONVERTED FOR NEW SUPERSESSION LOGIC
+      * ----------------------------------------------------------------
+      *  05/08/2000 BY: KIM DINH 
+      *           DESC: ADD CURR-EFF-DT TO ALL QUERIES THAT ACCESS IIST001
+      *                 IIST002 TABLES.
+      *          
+      * ----------------------------------------------------------------
+      *  03/04/99 BY:   JOHN CUSUMANO
+      *           DESC: RACE - VERSIONING 
+      *                 TOOK OUT REFERENCE TO FLAT RATE. ADDED
+      *                 WIP TABLE (WMCGT003) TO LOGIC. ALWAYS PROCESS
+      *                 BOTH WIP AND PROD TABLES. WIP TOTALS IN REPORT
+      *                 REPLACED THE FLR TOTALS. COPYBOOKS OF REPORTS 
+      *                 WERE EDITED TO REPLACE FLR WITH WIP.
+      * ----------------------------------------------------------------
+      *  05/28/98 BY:   GAIL WALDER
+      *           DESC: REMOVE ALL REFERENCES TO 'UK' AND SPECIAL
+      *                 CANADIAN OEM'S.  PREPARATION FOR GLOBALIZATION. 
+      * ----------------------------------------------------------------
+      * 03/28/97  BY:   Al Faelschle 
+      *           DESC: Removed moves to ws-paragraph in abend routines.
+      * ----------------------------------------------------------------
+      * 11/15/96  BY:   Al Faelschle 
+      *           DESC: Converted from MVS and DB2 to Unix and Oracle
+      *                 for Rehost project.
+      * ----------------------------------------------------------------
+      * 09/08/96  BY:   STEVE CARROLL                                   
+      *           DESC: REMOVE ALL REFERENCES TO THE INTERCHANGE DB.    
+      * ----------------------------------------------------------------
+      * 11/28/95  BY:   PATTY BECOTTE                                   
+      *           DESC: CHANGED TO CHECK 'NAGSTYP' FOR 'N/A'. IF SO, DO 
+      *                 NOT PRINT, ELSE MOVE VALUE IN CNTL-NAGS-TYP TO  
+      *                 HEADING.                                        
+      * ----------------------------------------------------------------
+      * 01/05/95  PG  CHANGED RESTART LOGIC TO USE MULTIPLE RESTART RECS
+      * ----------------------------------------------------------------
+      * 07/30/26  BY:   RODRIGO JASINSKI - rj132422
+      *           DESC: AIX to RHEL conversion
+      **************************************************************** 
+       ENVIRONMENT DIVISION.                                            
+       CONFIGURATION SECTION.                                           
+       SOURCE-COMPUTER.        IBM-370.                                 
+       OBJECT-COMPUTER.        IBM-370.                                 
+                                                                        
+       INPUT-OUTPUT SECTION.                                            
+       FILE-CONTROL.                                                    
+                                                                        
+           SELECT CONTROL-PARMS                                         
+                  ASSIGN TO  EXTERNAL PARMSIN
+                  ORGANIZATION IS LINE SEQUENTIAL.
+                                                                        
+           SELECT TRANS-FILE                                            
+                  ASSIGN TO  EXTERNAL TRANSIN
+                  ORGANIZATION IS LINE SEQUENTIAL.
+                                                                        
+           SELECT CONTROL-REPORT                                        
+                  ASSIGN TO  EXTERNAL
+                  LINE ADVANCING CNTLRPT.                          
+                                                                        
+           SELECT PARTS-FILE  ASSIGN TO EXTERNAL PARTSFL
+                  ORGANIZATION IS INDEXED
+                  ACCESS MODE IS RANDOM
+                  RECORD KEY IS PARTS-PART-NUMBER
+                  FILE STATUS IS PARTS-FILE-STATUS.
+                  
+       DATA DIVISION.                                                   
+       FILE SECTION.                                                    
+                                                                        
+       FD  CONTROL-PARMS                                                
+           RECORDING MODE IS F                                          
+           RECORD CONTAINS 80 CHARACTERS                                
+           BLOCK CONTAINS 0 RECORDS                                     
+           LABEL RECORDS ARE STANDARD.                                  
+       01  CNTL-PARM-REC           PIC X(80).                           
+                                                                        
+       FD  TRANS-FILE                                                   
+           RECORDING MODE IS F                                          
+           RECORD CONTAINS 187 CHARACTERS                               
+           BLOCK CONTAINS 0 RECORDS                                     
+           LABEL RECORDS ARE STANDARD.                                  
+       01  TRANS-REC               PIC X(187).                          
+                                                                        
+       FD  CONTROL-REPORT                                               
+           RECORDING MODE IS F                                          
+           RECORD CONTAINS 133 CHARACTERS                               
+           BLOCK CONTAINS 0 RECORDS                                     
+           LABEL RECORDS ARE OMITTED.                                   
+       01  REPORT-LINE                PIC X(133).                       
+                                                                        
+       FD  PARTS-FILE
+           RECORD CONTAINS 25 CHARACTERS.
+       01  PARTS-REC.
+           05  PARTS-PART-NUMBER          PIC X(25).
+ 
+       WORKING-STORAGE SECTION.                                         
+       77  PGMNAME            PIC X(08) VALUE "mptz013".
+       01  RCS-FILE            PIC X(60) VALUE 
+      -"$RCSfile: mptz013.cbl,v $".
+       01  RCS-REV             PIC X(60) VALUE 
+      -"$Revision: 1.5 $".
+       01  RCS-DATE            PIC X(60) VALUE 
+      -"$Date: 2026/07/31 12:23:10 $".
+       01  RCS-AUTH            PIC X(60) VALUE 
+      -"$Author: rj132422 $".
+       01  RCS-STATE           PIC X(60) VALUE 
+      -"$State: Exp $".
+       01  RCS-LOCKER          PIC X(60) VALUE 
+      -"$Locker: rj132422 $".
+                                                                        
+           COPY iisb999.cpy.
+                                                                        
+           COPY iisb998.cpy.
+
+       77  COMMIT-LIMIT               PIC 9(4)   VALUE 5000.            
+ 
+            EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       01  SQLGLM-TEXT         PIC X(120).          
+                                                                        
+       77  BLANK-IND                  PIC X(01)  VALUE SPACES.          
+                                                                        
+       77  VALUE-ZERO                 PIC S9     COMP-3  VALUE ZEROES.  
+          
+       01  WS-NULLIND-OEM-SDT         PIC S9     COMP VALUE 0.                  
+       01  WS-NULLIND-PRT-PDT         PIC S9     COMP VALUE 0.                  
+       01  WS-NULLIND-PRT-CEDT        PIC S9     COMP VALUE 0.                  
+       01  WS-NULLIND-PRT-PEDT        PIC S9     COMP VALUE 0.                  
+       01  WS-NULLIND-PRT-DDT         PIC S9     COMP VALUE 0.                  
+                                                                        
+       01  WS-SUPER-COUNT             PIC S9(09) COMP-3  VALUE 0.         
+       01  WS-CEGLN-COUNT             PIC S9(09) COMP-3  VALUE 0.    
+       01  WS-WIPLN-COUNT             PIC S9(09) COMP-3  VALUE 0.
+       01  WS-ALTPLN-COUNT            PIC S9(09) COMP-3  VALUE 0.         
+       01  WS-CEG-REVERSED-PART-COUNT PIC S9(09) COMP-3  VALUE 0.         
+       01  WS-WIP-REVERSED-PART-COUNT PIC S9(09) COMP-3  VALUE 0.         
+       01  WS-REVERSED-PART-COUNT     PIC S9(09) COMP-3  VALUE 0.         
+                                                                       
+       01  WS-SEL-OEM-NUM             PIC X(03).                        
+       01  WS-SEL-REGN-CD             PIC X(02).                        
+       01  WS-SEL-PART-NUM            PIC X(25). 
+       01  WS-SUPERSEDING-PART        PIC X(25). 
+       01  WS-CURRENT-PART            PIC X(25).
+       01  WS-PART-NUMBER-IN          PIC X(25).
+       01  WS-SEL-SUPR-EFF-DT         PIC X(10). 
+       01  WS-REGION-LIT.
+           05 FILLER1                 PIC XX VALUE ' ('.                       
+           05 WS-REGION               PIC XX.
+           05 FILLER2                 PIC X  VALUE ')'.
+       01  WS-REGION-LIT-X            PIC X(5).
+       01  SUPERCSR01 SQL-CURSOR. 
+       01  SUPERCSR02 SQL-CURSOR.
+          
+           EXEC SQL END   DECLARE SECTION END-EXEC.
+                                                                        
+       01  TEMP-FIELDS.                                                 
+      * DATE ACCEPTED FROM SYSTEM                                       
+           03  WS-CURRENT-DT.                                           
+               05  WS-CD-YEAR         PIC X(02).                        
+               05  WS-CD-MONTH        PIC X(02).                        
+               05  WS-CD-DAY          PIC X(02).                        
+      * TIME ACCEPTED FROM SYSTEM                                       
+           03  WS-CURRENT-TM.                                           
+               05  WS-CT-HOUR         PIC X(02).                        
+               05  WS-CT-MINUTE       PIC X(02).                        
+               05  WS-CT-SECOND       PIC X(02).                        
+               05  WS-CT-HUNDREDTH    PIC X(02).                        
+      * SYSTEM DATE PRINTED IN REPORT                                   
+           03  WS-FORMAT-DT.                                            
+               05  WS-FD-MONTH        PIC X(02).                        
+               05  FILLER             PIC X(01)  VALUE "/".             
+               05  WS-FD-DAY          PIC X(02).                        
+               05  FILLER             PIC X(01)  VALUE "/".             
+               05  WS-FD-YEAR         PIC X(02).                        
+      * SYSTEM TIME PRINTED IN REPORT                                   
+           03  WS-FORMAT-TM.                                            
+               05  WS-FT-HOUR         PIC X(02).                        
+               05  FILLER             PIC X(01)  VALUE ":".             
+               05  WS-FT-MINUTE       PIC X(02).                        
+               05  FILLER             PIC X(01)  VALUE ":".             
+               05  WS-FT-SECOND       PIC X(02).                        
+      * CONTROL EFFECTIVE DATE USED IN DATE COMPARISON                  
+           03  WS-TEMP-EFF-DT.                                          
+               05  WS-TEMP-EFF-YEAR   PIC X(04).                        
+               05  WS-TEMP-EFF-MONTH  PIC X(02).                        
+               05  WS-TEMP-EFF-DAY    PIC X(02).                        
+          
+      * OEM LAST UPDATE DATE FROM Oracle TABLE (FOR REFORMATTING)       
+           03  WS-LST-UPD-DT.                                           
+               05  WS-LST-UPD-MONTH   PIC X(02).                        
+               05  FILLER             PIC X(01).                        
+               05  WS-LST-UPD-DAY     PIC X(02).                        
+               05  FILLER             PIC X(01).                        
+               05  WS-LST-UPD-YEAR    PIC X(04).                        
+          
+      * OEM LAST UPDATE DATE USED IN DATE COMPARISON                    
+           03  WS-TEMP-UPD-DT.                                          
+               05  WS-TEMP-UPD-YEAR   PIC X(04).                        
+               05  WS-TEMP-UPD-MONTH  PIC X(02).                        
+               05  WS-TEMP-UPD-DAY    PIC X(02).                        
+      * CNTL EFFECTIVE DATE (FOR UPDATE / INSERT)                       
+           03  WS-TEMP-DT             PIC X(10).                        
+      * COUNTER TO DETERMINE WHEN TO COMMIT                             
+           03  WS-DB-ROW-CTR          PIC 9(4)   VALUE 0.               
+      * ERROR MESSAGE TO BE WRITTEN TO Oracle REPORT TABLE              
+           03  WS-ERR-MSG             PIC X(25).                        
+                                                                        
+       01  PROGRAM-SWITCHES.                                            
+           03  WS-PROCESS-SW          PIC X      VALUE " ".             
+               88  END-OF-DATABASE               VALUE "D".             
+               88  END-OF-TRANSFILE              VALUE "T".             
+               88  TRANS-EQUAL-RESTART           VALUE "R".             
+           03  WS-TRANS-SW            PIC X      VALUE "Y".             
+               88  FIRST-TIME                    VALUE "Y".             
+               88  NOT-FIRST-TIME                VALUE "N".             
+           03  WS-OEM-SW              PIC X      VALUE " ".             
+               88  VALID-OEM                     VALUE "Y".             
+               88  NOT-VALID-OEM                 VALUE "N".             
+           03  WS-PART-SW             PIC X      VALUE " ".             
+               88  VALID-PART                    VALUE "Y".             
+               88  NOT-VALID-PART                VALUE "N".             
+               88  DUPLICATE-PART                VALUE "D".             
+           03  WS-SUPERSESSION-SW     PIC X      VALUE " ".             
+               88  SUPERSESSION-FOUND            VALUE "Y".             
+               88  NO-SUPERSESSION-FOUND         VALUE "N".             
+           03  WS-SUPERSEDING-PART-SW PIC X      VALUE " ".             
+               88  SUPERSEDING-PART              VALUE "Y".             
+               88  NOT-SUPERSEDING-PART          VALUE "N".             
+           03  WS-CEGLINE-SW          PIC X      VALUE " ".             
+               88  END-OF-CEGLINE-ROWS           VALUE "Y".             
+           03  WS-WIPLINE-SW          PIC X      VALUE " ".             
+               88  END-OF-WIPLINE-ROWS           VALUE "Y".             
+           03  WS-ALTPART-SW  PIC X      VALUE " ".                     
+               88  END-OF-ALTPART-ROWS           VALUE "Y".             
+           03  WS-RESTART-SW          PIC X      VALUE " ".             
+               88  RESTART-READ-WRITTEN          VALUE "Y".             
+               88  RESTART-NOT-FOUND             VALUE "N".  
+           03  WS-EDITORIAL-SW        PIC X      VALUE SPACE.
+               88  EDITOR-ENTRIES                VALUE "Y".  
+            
+       01  PARTS-FILE-STATUS               PIC XX.
+               88  RECORD-INSERTED              VALUE "00".
+               88  DUPLICATE-PART-RECORD        VALUE "22".
+               
+           COPY mptb001.cpy.                                            
+           COPY mptb004.cpy.                                            
+           COPY mptb005.cpy.
+           COPY mptb002.cpy.                                            
+                                            
+       77  WS-RPT-TITLE               PIC X(50)                         
+           VALUE "    O.E.M. REVERSE SUPERSESSION UPDATE REPORT     ".  
+       77  WS-RPT-TITLE-S             PIC X(50)                         
+           VALUE "O.E.M. SUPPL. REVERSE SUPERSESSION UPDATE REPORT  ".  
+                                                                        
+           EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+          
+      ***************************************************************** 
+      * SQL COMMUNICATIONS AREA                                       * 
+      ***************************************************************** 
+           COPY mptb003.cpy.                                            
+           EXEC SQL
+               INCLUDE reformat_trans.cpy                                      
+           END-EXEC.
+           EXEC SQL                                                     
+               INCLUDE SQLCA                                            
+           END-EXEC.                                                    
+                                                                        
+           EXEC SQL
+               INCLUDE part_supplier.cpy
+           END-EXEC.
+                                                                        
+           EXEC SQL
+               INCLUDE part_supplier_country.cpy
+           END-EXEC.
+                                                                        
+           EXEC SQL                                                     
+               INCLUDE part.cpy
+           END-EXEC.                                                    
+                                                                        
+           EXEC SQL                                                     
+               INCLUDE supersession.cpy
+           END-EXEC.                                                    
+                                                                        
+           EXEC SQL                                                     
+               INCLUDE service_category_detail.cpy        
+           END-EXEC.                                                    
+
+           EXEC SQL                                                     
+               INCLUDE detail_part_xref.cpy      
+           END-EXEC.    
+
+           EXEC SQL     
+               INCLUDE part_altpart_xref.cpy
+           END-EXEC.
+                                                                        
+           EXEC SQL                                                     
+               INCLUDE acq_batch_restart.cpy
+           END-EXEC.                                                    
+                                                                        
+           EXEC SQL                                                     
+               INCLUDE acq_batch_reports.cpy      
+           END-EXEC. 
+             
+           EXEC SQL                                                     
+               INCLUDE procedures_ws.cpy      
+           END-EXEC.                                                    
+
+       01  WS-CNTL-EFF-DT             PIC X(10).
+       
+           EXEC SQL END   DECLARE SECTION END-EXEC.
+                                                                        
+      ***************************************************************** 
+       01  END-WORKING        PIC X(08) VALUE "END".
+      *LINKAGE SECTION.                          
+      *    and Connect to Oracle RDBMS                                  
+      ***************************************************************** 
+ 
+       PROCEDURE DIVISION.                     
+ 
+           CALL "mfconnect" USING  PGMNAME.    
+ 
+      ***************************************************************   
+      * MAIN-CONTROL:                                               *   
+      *     1. CONTROL PROGRAM PROCESSES.                           *   
+      *     2. DETERMINE END-OF-JOB.                                *   
+      ***************************************************************   
+       MAIN-CONTROL.                                                    
+           MOVE "MAIN-CONTROL.            " TO WS-PARAGRAPH.       
+           MOVE "MAIN-CONTROL" TO WS-PARAGRAPH.                         
+                                                                        
+           MOVE "MPTZ013"      TO WS-PGMNAME WS-PROGRAM-NAME.
+                                                                        
+      *    READY TRACE.
+
+           OPEN INPUT CONTROL-PARMS                                     
+                      TRANS-FILE                                        
+               OUTPUT CONTROL-REPORT
+                      PARTS-FILE.                                   
+                                                                        
+           PERFORM A0000-PROCESS-PARMS  THRU A0000-EXIT.                 
+                                                                        
+           PERFORM B0000-READ-TRANS THRU B0000-EXIT                     
+             UNTIL END-OF-TRANSFILE.                                    
+                                                                        
+           PERFORM G2000-CONTROL-REPORT THRU G2000-EXIT.                
+                                                                        
+           PERFORM Z1000-CLOSE-FILES    THRU Z1000-EXIT.                   
+            
+           IF RESTART-READ-WRITTEN                                    
+           THEN
+               PERFORM R8300-DELETE-RESTART THRU R8300-EXIT.            
+     
+           EXEC SQL
+            COMMIT WORK
+            RELEASE
+           END-EXEC.
+                                                                        
+           GOBACK.                                                      
+                                                                        
+       MAIN-EXIT. EXIT.                                                 
+                                                                        
+      ***************************************************************   
+      * A0000-PROCESS-PARMS:                                        *   
+      *     1. VERIFY CONTROL PARMS PASSED IN EXECUTE OF PROGRAM    *   
+      *     2. ACCEPT SYSTEM DATE AND TIME                          *   
+      *     3. MOVE THIS INFORMATION TO HEADINGS                    *   
+      *     4. CHECK IF RESTART RUN                                 *   
+      ***************************************************************   
+       A0000-PROCESS-PARMS.                                             
+           MOVE "A0000-PROCESS-PARMS" TO WS-PARAGRAPH.                  
+                                                                        
+           READ CONTROL-PARMS INTO WS-CNTL-PARM-REC                     
+             AT END                                                     
+                DISPLAY WS-ERR-MSG-CP1                                  
+                MOVE V-MISSING-CNTL-PARM TO WS-ABEND-CODE               
+                PERFORM Y2000-ABEND THRU Y2000-EXIT.                    
+                                                                        
+           IF CNTL-OEM-NUM NOT NUMERIC                                  
+             DISPLAY WS-ERR-MSG-CP2                                     
+             MOVE V-INVALID-CNTL-PARM TO WS-ABEND-CODE                  
+             PERFORM Y2000-ABEND THRU Y2000-EXIT.                       
+                                                                               
+           MOVE CNTL-OEM-NUM TO WS-SEL-OEM-NUM.
+           MOVE CNTL-REGN-CD TO WS-REGION, 
+                                  WS-SEL-REGN-CD.                    
+           PERFORM R1000-READ-OEM THRU R1000-EXIT.                      
+           IF NOT-VALID-OEM                                             
+             DISPLAY WS-ERR-MSG-CP2 
+             DISPLAY WS-SEL-OEM-NUM, " ",
+                     WS-SEL-REGN-CD                                    
+             MOVE V-INVALID-CNTL-PARM TO WS-ABEND-CODE                  
+             PERFORM Y2000-ABEND THRU Y2000-EXIT. 
+
+           MOVE WS-SEL-OEM-NUM            TO HDG-OEM-NUM.                  
+           MOVE WS-PART-SUPPLIER-NAME-RGN TO HDG-OEM-NM.                       
+           MOVE WS-PGMNAME                TO HDG-PGMNAME, 
+                                             EOR-PGMNAME.         
+                                                                       
+           MOVE CNTL-EFF-MONTH   TO WS-TEMP-EFF-MONTH.                 
+           MOVE CNTL-EFF-DAY     TO WS-TEMP-EFF-DAY.                   
+           MOVE CNTL-EFF-YEAR    TO WS-TEMP-EFF-YEAR.                  
+            
+           IF WS-TEMP-EFF-DT NOT NUMERIC OR WS-TEMP-EFF-DT <= ZEROES    
+             DISPLAY WS-ERR-MSG-CP3                                     
+             MOVE V-INVALID-DATE TO WS-ABEND-CODE                       
+             PERFORM Y2000-ABEND THRU Y2000-EXIT.                       
+                                                                        
+           ACCEPT WS-CURRENT-DT FROM DATE.                              
+           MOVE WS-CD-MONTH  TO WS-FD-MONTH.                            
+           MOVE WS-CD-DAY    TO WS-FD-DAY.                              
+           MOVE WS-CD-YEAR   TO WS-FD-YEAR.                             
+           MOVE WS-FORMAT-DT TO HDG-DT.                                 
+                                                                        
+           ACCEPT WS-CURRENT-TM FROM TIME.                              
+           MOVE WS-CT-HOUR   TO WS-FT-HOUR.                             
+           MOVE WS-CT-MINUTE TO WS-FT-MINUTE.                           
+           MOVE WS-CT-SECOND TO WS-FT-SECOND.                           
+           MOVE WS-FORMAT-TM TO HDG-TM.                                 
+                                                                        
+           IF OEM-TAPE-RUN                                              
+             MOVE WS-RPT-TITLE TO HDG-TITLE                             
+           ELSE                                                         
+             MOVE WS-RPT-TITLE-S TO HDG-TITLE.                          
+              
+           MOVE CNTL-EFF-DT        TO HDG-EFF-DT, 
+                                      WS-TEMP-DT,
+                                      WS-CNTL-EFF-DT.           
+           IF CNTL-NAGS-TYP = "N/A     "                                
+             NEXT SENTENCE                                              
+           ELSE                                                         
+             MOVE CNTL-NAGS-TYP TO HDG-NAGS-TYP.                        
+                                                                        
+           PERFORM A1000-CHECK-RESTART THRU A1000-EXIT.                 
+                                                                        
+       A0000-EXIT. EXIT.                                                
+      
+      ***************************************************************   
+      * A1000-CHECK-RESTART:                                        *   
+      *     1. CHECK IF RESTART ROWS FOUND INDICATING RESTART RUN.  *   
+      *     2. IF SO, VALIDATE AGAINST PARM EFFECTIVE DATE          *   
+      ***************************************************************   
+       A1000-CHECK-RESTART.                                             
+           MOVE "A1000-CHECK-RESTART" TO WS-PARAGRAPH.                  
+                                                                        
+           PERFORM R8000-READ-RESTART THRU R8000-EXIT.                  
+           IF RESTART-READ-WRITTEN                                      
+             IF CNTL-EFF-DT NOT EQUAL RS-EFF-DT                         
+               DISPLAY WS-ERR-MSG-CP5                                   
+               DISPLAY "CNTL-EFF-DT = " CNTL-EFF-DT
+               DISPLAY "RS-EFF-DT   = " RS-EFF-DT
+               MOVE V-PARM-DOESNT-MATCH-RESTART TO WS-ABEND-CODE        
+               PERFORM Y2000-ABEND THRU Y2000-EXIT                      
+             ELSE                                                       
+               PERFORM A2000-RESTART-TRANS THRU A2000-EXIT              
+                 UNTIL TRANS-EQUAL-RESTART OR END-OF-TRANSFILE          
+           ELSE                                                         
+               PERFORM E1000-INIT-RESTART-WSTG THRU E1000-EXIT.         
+                                                                        
+       A1000-EXIT. EXIT.                                                
+                                                                        
+      ***************************************************************   
+      * A2000-RESTART-TRANS:                                        *   
+      *     1. READ TRANS FILE TO POINT OF RESTART FILE             *   
+      ***************************************************************   
+       A2000-RESTART-TRANS.                                             
+           MOVE "A2000-RESTART-TRANS" TO WS-PARAGRAPH.                  
+                                                                        
+           READ TRANS-FILE INTO WS-TRANS-REC                            
+             AT END                                                     
+               DISPLAY WS-ERR-MSG-TR5                                   
+               MOVE V-EMPTY-INPUT-FILE TO WS-ABEND-CODE                 
+               PERFORM Y2000-ABEND THRU Y2000-EXIT.                     
+                                                                        
+           IF TR-TRANS-CODE NOT EQUAL "R"                               
+             DISPLAY WS-ERR-MSG-TR1                                     
+             MOVE V-INVALID-INPUT-FILE TO WS-ABEND-CODE                 
+             PERFORM Y2000-ABEND THRU Y2000-EXIT.                       
+                                                                        
+           IF TR-OLD-PART-NUM EQUAL RS-TR-OLD-PART-NUM AND              
+              TR-NEW-PART-NUM EQUAL RS-TR-NEW-PART-NUM                  
+             MOVE "R" TO WS-PROCESS-SW.                                 
+                                                                        
+       A2000-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * B0000-READ-TRANS:                                           *   
+      *     1. READ TRANSACTION FILE                                *   
+      *     2. IF TRANS FILE EMPTY OR MISSING, PREPARE FOR ABEND.   *   
+      *     3. VERIFY CORRECT TRANSACTION FILE FOR THIS RUN.        *   
+      *     4. PROCESS REVERSE-SUPERSESSION TRANSACTION             *   
+      ***************************************************************   
+       B0000-READ-TRANS.                                                
+           MOVE "B0000-READ-TRANS" TO WS-PARAGRAPH.                     
+                                                                        
+           READ TRANS-FILE INTO WS-TRANS-REC                            
+             AT END                                                     
+                MOVE "T" TO WS-PROCESS-SW.                              
+                                                                        
+           IF END-OF-TRANSFILE                                          
+               GO TO B0000-EXIT                                         
+           ELSE                                                         
+               ADD 1 TO RS-TRANS-READ-CTR.
+                                                                        
+           IF TR-TRANS-CODE NOT EQUAL "R"                               
+             DISPLAY WS-ERR-MSG-TR1                                     
+             MOVE V-INVALID-INPUT-FILE TO WS-ABEND-CODE                 
+             PERFORM Y2000-ABEND THRU Y2000-EXIT.                       
+                                                                        
+           PERFORM C0000-REVERSE-SUPER-PROCESS THRU C0000-EXIT.         
+                                                                        
+       B0000-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * C0000-REVERSE-SUPER-PROCESS:                                *   
+      *     1. DELETE THE SUPERSESSION FROM HISTORY TABLE, IF NOT   *   
+      *        FOUND, WRITE TRANS INFO TO Oracle REPORT TABLE       *
+      *     2. IF SUPERSESSION EXISTS, PROCESS THE REVERSAL         *   
+      *     3. GET ASSOCIATED LINE COUNTS (FOR REPORTING)           *   
+      *     4. DETERMINE IF TIME TO COMMIT AND IF SO, PERFORM RTN.  *   
+      ***************************************************************   
+       C0000-REVERSE-SUPER-PROCESS.                                     
+           MOVE "C0000-REVERSE-SUPER-PROCESS" TO WS-PARAGRAPH.          
+              
+           PERFORM R3300-DELETE-SUPERSESSION THRU R3300-EXIT.
+           IF NO-SUPERSESSION-FOUND                                     
+             MOVE WS-ERR-MSG-TR14 TO WS-ERR-MSG                         
+             PERFORM G3000-ERROR-ROUTINE THRU G3000-EXIT                
+             GO TO C0000-COMMIT-CHECK.
+             
+           ADD 1 TO RS-PROC-CTR.
+                 
+      * CHECK FOR DUPLICATE 'PART-TO-BE-REVERSED'(TR-NEW-PART-NUM).
+      * PROCESS THE FIRST INSTANCE IN A SERIES OF DUPLICATES,
+      * BYPASS REVERSING THE REST OF THE DUPLICATES. THE FIRST
+      * TRANSACTION'S TR-OLD-PART-NUM BECOMES THE SUPERSEDING PART.
+             PERFORM R6000-DUPLICATE-PART-CHECK THRU R6000-EXIT.
+             IF DUPLICATE-PART-RECORD
+                MOVE '00' TO PARTS-FILE-STATUS
+                GO TO C0000-COMMIT-CHECK.                                  
+                                                                        
+      * IF TR-NEW-PART-NUM (PART-TO-BE-REVERSED) DOESN'T EXIST, 
+      * DELETE THE ORIGINAL SUPERSESSION HISTORY REC.  
+      * (THE PART-TO-BE-REVERSED IS NO LONGER IN THE PARTS/DETAIL/ALTP 
+      * TABLES, THERE IS NOTHING TO REVERSE.)     
+           MOVE SPACE TO WS-PART-SW.
+           MOVE TR-NEW-PART-NUM TO WS-PART-NUMBER-IN.
+           PERFORM R2000-READ-PART THRU R2000-EXIT.
+                            
+           IF NOT-VALID-PART                                            
+             GO TO C0000-COMMIT-CHECK.                                  
+                                                                        
+      * IF TR-NEW-PART-NUM(PART-TO-BE-REVERSED) DOES EXIST, 
+      * PERFORM THE REVERSAL
+           PERFORM C2000-UPDATE THRU C2000-EXIT.                        
+           ADD 1 TO RS-NEW-PRT-DB-CTR.                                  
+                                                                        
+       C0000-COMMIT-CHECK.                                              
+           MOVE "C0000-COMMIT-CHECK.      " TO WS-PARAGRAPH.       
+        
+           IF WS-DB-ROW-CTR > COMMIT-LIMIT                              
+               PERFORM F0000-COMMIT THRU F0000-EXIT.                    
+                                                                        
+       C0000-EXIT. EXIT.                                                
+
+      ***************************************************************
+      * C2000-UPDATE:                                               *
+      *     1. DELETE EXISTING SUPERSESSION ROW.                    *
+      *     2. INSERT "OLD" PART ROW (ORIGINAL PART)                *
+      *     3. CHECK REGION PROCESSING                              *
+      *                                                             *
+      *        IF US RUN:                                           *
+      *          A) UPDATE ANY ASSOC. CEG OR WIP LINE ROW(S)        *
+      *                                                             *
+      *        IF CAN RUN:                                          *
+      *          A) UPDATE ANY ASSOC. CEG LINE ROW(S)               *
+      *                                                             *
+      *     4. INSERT ALTPART ROW(S) (USING NEW ALT PART ROW        *
+      *        INFO). IF OLD ALTPART ROW ALREADY EXISTS,            *
+      *        CONTINUE ON                                          *
+      *     5. DELETE ALTPART ROW(S) ASSOCIATED TO "NEW" PART       *
+      *     6. DELETE NEW PART ROW (AND ALL ASSOC. TABLE ROWS       *
+      *        VIA REFERENTIAL RULES)                               *
+      *-------------------------------------------------------------*
+      * NEW REVERSE SUPERSESSION LOGIC:                             *
+      *                                                             *
+      * DELETE EXISTING SUPERSESSION ROW.                           *
+      *                                                             *
+      * DETERMINE IF THERE ARE ANY SERVICE LINES ASSOCIATED TO THE  *
+      * REVERSED PART, THAT HAVE NOT BEEN SUPERSEDED BY BATCH       *
+      * PROCESSING.                                                 *
+      * THESE ENTRIES EXIST AS ORIGINALLY ENTERED BY AN EDITOR.     *
+      *                                                             *
+      * IF THERE ARE ANY LINES NOT UPDATED BY BATCH PROCESSING:     *
+      * 1. INSERT THE SUPERSEDING PART BACK INTO THE DATABASE       *
+      * 2. UPDATE THE CURRENT DETAIL_PART_XREF PART-SKEY TO EQUAL   *
+      *    THE SUPERSEDING PART PART-SKEY WHERE THE SUPERSESSION-   *
+      *    MOD-FLAG = 'Y'.                                          *
+      * 3. UPDATE THE CURRENT PART-ALTPART-XREF PART-SKEY TO EQUAL  *
+      *    THE SUPERSEDING PART-SKEY.                               *
+      *                                                             *
+      * IF ALL OF THE ASSOCIATED LINES HAVE BEEN UPDATED BY BATCH   * 
+      * PROCESSING:                                                 *
+      * 1. CHECK IF OLD PART ALREADY EXISTS;                        *
+      *    IF IT DOES:                                              *
+      *    - USE THE SKEY OF THE OLD PART TO UPDATE THE DETAIL      *
+      *      XREF                                                   *
+      *    - REMOVE THE NEW PART                                    *
+      *    IF IT DOESN'T:                                           *
+      *    - DELETE THE SUPERSEDING PART                            *
+      *    - UPDATE THE CURRENT PART ROW PART-SKEY WITH THE         *
+      *      SUPERSEDING PART NUMBER AND NULL/ZERO DATA.            *
+      *                                                             *
+      ***************************************************************   
+       C2000-UPDATE.                                                    
+           MOVE "C2000-UPDATE" TO WS-PARAGRAPH.                         
+                                                                        
+           PERFORM R4220-SET-EDITOR-ENTRY-FLAG THRU R4220-EXIT.
+           IF EDITOR-ENTRIES
+              PERFORM R2100-INSERT-SUPERSEDING-PART THRU R2100-EXIT
+              PERFORM R4100-SUPER-SKEY-UPDATE THRU R4100-EXIT
+              GO TO C2000-EXIT.
+                 
+           MOVE TR-OLD-PART-NUM TO WS-PART-NUMBER-IN.
+           MOVE SPACE TO WS-PART-SW. 
+           PERFORM R2000-READ-PART THRU R2000-EXIT.
+           IF VALID-PART
+             PERFORM R4100-SUPER-SKEY-UPDATE THRU R4100-EXIT 
+             PERFORM R7400-UPDATE-ALTPART-XREF THRU R7400-EXIT
+             MOVE TR-NEW-PART-NUM TO WS-SUPERSEDING-PART
+             PERFORM R2300-DELETE-SUPERSEDING-PART THRU R2300-EXIT 
+           ELSE                                                               
+             PERFORM R4150-PART-SKEY-UPDATE THRU R4150-EXIT. 
+                 
+       C2000-EXIT. EXIT.                                                
+                                                                        
+      ***************************************************************   
+      * E1000-INIT-RESTART-WSTG                                     *   
+      *     1. INITIALIZE WORKING STORAGE RESTART AREAS             *   
+      ***************************************************************   
+       E1000-INIT-RESTART-WSTG.                                         
+            MOVE "E1000-INIT-RESTART-WSTG" TO WS-PARAGRAPH.              
+                                                                        
+           INITIALIZE RESTART-RECORD                                    
+                      REPLACING ALPHANUMERIC DATA BY SPACES             
+                                NUMERIC      DATA BY ZEROES.            
+                                                                        
+       E1000-EXIT. EXIT.                                                
+                                                                        
+      ***************************************************************   
+      * F0000-COMMIT:                                               *   
+      *     1. "UPDATE" RESTART TABLE                               *   
+      *        THE FIRST TIME THAT A COMMIT IS PERFORMED, THE       *   
+      *        RESTART ROWS ARE INSERTED. SUBSEQUENT COMMITS INVOKE *   
+      *        AN UPDATE TO THE RESTART TABLE. AT THE END OF THE    *   
+      *        RUN, THE RESTART ROWS ARE DELETED.                   *   
+      *     2. COMMIT Oracle TABLE ACTIVITY                         *
+      ***************************************************************   
+       F0000-COMMIT.                                                    
+           MOVE "F0000-COMMIT" TO WS-PARAGRAPH.                         
+                                                                        
+           IF RESTART-READ-WRITTEN                                    
+               PERFORM F1000-MOVE-RESTART-INFO THRU F1000-EXIT          
+               PERFORM R8200-UPDATE-RESTART    THRU R8200-EXIT             
+           ELSE                                                       
+               PERFORM F1000-MOVE-RESTART-INFO THRU F1000-EXIT          
+               PERFORM R8100-INSERT-RESTART    THRU R8100-EXIT.            
+                                                                        
+           EXEC SQL                                                     
+             COMMIT WORK                                              
+           END-EXEC.                                                    
+                                                                        
+           MOVE 0 TO WS-DB-ROW-CTR.                                     
+                                                                        
+       F0000-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * F1000-MOVE-RESTART-INFO:                                    *   
+      *     1. MOVE INFORMATION TO RESTART RECORD                   *   
+      ***************************************************************   
+       F1000-MOVE-RESTART-INFO.                                         
+           MOVE "F1000-MOVE-RESTART-INFO" TO WS-PARAGRAPH.              
+    ***note part num not used in restart processing & reverse logic chgd
+    *** deleted part num from restart data
+           MOVE CNTL-EFF-DT         TO RS-EFF-DT.                      
+           MOVE TR-OLD-PART-NUM     TO RS-TR-OLD-PART-NUM.             
+           MOVE TR-NEW-PART-NUM     TO RS-TR-NEW-PART-NUM.             
+           MOVE RESTART-RECORD      TO WS-RESTART-DATA.
+                                                                        
+       F1000-EXIT. EXIT. 
+       
+      ***************************************************************
+      * G2000-CONTROL-REPORT:                                       *
+      *     1. WRITE CONTROL REPORT.                                *
+      *     2. BUILD AND INSERT CONTROL REPORT ROWS W/I Oracle TABLE.*
+      ***************************************************************
+       G2000-CONTROL-REPORT.                                            
+        MOVE "G2000-CONTROL-REPORT" TO WS-PARAGRAPH.                 
+                                                                        
+      * BUILD AND WRITE SUPERSESSION CONTROL REPORT HEADINGS AND        
+      * TRANS ACTIVITY TOTAL LINE                                       
+           MOVE 1 TO HDG-PAGE.                                          
+           MOVE 1 TO HDG-RPTNUM, EOR-RPTNUM.                            
+           WRITE REPORT-LINE FROM HEADING1 AFTER PAGE.                  
+           WRITE REPORT-LINE FROM HEADING2 AFTER 1 LINE.                
+           WRITE REPORT-LINE FROM HEADING3 AFTER 2 LINE.                
+           WRITE REPORT-LINE FROM SUBHEAD-04-1A AFTER 5 LINES.          
+           WRITE REPORT-LINE FROM SUBHEAD-04-1B AFTER 1 LINE.           
+           WRITE REPORT-LINE FROM SUBHEAD-04-2 AFTER 1 LINE.            
+           MOVE REPORT-RTRANS-DESC  TO RPT04-TRANS-DESC.                
+           MOVE RS-TRANS-READ-CTR   TO RPT04-TOTAL-READ.                
+           MOVE RS-PROC-CTR         TO RPT04-PROC-AMT.                  
+           MOVE RS-NOT-PROC-CTR     TO RPT04-NOT-PROC-AMT.              
+           MOVE RS-PRIOR-SUPE-CTR   TO RPT04-PRIOR-SUPE-AMT.            
+           MOVE RS-ALREADY-SUPE-CTR TO RPT04-ALREADY-SUPE-AMT.          
+           MOVE RS-PART-NOT-DB-CTR  TO RPT04-PART-NOT-DB-AMT.           
+           WRITE REPORT-LINE FROM DETAIL-04A AFTER 1 LINE.              
+                                                                        
+      * BUILD AND INSERT SUPER. TRANS CONTROL REPORT LINE IN Oracle TBL 
+           MOVE "MPTZ007-04" TO REPORT-NUMBER.                                
+           MOVE SPACES       TO REPORT-SORT-CRITERIA.                   
+           MOVE "R"          TO SRT4-TRANS-TYPE.                        
+           MOVE "A"          TO SRT4-REC-TYPE.                          
+           MOVE 1            TO SRT4-REC-TYPE-CTR.                      
+           MOVE DETAIL-04A   TO REPORT-DATA.                               
+           PERFORM R9100-INSERT-REPORT THRU R9100-EXIT.                 
+                                                                        
+      * BUILD AND WRITE DATABASE CONTROL SECTION HEADINGS AND           
+      * DATABASE PART ACTIVITY LINE.                                    
+           WRITE REPORT-LINE FROM SUBHEAD-04-3 AFTER 5 LINES.           
+           WRITE REPORT-LINE FROM SUBHEAD-04-4 AFTER 1 LINE.            
+           WRITE REPORT-LINE FROM SUBHEAD-04-5 AFTER 1 LINE.            
+           MOVE REPORT-PART-DESC TO RPT04-DATABASE.                  
+           MOVE RS-PART-READ-CTR    TO RPT04-READ-AMT.                  
+           MOVE RS-PART-INSRT-CTR   TO RPT04-INSRT-AMT.                 
+           MOVE RS-PART-UPDT-CTR    TO RPT04-UPDT-AMT.                  
+           MOVE RS-PART-DLET-CTR    TO RPT04-DLET-AMT.                  
+           ADD RS-PART-READ-CTR, RS-PART-INSRT-CTR,                     
+               RS-PART-UPDT-CTR, RS-PART-DLET-CTR                       
+                  GIVING RPT04-TOTAL-AMT.                               
+           WRITE REPORT-LINE FROM DETAIL-04B AFTER 1 LINE.              
+                                                                        
+      * BUILD AND INSERT DATABASE PART ACTIVITY LINE IN Oracle TABLE    
+           MOVE "B"         TO SRT4-REC-TYPE.                           
+           MOVE 1           TO SRT4-REC-TYPE-CTR.                       
+           MOVE DETAIL-04B  TO REPORT-DATA.                                
+           PERFORM R9100-INSERT-REPORT THRU R9100-EXIT.                 
+                                                                        
+      * BUILD AND WRITE SUPERSESSION ACTIVITY LINE                      
+           MOVE REPORT-SUPERSESSION-DESC TO RPT04-DATABASE.                  
+           MOVE RS-SUPER-READ-CTR   TO RPT04-READ-AMT.                  
+           MOVE ZEROES              TO RPT04-INSRT-AMT.                 
+           MOVE ZEROES              TO RPT04-UPDT-AMT.                  
+           MOVE RS-SUPER-DLET-CTR   TO RPT04-DLET-AMT.                  
+           ADD RS-SUPER-READ-CTR, RS-SUPER-DLET-CTR                     
+               GIVING RPT04-TOTAL-AMT.                                  
+           WRITE REPORT-LINE FROM DETAIL-04B AFTER 1 LINE.              
+                                                                        
+      * BUILD AND INSERT DATABASE SUPERSESSION ACTIVITY LINE IN Oracle  
+      * table
+           MOVE 2            TO SRT4-REC-TYPE-CTR.                      
+           MOVE DETAIL-04B   TO REPORT-DATA.                               
+           PERFORM R9100-INSERT-REPORT THRU R9100-EXIT.                 
+                                                                        
+      * BUILD AND WRITE CEG LINES ACTIVITY LINE                         
+           MOVE REPORT-PROD-DESC TO RPT04-DATABASE.                  
+           MOVE RS-CEGLN-READ-CTR   TO RPT04-READ-AMT.                  
+           MOVE ZEROES              TO RPT04-INSRT-AMT.                 
+           MOVE RS-CEGLN-UPDT-CTR   TO RPT04-UPDT-AMT.                  
+           MOVE ZEROES              TO RPT04-DLET-AMT.                  
+           ADD RS-CEGLN-READ-CTR, RS-CEGLN-UPDT-CTR                     
+               GIVING RPT04-TOTAL-AMT.                                  
+           WRITE REPORT-LINE FROM DETAIL-04B AFTER 1 LINE.              
+                                                                        
+      * BUILD AND INSERT DATABASE CEG LINES ACTIVITY LINE IN Oracle TBL 
+           MOVE 3            TO SRT4-REC-TYPE-CTR.                      
+           MOVE DETAIL-04B   TO REPORT-DATA.                               
+           PERFORM R9100-INSERT-REPORT THRU R9100-EXIT.                 
+                                                                        
+      * BUILD AND WRITE WIP ACTIVITY LINE                         
+           MOVE REPORT-WIP-DESC TO RPT04-DATABASE.                  
+           MOVE RS-WIPLN-READ-CTR    TO RPT04-READ-AMT.                  
+           MOVE ZEROES               TO RPT04-INSRT-AMT.                 
+           MOVE RS-WIPLN-UPDT-CTR    TO RPT04-UPDT-AMT.                  
+           MOVE ZEROES               TO RPT04-DLET-AMT.                  
+           ADD RS-WIPLN-READ-CTR, RS-WIPLN-UPDT-CTR                     
+               GIVING RPT04-TOTAL-AMT.                                  
+           WRITE REPORT-LINE FROM DETAIL-04B AFTER 1 LINE.              
+                                                                        
+      * BUILD AND INSERT DATABASE WIP LINES ACTIVITY LINE IN Oracle TBL 
+           MOVE 4             TO SRT4-REC-TYPE-CTR.                     
+           MOVE DETAIL-04B    TO REPORT-DATA.                              
+           PERFORM R9100-INSERT-REPORT THRU R9100-EXIT.                 
+                                                                        
+      * BUILD AND WRITE ALTPARTS ACTIVITY LINE                          
+           MOVE REPORT-PART-ALTPART-XREF-DESC TO RPT04-DATABASE.
+           MOVE RS-ALTPART-READ-CTR TO RPT04-READ-AMT.                  
+           MOVE ZEROS               TO RPT04-INSRT-AMT.                
+           MOVE RS-ALTPART-UPDT-CTR TO RPT04-UPDT-AMT.                  
+           MOVE RS-ALTPART-DLET-CTR TO RPT04-DLET-AMT.                  
+           ADD RS-ALTPART-READ-CTR, RS-ALTPART-UPDT-CTR,               
+               RS-ALTPART-DLET-CTR GIVING RPT04-TOTAL-AMT.              
+           WRITE REPORT-LINE FROM DETAIL-04B AFTER 1 LINE.              
+                                                                        
+      * BUILD AND INSERT DATABASE ALTPARTS ACTIVITY LINE IN Oracle TBL  
+           MOVE 6            TO SRT4-REC-TYPE-CTR.                      
+           MOVE DETAIL-04B   TO REPORT-DATA.                               
+           PERFORM R9100-INSERT-REPORT THRU R9100-EXIT.                 
+                                                                        
+      * BUILD AND WRITE ERROR REPORTS ACTIVITY LINE                     
+           MOVE REPORT-ACQ-BATCH-REPORTSE-DESC TO RPT04-DATABASE.
+           MOVE ZEROES               TO RPT04-READ-AMT.                 
+           MOVE RS-ERR-RPT-INSRT-CTR TO RPT04-INSRT-AMT.                
+           MOVE ZEROES               TO RPT04-UPDT-AMT.                 
+           MOVE ZEROES               TO RPT04-DLET-AMT.                 
+           MOVE RS-ERR-RPT-INSRT-CTR TO RPT04-TOTAL-AMT.                
+           WRITE REPORT-LINE FROM DETAIL-04B AFTER 1 LINE.              
+                                                                        
+      * BUILD AND INSERT DATABASE ERR RPTS ACTIVITY LINE IN Oracle TBL  
+           MOVE 7           TO SRT4-REC-TYPE-CTR.                       
+           MOVE DETAIL-04B  TO REPORT-DATA.                                
+           PERFORM R9100-INSERT-REPORT THRU R9100-EXIT.                 
+                                                                        
+      * BUILD AND WRITE TRANS REPORTS ACTIVITY LINE                     
+           MOVE REPORT-ACQ-BATCH-REPORTST-DESC TO RPT04-DATABASE.
+           MOVE ZEROES               TO RPT04-READ-AMT.                 
+           MOVE RS-TRN-RPT-INSRT-CTR TO RPT04-INSRT-AMT.                
+           MOVE ZEROES               TO RPT04-UPDT-AMT.                 
+           MOVE ZEROES               TO RPT04-DLET-AMT.                 
+           MOVE RS-TRN-RPT-INSRT-CTR TO RPT04-TOTAL-AMT.                
+           WRITE REPORT-LINE FROM DETAIL-04B AFTER 1 LINE.              
+                                                                        
+      * BUILD AND INSERT DATABASE TRANS RPTS ACTIVITY LINE IN Oracle TBL
+           MOVE 8               TO SRT4-REC-TYPE-CTR.                        
+           MOVE DETAIL-04B      TO REPORT-DATA.                                 
+           PERFORM R9100-INSERT-REPORT THRU R9100-EXIT.                 
+                                                                        
+      * WRITE END-OF-REPORT PAGE                                        
+           MOVE 2 TO HDG-PAGE.                                          
+           WRITE REPORT-LINE FROM HEADING1 AFTER PAGE.                  
+           WRITE REPORT-LINE FROM HEADING2 AFTER 1 LINE.                
+           WRITE REPORT-LINE FROM HEADING3 AFTER 2 LINES.               
+           WRITE REPORT-LINE FROM EOR-NOTE AFTER 15 LINES.              
+                                                                        
+      * BUILD & INSERT NEWLY SUPER UPDATE ACTIVITY LINE TO Oracle RPT   
+      * table
+           MOVE "S"             TO SRT4-TRANS-TYPE.                     
+           MOVE "C"             TO SRT4-REC-TYPE.                       
+           MOVE 6               TO SRT4-REC-TYPE-CTR.                   
+           MOVE SUPER-ACTVY-6   TO RPT04-UPDT-ACTVY.                    
+           MOVE RS-NEW-CEG-PCTR TO RPT04-CEG-PRT-CTR.                   
+           MOVE RS-NEW-CEG-LCTR TO RPT04-CEG-LN-CTR.                    
+           MOVE RS-NEW-WIP-PCTR TO RPT04-WIP-PRT-CTR.                   
+           MOVE RS-NEW-WIP-LCTR TO RPT04-WIP-LN-CTR.                    
+           MOVE RS-NEW-PRT-DB-CTR TO RPT04-PRT-DB-CTR.                  
+           MOVE DETAIL-04C      TO REPORT-DATA.                            
+           PERFORM R9100-INSERT-REPORT THRU R9100-EXIT. 
+                           
+       G2000-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * G3000-ERROR-ROUTINE:                                        *   
+      *     THIS ROUTINE ADDS TO THE APPROPRIATE COUNTER AND WRITES *   
+      *     TO THE Oracle ERROR REPORT TABLE.                       *
+      ***************************************************************   
+       G3000-ERROR-ROUTINE.                                             
+           MOVE "G3000-ERROR-ROUTINE" TO WS-PARAGRAPH.                  
+                                                                        
+           ADD 1 TO RS-NOT-PROC-CTR.                                    
+           MOVE "MPTZ007-01"     TO REPORT-NUMBER.                            
+           MOVE SPACES TO REPORT-SORT-CRITERIA.                         
+           MOVE "R"               TO SRT1-TRANS-TYPE.                   
+           MOVE TR-OLD-PART-NUM   TO SRT1-PART-NUM-1.                   
+           MOVE TR-NEW-PART-NUM   TO SRT1-PART-NUM-2.                   
+                                                                        
+           MOVE "R"               TO RPT01-TRANS.                       
+           MOVE TR-OLD-PART-NUM   TO RPT01-OLD-PART-NUM.                
+           MOVE TR-NEW-PART-NUM   TO RPT01-NEW-PART-NUM.                
+           MOVE WS-ERR-MSG        TO RPT01-ERR-MSG.                     
+           MOVE DETAIL-01         TO REPORT-DATA.                          
+           PERFORM R9100-INSERT-REPORT THRU R9100-EXIT.                 
+           ADD 1 TO RS-ERR-RPT-INSRT-CTR.                               
+
+       G3000-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * R1000-READ-OEM:                                             *   
+      *     1. READ PART-SUPPLIER-COUNTRY & PART-SUPPLIER TABLES    *   
+      ***************************************************************   
+       R1000-READ-OEM.                                                  
+           MOVE "R1000-READ-OEM"        TO WS-PARAGRAPH. 
+           MOVE  WS-PARAGRAPH           TO WS-PARNAME.                      
+           MOVE "PART-SUPPLIER-COUNTRY" TO WS-TBLNAME.
+           MOVE "SELECT "               TO WS-FUNCTION. 
+           MOVE WS-REGION-LIT TO WS-REGION-LIT-X.                              
+                                                                        
+           EXEC SQL EXECUTE
+             BEGIN
+              PKG_SUPPLIER.P_PART_SUPLRCNTRY_SUPLR_SEL_01
+                              (:WS-SEL-OEM-NUM,
+                               :WS-REGION-LIT-X,
+                               :WS-SEL-REGN-CD,
+                               :WS-PART-SUPPLIER-NUMBER-OUT,
+                               :WS-PART-SUPPLIER-NAME-RGN,
+                               :WS-PART-SUPPLIER-NAME,
+                               :WS-LAST-ASSY-DATE,
+                               :WS-LAST-ASSY-IND,
+                               :WS-LAST-COMPONENT-DATE,
+                               :WS-LAST-COMPONENT-IND,
+                               :WS-LAST-SUPERSESSION-DATE,
+                               :WS-LAST-SUPER-IND,
+                               :WS-LAST-DISCONTINUED-DATE,
+                               :WS-LAST-DISC-IND,
+                               :WS-LAST-PRICE-DATE,
+                               :WS-LAST-PRICE-IND,
+                               :WS-DISCONTINUED-TRAN-FLAG,
+                               :WS-DISCONTINUED-MONTHLY-COUNT,
+                               :WS-PART-COUNT,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+           IF SQLCODE EQUAL SUCCESSFUL                                  
+             MOVE "Y" TO WS-OEM-SW                                      
+           ELSE                                                         
+            IF SQLCODE EQUAL NOT-FOUND                                  
+              MOVE "N" TO WS-OEM-SW
+            ELSE                                                        
+              DISPLAY WS-DB-ERR-MSG                                     
+              PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+                                                                        
+       R1000-EXIT. EXIT.                                                
+                                                                         
+      ***************************************************************   
+      * R2000-READ-PART:                                            *   
+      *     1. READ PART TABLE                                      *   
+      ***************************************************************   
+       R2000-READ-PART.                                             
+           MOVE "R2000-READ-PART" TO WS-PARAGRAPH. 
+           MOVE  WS-PARAGRAPH     TO WS-PARNAME.                     
+           MOVE "PART"            TO WS-TBLNAME.                                
+           MOVE "SELECT "         TO WS-FUNCTION.                               
+           EXEC SQL EXECUTE
+           BEGIN
+            PKG_PART.P_PART_SEL_01
+                (:WS-SEL-OEM-NUM,
+                 :WS-SEL-REGN-CD,
+                 :WS-PART-NUMBER-IN,
+                 :WS-PART-NUMBER-OUT,
+                 :WS-LAST-PRICE-DATE,
+                 :WS-LAST-PRICE-IND,
+                 :WS-CURRENT-PRICE,
+                 :WS-ROW-COUNT,
+                 :WS-ERROR-TEXT,
+                 :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.                      
+           IF SQLCODE EQUAL SUCCESSFUL                                  
+             MOVE "Y" TO WS-PART-SW                                     
+             ADD 1 TO RS-PART-READ-CTR                                  
+           ELSE                                                         
+            IF SQLCODE EQUAL NOT-FOUND                                  
+              MOVE "N" TO WS-PART-SW                                    
+            ELSE                                                        
+              DISPLAY WS-DB-ERR-MSG  
+              DISPLAY "BAD SELECT PART NUMBER: ", 
+                       TR-NEW-PART-NUM                  
+              PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+                                                                        
+       R2000-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * R2100-INSERT-SUPERSEDING-PART:                              *   
+      *     1. INSERT "OLD" (ORIGINAL) PART (PRICE INFO IS NULLED   *   
+      *        AND ZEROED OUT.                                      *   
+      ***************************************************************   
+       R2100-INSERT-SUPERSEDING-PART.
+           MOVE "R2100-INSERT-SUPERSEDING-PART" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH   TO WS-PARNAME.
+           MOVE "PART"          TO WS-TBLNAME.                                
+           MOVE "INSERT "       TO WS-FUNCTION.  
+           MOVE TR-OLD-PART-NUM TO WS-SUPERSEDING-PART.
+           MOVE SPACES          TO WS-PART-DESCRIPTION.
+           MOVE " "             TO WS-DISCONTINUED-DATE.
+           MOVE -1              TO WS-DISC-IND.
+           
+           EXEC SQL EXECUTE                                             
+           BEGIN
+            PKG_PART.P_PART_INS_02
+             (:WS-SEL-OEM-NUM  ,
+              :TR-OLD-PART-NUM,
+              :WS-SEL-REGN-CD ,
+              :WS-DISCONTINUED-DATE,
+              :WS-DISC-IND,
+              :WS-ROW-COUNT,
+              :WS-ERROR-TEXT,
+              :WS-SQLCODE);
+           END;                                                      
+           END-EXEC.
+           
+           MOVE WS-SQLCODE TO SQLCODE.
+           IF SQLCODE EQUAL SUCCESSFUL                                  
+             ADD 1 TO RS-PART-INSRT-CTR                                 
+             ADD 1 TO WS-DB-ROW-CTR                                     
+           ELSE                                                         
+             IF SQLCODE EQUAL DUPLICATE-ROW                           
+                 GO TO R2100-EXIT                                       
+             ELSE                                                       
+               DISPLAY WS-DB-ERR-MSG                                    
+               DISPLAY "INVALID INSERT PART NUMBER: ", 
+                          TR-OLD-PART-NUM              
+               PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+                    
+       R2100-EXIT. EXIT.                                                
+                                                             
+      ***************************************************************   
+      * R2300-DELETE-SUPERSEDING-PART                               *   
+      *      DELETE SUPERSEDING PART (IF IT EXISTS) THE SUPERSEDING *
+      *      PART DATA WILL BE USED TO UPDATE THE CURRENT PART'S    *
+      *      PART ROW. THE SKEY WILL BE REUSED CAUSING AN AUTOMATIC *
+      *      REVERSE SUPERSESSION.                                  *   
+      *      THE CURRENT PART SKEY WILL NOW POINT TO THE            *
+      *      SUPERSEDING PART'S DATA.                               *
+      ***************************************************************   
+       R2300-DELETE-SUPERSEDING-PART.
+           MOVE "R2300-DELETE-SUPERSEDING-PART" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH   TO WS-PARNAME.
+           MOVE "PART"          TO WS-TBLNAME.                                
+           MOVE "DELETE "       TO WS-FUNCTION.   
+
+           EXEC SQL EXECUTE                                             
+           BEGIN                                                     
+                 PKG_PART.P_PART_DEL_01(:WS-SEL-OEM-NUM,        
+                                       :WS-SEL-REGN-CD,  
+                                       :WS-SUPERSEDING-PART,
+                                       :WS-ROW-COUNT,
+                                       :WS-ERROR-TEXT,
+                                       :WS-SQLCODE);
+           END;                                                      
+           END-EXEC.
+                                                                        
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE EQUAL SUCCESSFUL                                  
+             ADD 1 TO RS-PART-DLET-CTR                                  
+             ADD 1 TO WS-DB-ROW-CTR                                     
+           ELSE                                                         
+             IF SQLCODE EQUAL NOT-FOUND                                 
+               NEXT SENTENCE                                            
+           ELSE                                                         
+             DISPLAY WS-DB-ERR-MSG                                      
+             DISPLAY "BAD DELETE PART NUMBER: ", 
+                      WS-SUPERSEDING-PART               
+             DISPLAY "TRANSACTION RECORD: ", 
+                      WS-SEL-OEM-NUM "  ",             
+                      WS-SEL-REGN-CD "  ",
+                      TR-OLD-PART-NUM "  ",             
+                      TR-NEW-PART-NUM              
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+                                                                        
+       R2300-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * R2400-UPDATE-PART-DATA:                                     *   
+      *     RACE II - NEW ROUTINE FOR SUPERSESSIONS                 *          
+      *  BUILD SUPERSEDING PART DATA IN CURRENT PART ROW            *   
+      *  ( REUSE OLD PART SKEY, CREATES AN AUTOMATIC SUPERSESSION ) *
+      *  THE CURRENT PART'S PART SKEY NOW POINTS TO THE SUPERSEDING *
+      *  PART DATA.                                                 *
+      ***************************************************************   
+       R2400-UPDATE-PART-DATA.                                           
+           MOVE "R2400-UPDATE-PART-DATA" TO WS-PARAGRAPH. 
+           MOVE  WS-PARAGRAPH   TO WS-PARNAME.               
+           MOVE "PART"          TO WS-TBLNAME.                                
+           MOVE "UPDATE"        TO WS-FUNCTION.  
+           MOVE TR-OLD-PART-NUM TO WS-SUPERSEDING-PART.
+           MOVE TR-NEW-PART-NUM TO WS-CURRENT-PART.
+           MOVE 0 TO WS-CEG-REVERSED-PART-COUNT.
+           MOVE 0 TO WS-WIP-REVERSED-PART-COUNT.
+           MOVE 0 TO WS-ROW-COUNT.
+           
+           EXEC SQL EXECUTE
+           BEGIN
+                         PKG_PART.P_PART_UPD_09
+                              (:WS-SEL-OEM-NUM,
+                               :WS-SEL-REGN-CD,
+                               :WS-CURRENT-PART,
+                               :WS-SUPERSEDING-PART,
+                               :WS-CEG-REVERSED-PART-COUNT,
+                               :WS-WIP-REVERSED-PART-COUNT,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+           END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+           IF SQLCODE EQUAL SUCCESSFUL                                  
+             ADD WS-ROW-COUNT TO RS-PART-UPDT-CTR                        
+             ADD WS-ROW-COUNT TO WS-DB-ROW-CTR                            
+           ELSE                                                         
+               DISPLAY "INVALID UPDATE OF OLD PART"    
+               DISPLAY "OLD PART NUM: ", TR-OLD-PART-NUM          
+               DISPLAY "NEW PART NUM: ", TR-NEW-PART-NUM
+               DISPLAY "SQLCODE: ",WS-SQLCODE
+               DISPLAY "ERROR TEXT: ", WS-ERROR-TEXT
+               PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+           IF SQLCODE EQUAL SUCCESSFUL
+              IF WS-CEG-REVERSED-PART-COUNT > 0
+                 ADD WS-CEG-REVERSED-PART-COUNT TO RS-NEW-CEG-LCTR,
+                                                   RS-CEGLN-READ-CTR,
+                                                   RS-CEGLN-UPDT-CTR
+                 ADD 1 TO RS-NEW-CEG-PCTR
+              END-IF
+              IF WS-WIP-REVERSED-PART-COUNT > 0
+                 ADD WS-WIP-REVERSED-PART-COUNT TO RS-NEW-WIP-LCTR,
+                                                   RS-WIPLN-READ-CTR,
+                                                   RS-WIPLN-UPDT-CTR
+                 ADD 1 TO RS-NEW-WIP-PCTR
+              END-IF
+           END-IF.
+
+       R2400-EXIT. EXIT.   
+ 
+      ***************************************************************   
+      * R3000-READ-SUPERSESSION:                                    *   
+      *     1. READ SUPERSESSION TABLE TO VERIFY THAT SUPERSESSION  *   
+      *        NEEDING REVERSAL EXISTS                              *   
+      ***************************************************************   
+       R3000-READ-SUPERSESSION.                                         
+           MOVE "R3000-READ-SUPERSESSION" TO WS-PARAGRAPH. 
+           MOVE  WS-PARAGRAPH   TO WS-PARNAME.             
+           MOVE "SUPERSESSION"  TO WS-TBLNAME.                                
+           MOVE "SELECT "       TO WS-FUNCTION.  
+           
+           EXEC SQL EXECUTE
+           BEGIN
+            PKG_SUPERSESSION.P_SUPERSESSION_SEL_03
+                (:WS-SEL-OEM-NUM,
+                 :WS-SEL-REGN-CD,
+                 :TR-OLD-PART-NUM,
+                 :TR-NEW-PART-NUM,
+                 :TR-SUPR-EFF-DT,
+                 :WS-SUPER-EFFECTIVE-DATE-OUT,
+                 :WS-ROW-COUNT,
+                 :WS-ERROR-TEXT,
+                 :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+           IF SQLCODE EQUAL SUCCESSFUL
+             MOVE "Y" TO WS-SUPERSESSION-SW    
+             ADD 1 TO RS-SUPER-READ-CTR                                 
+           ELSE  
+             IF SQLCODE EQUAL NOT-FOUND 
+               MOVE "N" TO WS-SUPERSESSION-SW 
+             ELSE 
+               DISPLAY WS-DB-ERR-MSG 
+               DISPLAY "BAD SELECT SUPERSESSION: PART NUMBER: ", 
+                        TR-OLD-PART-NUM 
+               DISPLAY "SUPR PART NUMBER: ", TR-NEW-PART-NUM 
+               PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+                                                                        
+       R3000-EXIT. EXIT.
+
+      ***************************************************************   
+      * R3300-DELETE-SUPERSESSION:                                  *   
+      *     1. DELETE EXISTING SUPERSESSION ROW                     *   
+      ***************************************************************   
+       R3300-DELETE-SUPERSESSION.                                       
+           MOVE "R3300-DELETE-SUPERSESSION" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH   TO WS-PARNAME.            
+           MOVE "SUPERSESSION"  TO WS-TBLNAME.                                
+           MOVE "DELETE "       TO WS-FUNCTION. 
+                                         
+           EXEC SQL EXECUTE
+           BEGIN
+            PKG_SUPERSESSION.P_SUPERSESSION_DEL_01
+                             (:WS-SEL-OEM-NUM,
+                              :WS-SEL-REGN-CD,
+                              :TR-OLD-PART-NUM,
+                              :TR-NEW-PART-NUM,
+                              :TR-SUPR-EFF-DT, 
+                              :WS-ROW-COUNT,
+                              :WS-ERROR-TEXT,
+                              :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+           IF SQLCODE EQUAL SUCCESSFUL                                  
+             ADD 1 TO RS-SUPER-DLET-CTR                                 
+             ADD 1 TO WS-DB-ROW-CTR 
+             MOVE "Y" TO WS-SUPERSESSION-SW    
+             ADD 1 TO RS-SUPER-READ-CTR                                 
+          ELSE                                    
+              IF SQLCODE EQUAL NOT-FOUND 
+                 MOVE "N" TO WS-SUPERSESSION-SW 
+              ELSE                                                         
+                 DISPLAY WS-DB-ERR-MSG                                      
+                 DISPLAY "BAD SUPERSESSION DELETE: PART NUMBER: ", 
+                      TR-OLD-PART-NUM                   
+                 DISPLAY "SUPR PART NUMBER: ", TR-NEW-PART-NUM            
+                 PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+       R3300-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      *  R4100-SUPER-SKEY-UPDATE:                                   *   
+      *     RACE II - NEW ROUTINE                                   *
+      *     REPLACES ROUTINES TO UPDATE CEGLINES                    *          
+      *     1. UPDATE DETAIL-PART-XREF PART SKEY WITH SUPERSEDING   *
+      *        PART SKEY                                            *
+      *     2. SET DETAIL-PART-XREF SUPERSESSION-MOD-FLAG TO 'Y'    *
+      *     3. UPDATE PART-ALTPART-XREF WITH SUPERSEDING PART SKEY  *
+      *************************************************************** 
+        
+       R4100-SUPER-SKEY-UPDATE.
+           MOVE "R4100-SUPER-SKEY-UPDATE" TO WS-PARAGRAPH. 
+            
+           MOVE "PR" TO WS-VERSION-TYPE.
+           PERFORM R4200-UPDATE-DX-SKEY.
+           MOVE "WP" TO WS-VERSION-TYPE.
+           PERFORM R4200-UPDATE-DX-SKEY.
+
+             
+       R4100-EXIT.   EXIT.
+       
+      ***************************************************************   
+      * R4150-PART-SKEY-UPDATE:                                     *       
+      *  RACE II - NEW ROUTINE                                      *       
+      *  REPLACES ROUTINES TO UPDATE CEGLINES                       *       
+      *  1. GET ALTERNATE PARTS IMPACT COUNT FOR THE NEW PART       *       
+      *     SKEY/NUMBER                                             *       
+      *  2. UPDATE NEW PART.PART SKEY ROW WITH OLD PART NUMBER &    *
+      *     DATA, RETAINING THE ORIGINAL PART SKEY.                 *       
+      *     THE PART SKEY REPRESENTS THE NATIVE KEY:                *       
+      *     PART-SUPPLIER, PART-SUPPLIER-COUNTRY-ABBR, PART-NUMBER  *       
+      *  3. SET DETAIL-PART-XREF SUPERSESSION-MOD-FLAG TO 'N'       *       
+      *                                                             *       
+      *  (THE PART SKEY REMAINS THE SAME AND POINTS TO THE OLD PART)*
+      ***************************************************************   
+       R4150-PART-SKEY-UPDATE. 
+           MOVE "R4100-SUPER-SKEY-UPDATE" TO WS-PARAGRAPH. 
+                 
+           PERFORM R7500-ALTPART-IMPACT-COUNT THRU R7500-EXIT.
+           PERFORM R2400-UPDATE-PART-DATA THRU R2400-EXIT.
+                                                                       
+       R4150-EXIT. EXIT. 
+                                                                        
+      ***************************************************************   
+      * R4200-UPDATE-DX-SKEY:                                       * 
+      *     RACE II - NEW ROUTINE                                   *
+      *     REPLACES ROUTINES TO UPDATE CEGLINES                    *          
+      *     UPDATES DETAIL-PART-XREF TABLE                          *   
+      *     1. IF ANY ROWS WITH OLD PART SKEY ARE FOUND AND THE     *
+      *        SUPERSESSION-MOD-FLAG = "Y":                         *
+      *        UPDATE DETAIL-PART-XREF.PART_SKEY WITH THE SUPERSEDING* 
+      *        PART SKEY AND SETS THE SUPERSESSION_MOD _FLAG TO 'N' *   
+      *        ADD # OF LINES UPDATED (FOUND IN ROW-COUNT) TO UPDATE*
+      *        COUNTERS. ADD REVERSED PARTS READ TO READ/LINE COUNTS*
+      *     2. IF NONE FOUND, JUST CONTINUE                         *   
+      *     3. PROCESS FOR VERSION TYPE "PR" OR "WP"                *
+      *     4. PROCESS FOR PART SUPPLIER COUNTRY                    *
+      *     5. INCREMENT COUNTERS FOR ASSCOIATED VERSION TYPE       *
+      * NOTE: DO NOT REVERSE THOSE PARTS LINES THAT HAVE NOT BEEN   *
+      *       IMPACTED BY A BATCH SUPERSESSON UPDATE.               *
+      *                                                             *
+      *      RACE II -THIS ROUTINE REPLACES R4000-COUNT-CEGLN       *
+      *                                     R4200-UPDATE-CEGLINE-US *
+      *                                     R4200-UPDATE-CEGLINE-CAN*
+      *                                     R5000-COUNT-WIPLN       *
+      *                                     R5200-UPDATE-WIPLINE-CAN*
+      *                                     R5200-UPDATE-WIPLINE-US *
+      ***************************************************************   
+       R4200-UPDATE-DX-SKEY.                                         
+           MOVE "R4200-UPDATE-DX-SKEY" TO WS-PARAGRAPH. 
+           MOVE  WS-PARAGRAPH      TO WS-PARNAME.             
+           MOVE "DETAIL-PART-XREF" TO WS-TBLNAME.
+           MOVE "UPDATE "          TO WS-FUNCTION.   
+           MOVE TR-NEW-PART-NUM    TO WS-CURRENT-PART.
+           MOVE TR-OLD-PART-NUM    TO WS-SUPERSEDING-PART. 
+      
+           EXEC SQL EXECUTE                                             
+           BEGIN                                                     
+           PKG_SERVICE.P_DETAIL_PART_XREF_UPD_04
+                                      (:WS-VERSION-TYPE,
+                                       :WS-SEL-OEM-NUM, 
+                                       :WS-SEL-REGN-CD,
+                                       :WS-CURRENT-PART,
+                                       :WS-SUPERSEDING-PART,
+                                       :WS-ROW-COUNT,
+                                       :WS-ERROR-TEXT,
+                                       :WS-SQLCODE);
+           END;                                                      
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE EQUAL SUCCESSFUL
+              ADD WS-ROW-COUNT TO WS-DB-ROW-CTR 
+              IF WS-VERSION-TYPE = "PR"
+                ADD WS-ROW-COUNT  TO RS-CEGLN-UPDT-CTR
+              END-IF
+              IF WS-VERSION-TYPE = "WP"
+                 ADD WS-ROW-COUNT  TO RS-WIPLN-UPDT-CTR
+              END-IF
+           ELSE 
+              IF SQLCODE EQUAL NOT-FOUND
+                 CONTINUE
+              ELSE
+                 DISPLAY WS-DB-ERR-MSG 
+                 DISPLAY "BAD UPDATE DETAIL-PART-XREF PART-SKEY"
+                 DISPLAY "OLD PART NUMBER: ", TR-OLD-PART-NUM
+                 DISPLAY "NEW PART NUMBER: ",TR-NEW-PART-NUM 
+                 DISPLAY "VERSION: ", WS-VERSION-TYPE                  
+                 PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+             
+      ** THE FOLLOWING REPLACES R4000-COUNT-CEGLN AND R5000-COUNT-WIPLN
+           IF SQLCODE EQUAL SUCCESSFUL AND 
+              WS-ROW-COUNT > 0
+              IF WS-VERSION-TYPE = "PR"
+                 ADD WS-ROW-COUNT TO RS-NEW-CEG-LCTR,
+                                      RS-CEGLN-READ-CTR
+                 ADD 1 TO RS-NEW-CEG-PCTR
+              ELSE
+              IF WS-VERSION-TYPE = "WP"
+                 ADD WS-ROW-COUNT TO RS-NEW-WIP-LCTR,
+                                     RS-WIPLN-READ-CTR
+                 ADD 1 TO RS-NEW-WIP-PCTR.
+              
+       R4200-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * R4220-SET-EDITOR-ENTRY-FLAG:                                *   
+      *   DETERMINE IF THERE ARE ANY DETAIL-PART-XREF ROWS FOR THE  *   
+      *   CURRENT PART WHERE THE SUPERSESSION-MOD-FLAG = 'N'.       *
+      *   THESE PARTS LINES ENTERED BY EDITORIAL HAVE NOT BEEN      *
+      *   IMPACTED BY A BATCH SUPERSESSON UPDATE AND ARE NOT TO BE  *
+      *   REVERSED. RETURN COUNTS.                                  *
+      ***************************************************************   
+       R4220-SET-EDITOR-ENTRY-FLAG.
+           MOVE "R4220-SET-EDITOR-ENTRY-FLAG " TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH       TO WS-PARNAME.
+           MOVE "DETAIL-PART-XREF " TO WS-TBLNAME.
+           MOVE "SELECT  "          TO WS-FUNCTION.
+           MOVE " "                 TO WS-EDITORIAL-SW.
+           MOVE TR-NEW-PART-NUM     TO WS-CURRENT-PART.
+           MOVE ZERO                TO WS-DX-COUNT.
+
+           EXEC SQL EXECUTE
+           BEGIN
+           PKG_SERVICE.P_DETAIL_PART_XREF_SEL_01
+                       (:WS-SEL-OEM-NUM,
+                        :WS-SEL-REGN-CD,
+                        :WS-CURRENT-PART,
+                        :WS-DX-COUNT,
+                        :WS-ROW-COUNT,
+                        :WS-ERROR-TEXT,
+                        :WS-SQLCODE);
+            END;
+           END-EXEC.
+           
+           MOVE WS-SQLCODE TO SQLCODE.
+           IF SQLCODE EQUAL SUCCESSFUL
+              IF WS-DX-COUNT > 0 
+                 MOVE "Y" TO WS-EDITORIAL-SW
+              END-IF
+           ELSE 
+              IF SQLCODE EQUAL NOT-FOUND
+                 CONTINUE
+              ELSE
+                 DISPLAY WS-DB-ERR-MSG 
+                 DISPLAY "BAD SELECT DETAIL-PART-XREF MOD FLAG COUNT"
+                 DISPLAY "CURRENT PART NUMBER: ",TR-NEW-PART-NUM 
+                 PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.   
+           
+       R4220-EXIT.    EXIT.
+
+      ***************************************************************   
+      * R6000-DUPLICATE-PART-CHECK:                                 *   
+      *     1. INSERT TR-NEW-PART-NUM (PART-TO-BE-REVERSED)         *   
+      *         BYPASSS REVERSE PROCESSING WITH A DUPLICATE REC     *
+      *         FILE STATUS CODE                                    *   
+      ***************************************************************   
+       R6000-DUPLICATE-PART-CHECK.
+       
+           MOVE TR-NEW-PART-NUM TO PARTS-PART-NUMBER.
+           WRITE PARTS-REC.
+           IF DUPLICATE-PART-RECORD OR RECORD-INSERTED
+              CONTINUE
+           ELSE
+              DISPLAY "BAD WRITE TO PARTS-FILE STATUS: "
+                          PARTS-FILE-STATUS
+              DISPLAY "OLD PART - NEW PART: " TR-OLD-PART-NUM,
+                       " ",TR-NEW-PART-NUM
+              PERFORM Y2000-ABEND THRU Y2000-EXIT.
+       
+       R6000-EXIT.    EXIT.
+       
+      ***************************************************************   
+      * R7400-UPDATE-ALTPART-XREF:                                  *   
+      *  UPDATE ALTERNATE PART ROWS WHERE OLD PART SKEY EXISTS      * 
+      *   UPDATE TO NEW PART SKEY                                   *  
+      ***************************************************************   
+       R7400-UPDATE-ALTPART-XREF.                                            
+           MOVE "R7400-UPDATE-ALTPART-XREF" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH       TO WS-PARNAME.       
+           MOVE "PART-ALTPART-XREF" TO WS-TBLNAME.
+           MOVE "UPDATE "           TO WS-FUNCTION.   
+
+           MOVE TR-OLD-PART-NUM TO WS-SUPERSEDING-PART.
+           MOVE TR-NEW-PART-NUM TO WS-CURRENT-PART.
+
+           EXEC SQL EXECUTE                                             
+           BEGIN                                                     
+           PKG_ALTERNATE_PARTS.P_PART_ALTPART_XREF_UPD_03
+                                      (:WS-SEL-OEM-NUM, 
+                                       :WS-SEL-REGN-CD,
+                                       :WS-CURRENT-PART,
+                                       :WS-SUPERSEDING-PART,
+                                       :WS-ROW-READ-COUNT,
+                                       :WS-UPDATE-ROW-COUNT,
+                                       :WS-DELETE-ROW-COUNT,
+                                       :WS-ERROR-TEXT,
+                                       :WS-SQLCODE);
+           END;                                                      
+           END-EXEC.
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE EQUAL SUCCESSFUL                                  
+              ADD WS-UPDATE-ROW-COUNT TO RS-ALTPART-UPDT-CTR,
+              ADD WS-ROW-READ-COUNT   TO RS-ALTPART-READ-CTR,
+                                         WS-DB-ROW-CTR
+              ADD WS-DELETE-ROW-COUNT TO RS-ALTPART-DLET-CTR
+           ELSE
+              IF SQLCODE EQUAL NOT-FOUND
+                 NEXT SENTENCE                         
+              ELSE                                                         
+                 DISPLAY WS-DB-ERR-MSG                                    
+                 DISPLAY "BAD UPDATE ALTPART OLD PART NUMBER: ", 
+                                           WS-CURRENT-PART
+                 DISPLAY "NEW PART NUMBER: ", WS-SUPERSEDING-PART
+                 PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+                 
+       R7400-EXIT.   EXIT.
+                                                                        
+      ***************************************************************   
+      * R7500-ALTPART-IMPACT-COUNT:                                 *   
+      *  GET THE NUMBER OF INSTANCES THAT THE PART SUPPLIER PART    * 
+      *  NUMBER IS IN THE PART/ALTERNATE PARTS CROSS REFERENCE TABLE*  
+      ***************************************************************   
+       R7500-ALTPART-IMPACT-COUNT.                                            
+           MOVE "R7500-ALTPART-IMPACT-COUNT" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH       TO WS-PARNAME.       
+           MOVE "PART-ALTPART-XREF" TO WS-TBLNAME.
+           MOVE "SELECT "           TO WS-FUNCTION.   
+           
+           EXEC SQL EXECUTE                                             
+            BEGIN                                                     
+            PKG_ALTERNATE_PARTS.P_PART_ALTPART_XREF_SEL_01
+                                      (:WS-SEL-OEM-NUM, 
+                                       :WS-SEL-REGN-CD,
+                                       :TR-NEW-PART-NUM,
+                                       :WS-ROW-READ-COUNT,
+                                       :WS-ERROR-TEXT,
+                                       :WS-SQLCODE);
+            END;                                                      
+           END-EXEC.
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE EQUAL SUCCESSFUL                                  
+              ADD WS-ROW-READ-COUNT   TO RS-ALTPART-UPDT-CTR,
+                                         RS-ALTPART-READ-CTR,
+                                         WS-DB-ROW-CTR
+           ELSE
+              IF SQLCODE EQUAL NOT-FOUND
+                 NEXT SENTENCE                         
+              ELSE                                                         
+                 DISPLAY WS-DB-ERR-MSG                                    
+                 DISPLAY "BAD SELECT ALTPART OLD PART NUMBER: ", 
+                                           WS-CURRENT-PART
+                 PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+       R7500-EXIT.   EXIT.
+
+      ***************************************************************   
+      * R8000-READ-RESTART:                                         *   
+      * 1. READ ACQ-BATCH-RESTART Oracle RESTART ROWS               *
+      *     (REC TYPE A AND C)  RETURN RESTART DATA.                *
+      ***************************************************************   
+       R8000-READ-RESTART.                                              
+           MOVE "R8000-READ-RESTART" TO WS-PARAGRAPH. 
+           MOVE  WS-PARAGRAPH        TO WS-PARNAME.                  
+           MOVE "ACQ-BATCH-RESTART"  TO WS-TBLNAME.
+           MOVE "SELECT "            TO WS-FUNCTION.
+     **    The initialization of returned table columns is required.
+      *     INITIALIZE WS-RESTART-DATA.
+           EXEC SQL EXECUTE
+           BEGIN
+              PKG_APPLICATION.P_ACQ_BATCH_RESTART_SEL_01
+                              (:WS-PROGRAM-NAME,   
+                               :WS-SEL-OEM-NUM,
+                               :WS-SEL-REGN-CD,
+                               :WS-CNTL-EFF-DT,
+                               :WS-RESTART-DATA,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+           END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+           IF SQLCODE EQUAL SUCCESSFUL
+             MOVE "Y" TO WS-RESTART-SW 
+             MOVE WS-RESTART-DATA TO RESTART-RECORD
+           ELSE
+            IF SQLCODE EQUAL NOT-FOUND
+              MOVE "N" TO WS-RESTART-SW 
+              GO TO R8000-EXIT
+            ELSE 
+              DISPLAY WS-DB-ERR-MSG 
+              DISPLAY "BAD SELECT OF RESTART DATA ACQ_BATCH_RESTART"
+              DISPLAY "PROGRAM NAME: ",
+                       WS-PROGRAM-NAME 
+              PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+                                                                          
+       R8000-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * R8100-INSERT-RESTART:                                       *   
+      *1. INSERT ACQ-BATCH-RESTART Oracle RESTART ROWS (TYPE A AND C)*
+      ***************************************************************   
+       R8100-INSERT-RESTART.                                            
+           MOVE "R8100-INSERT-RESTART" TO WS-PARAGRAPH. 
+           MOVE  WS-PARAGRAPH          TO WS-PARNAME.                
+           MOVE "ACQ_BATCH_RESTART "   TO WS-TBLNAME.
+           MOVE "INSERT " TO WS-FUNCTION.                               
+
+           EXEC SQL EXECUTE
+           BEGIN
+              PKG_APPLICATION.P_ACQ_BATCH_RESTART_INS_01
+                              (:WS-PROGRAM-NAME,   
+                               :WS-SEL-OEM-NUM,
+                               :WS-SEL-REGN-CD,
+                               :WS-RESTART-DATA,
+                               :WS-CNTL-EFF-DT,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+           END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+           IF SQLCODE EQUAL SUCCESSFUL                                  
+             MOVE "Y" TO WS-RESTART-SW                                  
+           ELSE                                                         
+             DISPLAY WS-DB-ERR-MSG 
+             DISPLAY "BAD INSERT RESTART DATA TO ACQ-BATCH-RESTART"
+             DISPLAY "PROGRAM NAME: ", 
+                     WS-PROGRAM-NAME 
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+                                                                        
+       R8100-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * R8200-UPDATE-RESTART:                                       *   
+      *     1. UPDATE ACQ-BATCH-RESTART Oracle RESTART ROWS         *
+      ***************************************************************   
+       R8200-UPDATE-RESTART.                                            
+           MOVE "R8200-UPDATE-RESTART" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH          TO WS-PARNAME.                 
+           MOVE "ACQ_BATCH_RESTART "   TO WS-TBLNAME.
+           MOVE "UPDATE "  TO WS-FUNCTION.                              
+
+           EXEC SQL EXECUTE
+           BEGIN
+              PKG_APPLICATION.P_ACQ_BATCH_RESTART_UPD_01
+                              (:WS-PROGRAM-NAME,   
+                               :WS-SEL-OEM-NUM,
+                               :WS-SEL-REGN-CD,
+                               :WS-RESTART-DATA,
+                               :WS-CNTL-EFF-DT,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+           IF SQLCODE NOT EQUAL SUCCESSFUL                              
+             DISPLAY WS-DB-ERR-MSG 
+             DISPLAY "BAD UPDATE OF ACQ_BATCH_RESTART RESTART DATA"
+             DISPLAY "PROGRAM NAME: ", 
+                     WS-PROGRAM-NAME 
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+                                                                        
+       R8200-EXIT. EXIT.                                                
+                                                                        
+      ***************************************************************   
+      * R8300-DELETE-RESTART:                                       *   
+      *     1. DELETE ACQ-BATCH-RESTART DB RESTART ROWS             *    
+      ***************************************************************   
+       R8300-DELETE-RESTART.                                            
+           MOVE "R8300-DELETE-RESTART" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH          TO WS-PARNAME.                
+           MOVE "ACQ_BATCH_RESTART "   TO WS-TBLNAME.
+           MOVE "DELETE " TO WS-FUNCTION.                               
+
+           EXEC SQL EXECUTE
+           BEGIN
+              PKG_APPLICATION.P_ACQ_BATCH_RESTART_DEL_01
+                              (:WS-PROGRAM-NAME,   
+                               :WS-SEL-OEM-NUM,
+                               :WS-SEL-REGN-CD,
+                               :WS-CNTL-EFF-DT,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+           IF SQLCODE EQUAL SUCCESSFUL                                  
+             MOVE "N" TO WS-RESTART-SW                                  
+           ELSE                                                         
+             IF SQLCODE EQUAL NOT-FOUND                                 
+               GO TO R8300-EXIT                                         
+             ELSE                                                       
+               DISPLAY WS-DB-ERR-MSG
+               DISPLAY "BAD DELETE OF ACQ_BATCH_RESTART RESTART ROW" 
+               DISPLAY "PROGRAM NAME: ", 
+                     WS-PROGRAM-NAME 
+               PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+                                                                        
+       R8300-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * R9100-INSERT-REPORT:                                        *   
+      *     1. INSERT ACQ_BATCH_REPORT Oracle REPORT ROW            *
+      ***************************************************************   
+       R9100-INSERT-REPORT.                                             
+           MOVE "R9100-INSERT-REPORT" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH         TO WS-PARNAME.                  
+           MOVE "ACQ_BATCH_REPORTS"   TO WS-TBLNAME.
+           MOVE "INSERT " TO WS-FUNCTION.                               
+           MOVE REPORT-SORT-CRITERIA TO WS-SORT-DATA.                      
+           MOVE REPORT-DATA          TO WS-REPORT-DATA.                      
+
+           EXEC SQL EXECUTE
+           BEGIN
+              PKG_APPLICATION.P_ACQ_BATCH_REPORTS_INS_01
+                              (:REPORT-NUMBER,   
+                               :WS-SEL-OEM-NUM,
+                               :WS-SEL-REGN-CD,
+                               :WS-SORT-DATA,
+                               :WS-REPORT-DATA,
+                               :WS-CNTL-EFF-DT,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+           IF SQLCODE EQUAL SUCCESSFUL
+             ADD 1 TO WS-DB-ROW-CTR
+           ELSE  
+             DISPLAY WS-DB-ERR-MSG
+             DISPLAY "BAD INSERT ACQ_BATCH_REPORTS"
+             DISPLAY "REPORT NUMBER: ", REPORT-NUMBER
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+       R9100-EXIT. EXIT.
+       
+      ***************************************************************
+      * Y1500-SQL-PROCEDURE-ERROR                                   *
+      *   1. PREPARE TO ABORT PROGRAM DUE TO SQL ERROR              *
+      *   2. ROLLBACK ANY ORACLE UPDATES SINCE LAST COMMIT PERFORMD *
+      ***************************************************************  
+       Y1500-SQL-PROCEDURE-ERROR. 
+                                                                        
+           IF SQLCODE < 0                                               
+               COMPUTE WS-ABEND-CODE = SQLCODE * -1                     
+           ELSE                                                         
+               MOVE SQLCODE TO WS-ABEND-CODE.                           
+   
+           DISPLAY "SQLCODE " WS-ABEND-CODE.
+           DISPLAY "        " WS-ERROR-TEXT.                 
+                                                                        
+           EXEC SQL                                                     
+               ROLLBACK                                                 
+           END-EXEC.                                                    
+                                                                        
+           PERFORM Y2000-ABEND THRU Y2000-EXIT.                         
+                                                                        
+       Y1500-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * Y2000-ABEND:                                                *   
+      *     1. CALL ABEND PROGRAM.                                  *   
+      ***************************************************************   
+       Y2000-ABEND.                                                     
+                                                                        
+           CALL "cobabend" USING PGMNAME, END-WORKING, WS-ABEND-AREA.
+                                                                        
+       Y2000-EXIT. EXIT.                                                
+
+      ***************************************************************   
+      * Z1000-CLOSE-FILES.                                          *   
+      *     1. CLOSE ALL FILES.                                     *   
+      ***************************************************************   
+       Z1000-CLOSE-FILES.                                               
+           MOVE "Z1000-CLOSE-FILES" TO WS-PARAGRAPH.                    
+                                                                        
+           CLOSE  CONTROL-PARMS                                         
+                  TRANS-FILE                                            
+                  CONTROL-REPORT
+                  PARTS-FILE.                                       
+                                                                        
+       Z1000-EXIT. EXIT.
+@
+
+
+1.5
+log
+@AIX to RHEL conversion
+@
+text
+@d188 1
+a188 1
+      ***************************************************************** 
+d249 1
+a249 1
+      -"$Revision: 1.4 $".
+d251 1
+a251 1
+      -"$Date: 2019/01/24 06:46:40 $".
+d253 1
+a253 1
+      -"$Author: pg2697 $".
+@
+
+
+1.4
+log
+@No code change. Added mod note so pgm could be recompiled with new version of mptb002.cpy
+@
+text
+@d186 2
+d249 1
+a249 1
+      -"$Revision: 1.3 $".
+d251 1
+a251 1
+      -"$Date: 2014/05/18 02:19:00 $".
+d257 1
+a257 1
+      -"$Locker: pg2697 $".
+@
+
+
+1.3
+log
+@ no code chg. added mod history to allow check_in and recompile in prod (for Oracle 11G IBM 770 Migration).
+@
+text
+@d107 4
+d247 1
+a247 1
+      -"$Revision: 1.2 $".
+d249 1
+a249 1
+      -"$Date: 2003/02/08 01:19:45 $".
+@
+
+
+1.2
+log
+@ added logic to handle scenario where old part already exists (due to looping super)
+@
+text
+@d107 5
+a111 1
+      *           
+d243 1
+a243 1
+      -"$Revision: 1.1 $".
+d245 1
+a245 1
+      -"$Date: 2002/03/12 18:56:46 $".
+d247 1
+a247 1
+      -"$Author: gw8440 $".
+@
+
+
+1.1
+log
+@ race initial checkin
+@
+text
+@d108 5
+d239 1
+a239 1
+      -"$Revision: 1.4 $".
+d241 1
+a241 1
+      -"$Date: 2000/06/21 16:52:15 $".
+d243 1
+a243 1
+      -"$Author: kd7852 $".
+d247 1
+a247 1
+      -"$Locker: gw8440 $".
+d682 3
+a684 1
+           PERFORM R2000-READ-PART-NEW THRU R2000-EXIT.
+a693 16
+      *  FOLLOWING PARAGRAPHS FOR COUNT LINES THAT WERE REVERSED 
+      *  BACK TO "OLD" PART NUMBER
+      *  REPLACED BY PROCS P_DETAIL_PART_XREF AND P_PART_UPD_09
+*******           MOVE TR-OLD-PART-NUM TO WS-SEL-PART-NUM.
+*******           PERFORM R4000-COUNT-CEGLN THRU R4000-EXIT.
+            
+*******           IF WS-CEGLN-COUNT > 0                                        
+*******             ADD WS-CEGLN-COUNT TO RS-NEW-CEG-LCTR                      
+*******            ADD 1 TO RS-NEW-CEG-PCTR.                                  
+              
+
+*******          PERFORM R5000-COUNT-WIPLN THRU R5000-EXIT.                   
+*******           IF WS-WIPLN-COUNT > 0                                        
+*******             ADD WS-WIPLN-COUNT TO RS-NEW-WIP-LCTR                      
+*******             ADD 1 TO RS-NEW-WIP-PCTR.                                  
+                                                                        
+d740 9
+a748 3
+      * 1. DELETE THE SUPERSEDING PART                              *
+      * 2. UPDATE THE CURRENT PART ROW PART-SKEY WITH THE           *
+      *    SUPERSEDING PART NUMBER AND NULL/ZERO DATA.              *
+d758 13
+a770 7
+              PERFORM R7400-UPDATE-ALTPART-XREF
+           ELSE
+              PERFORM R7500-ALTPART-IMPACT-COUNT THRU R7500-EXIT
+              MOVE TR-OLD-PART-NUM TO WS-SUPERSEDING-PART 
+              PERFORM R2300-DELETE-SUPERSEDING-PART THRU R2300-EXIT
+              PERFORM R2400-UPDATE-PART-DATA THRU R2400-EXIT.
+                                                                        
+d1074 1
+a1074 1
+      * R2000-READ-PART-NEW:                                        *   
+a1075 1
+      *        (THIS IS THE PART WHICH WILL BE REVERSED BACK TO OLD)*   
+d1077 1
+a1077 1
+       R2000-READ-PART-NEW.                                             
+a1081 2
+           MOVE SPACE TO WS-PART-SW.
+           MOVE TR-NEW-PART-NUM TO WS-PART-NUMBER-IN.
+d1194 6
+a1199 1
+                      TR-NEW-PART-NUM                   
+d1358 1
+a1358 2
+      *     3. DELETE THE OLD PART                                  *   
+      *     4. UPDATE PART-ALTPART-XREF WITH SUPERSEDING PART SKEY  *
+d1369 1
+d1373 22
+d1400 1
+a1400 1
+      *        SUPERSESSION-MOD-FLAG = 'N":                         *
+d1402 1
+a1402 1
+      *        PART SKEY AND SETS THE SUPERSESSION_MOD _FLAG TO 'Y' *   
+@

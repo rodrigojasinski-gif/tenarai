@@ -1,0 +1,14 @@
+104,105c104
+<     s/(\.\d\d)$pdelm(\d)/$1$delm$2/g;
+<     s/(\.\d)$pdelm(\d)/$1$delm$2/g;
+---
+>     s/$pdelm/$delm/g;
+107,114d105
+<     s/$delm(\d)$pdelm(\d)/$delm$1$delm$2/g;
+<     s/$delm(\d\d)$pdelm(\d)/$delm$1$delm$2/g;
+<     s/$delm(\d\d\d)$pdelm(\d)/$delm$1$delm$2/g;
+<     s/$delm(\d\d\d\d)$pdelm(\d)/$delm$1$delm$2/g;
+<     s/$delm(\d\d\d\d\d)$pdelm(\d)/$delm$1$delm$2/g;
+< 
+<  
+<  # die $_; 

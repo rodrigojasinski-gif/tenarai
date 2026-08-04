@@ -1,0 +1,16 @@
+#!/bin/ksh
+#$Id: rshowlocks,v 1.6 2021/07/03 01:47:55 pg2697 Exp $
+## modified to list all locked files in prod: bin, src, prm and inc folders gw 3/11/07
+## modify to access prod server alias racercs gw 03/28/07
+## modified to correct 'arg list too long' error gw 5/3/07 
+## change rsh to ssh. removed -e flag (invalid flag)  pag
+#set -xv
+echo "============================================="
+echo "The following are checked out:"
+
+ssh racercs 'find /prod/race/*/bin/RCS/ -type f -exec rlog -L -R {} \;' | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+ssh racercs 'find /prod/race/*/src/RCS/ -type f -exec rlog -L -R {} \;' | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+ssh racercs 'find /prod/race/*/prm/RCS/ -type f -exec rlog -L -R {} \;' | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+ssh racercs 'find /prod/race/*/inc/RCS/ -type f -exec rlog -L -R {} \;' | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+##rsh media1  'find /prod/race/*/bin/RCS/ -type f -exec rlog -L -R {} \;' | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+echo "============================================="

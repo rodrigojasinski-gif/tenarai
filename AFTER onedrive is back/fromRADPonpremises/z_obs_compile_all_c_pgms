@@ -1,0 +1,24 @@
+##############################################################################
+# compile_all_c_pgms  (ksh)                                                  #
+#                                                                            #
+#   This script will compile all C programs.                                 #
+#                                                                            #
+#   COMMAND LINE:  compile_all_c_pgms                                        #
+#                                                                            #
+##############################################################################
+ 
+  export LOGFILE=compile_all_c_pgms_$(date +'%C%y%m%d%H%M%S').log
+
+##############################################################################
+# remove log file if it already exists
+##############################################################################
+  rm -f compile_all_c_pgms_*.log
+
+##############################################################################
+# call subscript to compile all programs
+##############################################################################
+  touch $LOGFILE
+
+  echo -- calling compile_all_c.ksh subscript -- 
+
+  compile_all_c.ksh 

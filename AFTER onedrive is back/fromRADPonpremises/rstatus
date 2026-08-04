@@ -1,0 +1,196 @@
+#! /bin/ksh 
+#$Id: rstatus,v 1.8 2021/07/03 01:48:24 pg2697 Exp $
+##################################################################################
+# rstatus - (formerly rstatus)
+#
+# MODIFICATIONS:
+# 03/06/2007 - GW - modified to accept all file type/extensions
+# 03/28/2007 - GW - modified to access prod server alias racercs  
+# 08/20/2014 - PG - Oracle 11G Migration changes
+# 11/03/2014 - PG - Added colon in grep for 'head'. (i.e. 'head' -> 'head:'
+# 06/25/2021 - PG - Changed rsh/rcp to ssh/scp. Removed -e flag (invalid flag).
+##################################################################################
+
+##################################################################################
+# check if parm values passed in
+##################################################################################
+  if [ $# != "2" ]
+    then
+      echo  Usage: rstatus file_name subsys/component_dir "\007"
+      exit -1
+  fi
+
+##################################################################################
+# create environment variables from parm values passed in
+##################################################################################
+  export FNAME_EXT=$1
+  export FNAME=$(echo $FNAME_EXT | awk -F. '{print $1}')
+  export EXTENSION=$(echo $FNAME_EXT | awk -F. '{print $2}')
+  export SUBSYS=$(echo $2 | awk -F/ '{print $1}')
+  export COMPNT_DIR=$(echo $2 | awk -F/ '{print $2}')
+  export PRODDIR=/prod/race
+  export STGDIR=/stage/race
+  export MDEVDIR=/mdev/race
+  if [ $ACT_LVL = "mdev" ]
+    then 
+      export RCSDIR=racercs:/prod/race              ##previously defined as RCSDIR=race:/prod/race 
+  else
+      export RCSDIR=/prod/race                    
+  fi  
+
+########################################################## For testing purposes
+#  echo '$FNAME_EXT : ' $FNAME_EXT
+#  echo '$FNAME     : ' $FNAME
+#  echo '$EXTENSION : ' $EXTENSION
+#  echo '$SUBSYS    : ' $SUBSYS
+#  echo '$COMPNT_DIR: ' $COMPNT_DIR
+#  echo '$PRODDIR   : ' $PRODDIR
+#  echo '$STGDIR    : ' $STGDIR
+#  echo '$MDEVDIR   : ' $MDEVDIR
+########################################################## For testing purposes
+
+
+##################################################################################
+# validate subsys, COMPNT_DIR, and extension
+##################################################################################
+  case $SUBSYS in
+        altp|ceg|misc|oto|parts|qrp|share|ext|oem) ;;
+    *) echo "$SUBSYS: subsystem_name not altp|ceg|misc|oto|parts|qrp|share|ext|oem" ; exit -1;; 
+  esac
+
+  case $COMPNT_DIR in
+        bin|src|inc|lib|prm) echo " " > /dev/null;;
+    *) echo "$COMPNT_DIR: COMPNT_DIR_name not bin|src|inc|lib|prm"; exit -1;; 
+  esac
+
+  if [ ${EXTENSION} ]                       #this checks if EXTENSION is not null
+    then 
+      case $EXTENSION in
+           cbl|c|pc|ksh|mk|awk|exp|pl|ctl|prm|cpy) echo " " > /dev/null;;
+        *) echo "$EXTENSION: file extension_name not cbl|c|pc|ksh|mk|awk|exp|pl|ctl|prm|cpy"; exit -1;; 
+      esac
+  fi
+##################################################################################
+# execute commands and display Summary information
+# RE: pickup of RCS info - C pgms use $Id; others contain $Revision
+##################################################################################
+
+  echo ============================= Summary =====================================
+  if [ $ACT_LVL = "mdev" ]
+    then 
+      echo "\n                       PROD:"
+      ssh racercs ls -l $PRODDIR/$SUBSYS/$COMPNT_DIR/RCS/$FNAME_EXT,v   2>/dev/null
+      export PROD_VERS=`rrevlog $FNAME_EXT $SUBSYS/$COMPNT_DIR | grep 'head:'`
+      echo 'PRODUCTION RCS HEADER = ' $PROD_VERS  
+      echo '----------' 
+      
+      ssh racercs ls -l $PRODDIR/$SUBSYS/$COMPNT_DIR/$FNAME_EXT   2>/dev/null
+      rm -f temp.txt		
+	  ssh racercs grep -s '\$Revision' $PRODDIR/$SUBSYS/$COMPNT_DIR/$FNAME_EXT | head -1 > temp.txt
+      ssh racercs grep -s '\$Id' $PRODDIR/$SUBSYS/$COMPNT_DIR/$FNAME_EXT | head -1 >> temp.txt
+	  echo "CURRENT RCS COMMENT   = `cat temp.txt`"	
+      echo '----------'  
+     
+	  ssh racercs ls -l $PRODDIR/$SUBSYS/$COMPNT_DIR/rollback/$FNAME_EXT   2>/dev/null
+      rm -f temp.txt
+	  ssh racercs grep -s '\$Revision' $PRODDIR/$SUBSYS/$COMPNT_DIR/rollback/$FNAME_EXT | head -1 > temp.txt
+      ssh racercs grep -s '\$Id' $PRODDIR/$SUBSYS/$COMPNT_DIR/rollback/$FNAME_EXT | head -1 >> temp.txt
+	  echo "ROLLBACK RCS COMMENT  = `cat temp.txt`"
+
+      echo "\n                       STAGE:"
+      ls -l $STGDIR/$SUBSYS/$COMPNT_DIR/$FNAME_EXT   2>/dev/null
+      rm -f temp.txt		
+	  grep -s '\$Revision' $STGDIR/$SUBSYS/$COMPNT_DIR/$FNAME_EXT | head -1  > temp.txt
+      grep -s '\$Id' $STGDIR/$SUBSYS/$COMPNT_DIR/$FNAME_EXT | head -1 >> temp.txt
+	  echo "CURRENT RCS COMMENT   = `cat temp.txt`"
+      echo '----------' 
+			
+      ls -l $STGDIR/$SUBSYS/$COMPNT_DIR/rollback/$FNAME_EXT   2>/dev/null
+      rm -f temp.txt
+      grep -s '\$Revision' $STGDIR/$SUBSYS/$COMPNT_DIR/rollback/$FNAME_EXT | head -1 > temp.txt
+      grep -s '\$Id' $STGDIR/$SUBSYS/$COMPNT_DIR/rollback/$FNAME_EXT | head -1 >> temp.txt
+	  echo "ROLLBACK RCS COMMENT  = `cat temp.txt`"
+      ls -l $STGDIR/$SUBSYS/$COMPNT_DIR/lst/$FNAME*  2>/dev/null
+
+      echo "\n                       MDEV:"
+      ls -l $MDEVDIR/$SUBSYS/$COMPNT_DIR/$FNAME_EXT   2>/dev/null
+      rm -f temp.txt
+      grep -s '\$Revision' $MDEVDIR/$SUBSYS/$COMPNT_DIR/$FNAME_EXT | head -1 > temp.txt
+      grep -s '\$Id' $MDEVDIR/$SUBSYS/$COMPNT_DIR/$FNAME_EXT | head -1 >> temp.txt
+	  echo "CURRENT RCS COMMENT   = `cat temp.txt`"
+      echo '----------' 
+			
+      ls -l $MDEVDIR/$SUBSYS/$COMPNT_DIR/rollback/$FNAME_EXT   2>/dev/null
+      rm -f temp.txt
+      grep -s '\$Revision' $MDEVDIR/$SUBSYS/$COMPNT_DIR/rollback/$FNAME_EXT | head -1 > temp.txt
+      grep -s '\$Id' $MDEVDIR/$SUBSYS/$COMPNT_DIR/rollback/$FNAME_EXT | head -1 >> temp.txt
+			echo "ROLLBACK RCS COMMENT  = `cat temp.txt`"   
+			
+      echo "\n                       EXECUTABLES (FROM COMPILES):"
+      case $EXTENSION in
+          cbl)     ls -l $MDEVDIR/$SUBSYS/bin/$FNAME $MDEVDIR/$SUBSYS/bin/rollback/$FNAME 2>/dev/null \
+                   ls -l $STGDIR/$SUBSYS/bin/$FNAME $STGDIR/$SUBSYS/bin/rollback/$FNAME 2>/dev/null;;
+          c)       ls -l $MDEVDIR/$SUBSYS/bin/$FNAME $MDEVDIR/$SUBSYS/bin/rollback/$FNAME 2>/dev/null \
+                   ls -l $STGDIR/$SUBSYS/bin/$FNAME $STGDIR/$SUBSYS/bin/rollback/$FNAME 2>/dev/null \    
+                   ls -l $MDEVDIR/$SUBSYS/lib/$FNAME.o $MDEVDIR/$SUBSYS/lib/rollback/$FNAME.o 2>/dev/null \
+									 ls -l $MDEVDIR/$SUBSYS/lib/$FNAME.so $MDEVDIR/$SUBSYS/lib/rollback/$FNAME.so 2>/dev/null \
+                   ls -l $STGDIR/$SUBSYS/lib/$FNAME.o $STGDIR/$SUBSYS/lib/rollback/$FNAME.o 2>/dev/null \
+									 ls -l $STGDIR/$SUBSYS/lib/$FNAME.so $STGDIR/$SUBSYS/lib/rollback/$FNAME.so 2>/dev/null;;
+          pc)      ls -l $MDEVDIR/$SUBSYS/lib/$FNAME.o $MDEVDIR/$SUBSYS/lib/rollback/$FNAME.o 2>/dev/null \
+                   ls -l $MDEVDIR/$SUBSYS/lib/$FNAME.so $MDEVDIR/$SUBSYS/lib/rollback/$FNAME.so 2>/dev/null \
+									 ls -l $STGDIR/$SUBSYS/lib/$FNAME.o $STGDIR/$SUBSYS/lib/rollback/$FNAME.o 2>/dev/null \ 
+									 ls -l $STGDIR/$SUBSYS/lib/$FNAME.so $STGDIR/$SUBSYS/lib/rollback/$FNAME.so 2>/dev/null;;
+					*)   echo 'Not Applicable for this object';;				 
+      esac
+ 
+      echo "\n                       CWD: (Current Working Directory)"
+      ls -l $FNAME_EXT*
+
+  else                              ##radp logic (used by prod_move##
+      echo "\n                       PROD:"
+      ls -l $PRODDIR/$SUBSYS/$COMPNT_DIR/RCS/$FNAME_EXT,v    2>/dev/null
+      export PROD_VERS=`rlog $PRODDIR/$SUBSYS/$COMPNT_DIR/RCS/$FNAME_EXT,v  | grep 'head:'`
+      echo 'PRODUCTION RCS HEADER = ' $PROD_VERS  
+      echo '----------' 
+
+      ls -l $PRODDIR/$SUBSYS/$COMPNT_DIR/$FNAME_EXT 2>/dev/null
+      rm -f temp.txt
+      grep -s '\$Revision' $PRODDIR/$SUBSYS/$COMPNT_DIR/$FNAME_EXT | head -1 > temp.txt
+      grep -s '\$Id' $PRODDIR/$SUBSYS/$COMPNT_DIR/$FNAME_EXT | head -1 >> temp.txt
+      echo "CURRENT RCS COMMENT   = `cat temp.txt`"
+      echo '----------'
+  
+      ls -l $PRODDIR/$SUBSYS/$COMPNT_DIR/rollback/$FNAME_EXT 2>/dev/null
+      rm -f temp.txt
+      grep -s '\$Revision' $PRODDIR/$SUBSYS/$COMPNT_DIR/rollback/$FNAME_EXT | head -1 > temp.txt
+      grep -s '\$Id' $PRODDIR/$SUBSYS/$COMPNT_DIR/rollback/$FNAME_EXT | head -1 >> temp.txt
+			echo "ROLLBACK RCS COMMENT  = `cat temp.txt`" 
+ 
+      echo "\n                       EXECUTABLES (FROM COMPILES):"
+      case $EXTENSION in
+          cbl) ls -l $PRODDIR/$SUBSYS/bin/$FNAME 2>/dev/null \
+               ls -l $PRODDIR/$SUBSYS/bin/rollback/$FNAME 2>/dev/null \
+               ssh radd ls -l $STGDIR/$SUBSYS/bin/$FNAME 2>/dev/null \
+               ssh radd ls -l $STGDIR/$SUBSYS/bin/rollback/$FNAME 2>/dev/null;;
+          c)   ls -l $PRODDIR/$SUBSYS/bin/$FNAME 2>/dev/null \
+               ls -l $PRODDIR/$SUBSYS/bin/rollback/$FNAME 2>/dev/null \
+               ls -l $PRODDIR/$SUBSYS/lib/$FNAME.o $PRODDIR/$SUBSYS/lib/$FNAME.so 2>/dev/null \
+               ls -l $PRODDIR/$SUBSYS/lib/rollback/$FNAME.o $PRODDIR/$SUBSYS/lib/rollback/$FNAME.so 2>/dev/null \
+               ssh radd ls -l $STGDIR/$SUBSYS/bin/$FNAME 2>/dev/null \
+               ssh radd ls -l $STGDIR/$SUBSYS/bin/rollback/$FNAME 2>/dev/null \
+               ssh radd ls -l $STGDIR/$SUBSYS/lib/$FNAME.o $STGDIR/$SUBSYS/lib/$FNAME.so 2>/dev/null \
+               ssh radd ls -l $STGDIR/$SUBSYS/lib/rollback/$FNAME.o $STGDIR/$SUBSYS/lib/rollback/$FNAME.so 2>/dev/null;;
+          pc)  ls -l $PRODDIR/$SUBSYS/lib/$FNAME.o* 2>/dev/null \
+               ls -l $PRODDIR/$SUBSYS/lib/rollback/$FNAME.o 2>/dev/null \
+               ssh radd ls -l $STGDIR/$SUBSYS/lib/$FNAME.o 2>/dev/null \
+               ssh radd ls -l $STGDIR/$SUBSYS/lib/rollback/$FNAME.o 2>/dev/null;;
+					*)   echo 'Not Applicable for this object';;		 
+      esac
+ fi 
+ 
+  rm -f temp.txt
+  echo == End of Summary =========================================================
+
+##################################################################################
+# end of script
+##################################################################################

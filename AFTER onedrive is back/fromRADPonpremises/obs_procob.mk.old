@@ -1,0 +1,143 @@
+# Modified for RACE by jhh - 8/20/01
+
+include $(ORACLE_HOME)/precomp/lib/env_precomp.mk
+
+# This Makefile builds the sample programs in 
+# $(ORACLE_HOME)/precomp/demo/procob, and can serve as a template for linking
+# customer applications.
+#
+# SAMPLES is a list of the procobol sample programs.
+# GNTSAMPLES is the list of the .gnt files for the sampel programs.
+#
+SAMPLES=sample1 sample2 sample3 sample4 sample6 sample7 sample8 \
+	sample9 sample10 sample11
+GNTSAMPLES=sample1.gnt sample2.gnt sample3.gnt sample4.gnt \
+	sample6.gnt sample7.gnt sample8.gnt sample9.gnt \
+	sample10.gnt sample11.gnt 
+#
+# These targets are build all of a class of samples in one call to make.
+#
+samples: $(SAMPLES)
+gntsamples: $(GNTSAMPLES)
+#
+# The target 'build' puts together a statically linked executable from
+# the cobol sources in $(COBS) and the libraries in $(PROLDLIBS).  The
+# rules to make .cob files from .pco files are later in this file.
+# The target 'build_static' is similar, but does not use the client shared
+# library.
+#
+build: $(COBS)
+	$(COB) $(COBFLAGS) -o $(EXE) $(COBS) -L$(LIBHOME) -L/usr/shlib $(COBSQLINTF) $(PROLDLIBS)
+build_static: $(COBS)
+	$(COB) $(COBFLAGS) -o $(EXE) $(COBS) -L$(LIBHOME) -L/usr/shlib $(COBSQLINTF) $(STATICPROLDLIBS)
+$(SAMPLES):
+	$(MAKE) -f $(MAKEFILE) build COBS=$@.cob EXE=$@
+#
+# Dynamically linked procobol application are built by generating .gnt files.
+# The rules for .cob -> .gnt come later.
+#
+# sample5.pco illustrates the precompiler part of building a precompiler-forms
+# application.  Building the actual executable would require the FORMS bundle.
+# Since the controlling executable in a forms application is from forms,
+# a dynamically linked procobol user-exit doesn't really make sense.
+sample5:
+	@$(ECHO) 'sample5 is a user-exit demo; use a makefile from forms.'
+sample5.gnt:
+	@$(ECHO) 'sample5 is a user-exit demo; do not make a .gnt file.'
+#
+# Some of the samples require that .sql scripts be run before precompilation.
+# If you set RUNSQL=run in your call to make, then make will use sqlplus or
+# svrmgrl, as appropriate, to run the .sql scripts.
+# If you leave RUNSQL unset, then make will print out a reminder to run the
+# scripts.
+# If you have already run the scripts, then RUNSQL=done will omit the reminder.
+#
+sqlplus_run:
+	($(CD) ../sql; $(BINHOME)sqlplus $(USER) @$(SCRIPT) < /dev/null)
+svrmgrl_run:
+	($(CD) ../sql; $(BINHOME)svrmgrl < $(SCRIPT).sql)
+sqlplus_ svrmgrl_:
+	@$(ECHO) "# You must run the .sql script, " $(SCRIPT),
+	@$(ECHO) "# before precomping this sample."
+sqlplus_done svrmgrl_done:
+#
+calldemo-sql:
+	$(MAKE) -f $(MAKEFILE) USER=scott/tiger SCRIPT=calldemo sqlplus_$(RUNSQL)
+sample11-sql:
+	$(MAKE) -f $(MAKEFILE) USER=scott/tiger SCRIPT=sample11 sqlplus_$(RUNSQL)
+#
+# Here are some rules for converting .pco -> .cob -> .o and for .cob -> .gnt.
+#
+.SUFFIXES: .pco .cob .o $(GNT)
+
+.pco.cob:
+	$(PROCOB18) $(PCCFLAGS) iname=$*.pco
+
+.cob$(GNT):
+	$(COB) $(COBGNTFLAGS) $*.cob
+#
+# These are specific targets to make the .o files for samples that require
+# more careful handling.
+#
+sample9.cob: calldemo-sql
+	$(PROCOB18) $(PCCPLSFLAGS) iname=$*.pco dbms=v6
+sample11.cob: sample11-sql
+	$(PROCOB18) $(PCCPLSFLAGS) iname=$*.pco dbms=v6
+###########Mitchell stuff
+OBJS=$(OBJS)
+
+CFLG	=  $(CFLG2) MAXOPENCURSORS=1 SQLCHECK=SEMANTICS USERID=SCOTT/TIGER
+CLEAN1	= -@rm $@.int $@.cob 
+CLEAN2	= -@rm $@.o
+INCL	= "/prod/race/share/inc"
+#STAGE_INCL	= "/stage/race/share/inc"
+MODE	= ANSI
+OBJ1	=  
+OPT1	= -C "IBMCOMP DEFAULTCALLS=4 FOLDCOPYNAME=LOWER FOLDCALLNAME=LOWER LIST() SETTING LINKCOUNT=128"
+
+.SUFFIXES: .cbl
+
+#LDSTRING=
+#PRODUCT_LIBHOME=
+# MAKEFILE=procob.mk
+#PCCPLSFLAGS= sqlcheck=full userid=$(USERID) 
+#USERID=scott/tiger
+
+COBFLAGS=-C IBMCOMP FOLDCOPYNAME=LOWER LINKCOUNT=128
+
+subr iisr906 mexr001 mexr002 mptr998 \
+xcgr001 xcgr005 xcgr006 \
+xcgr007 xcgr008 xcgr010 \
+xcgr011 xcgr012 xcgr015 xcgr016 xcgr022:
+	$(PROCOB) iname=$@.cbl $(PCCFLAGS) INCLUDE=$(INCL) 
+#       $(COB) $(OPT1) $@.cob $(OBJ1) $(OBJS) -W e -c -x -L$(LIBHOME) $(COBSQLINTF) $(PROLDLIBS)
+#Use following line after 8.1.6.3 patch is applied
+	$(COB) $(OPT1) $@.cob $(OBJ1) $(OBJS) -W e -c -x -L$(LIBHOME) $(COBSQLINTF) $(PROLDLIBS) -lnsslb8
+	$(CLEAN1)
+
+
+
+
+
+.cbl:
+	$(PROCOB) iname=$*.cbl $(PCCFLAGS) INCLUDE=$(INCL) MODE=$(MODE) $(CFLG)
+	$(COB) $(OPT1) $*.cob $(OBJ1) $(OBJS) -W e -x -L$(LIBHOME) $(COBSQLINTF) $(PROLDLIBS) -lnsslb8
+	$(CLEAN1)
+	$(CLEAN2)
+
+###end mitchell Stuff
+
+
+
+#
+# The macro definition fill in some details or override some defaults from 
+# other files.
+#
+LDSTRING=
+PRODUCT_LIBHOME=
+MAKEFILE=procob.mk
+PCCPLSFLAGS= sqlcheck=full userid=$(USERID) 
+USERID=scott/tiger
+
+PROLDLIBS=$(STATICPROLDLIBS)
+

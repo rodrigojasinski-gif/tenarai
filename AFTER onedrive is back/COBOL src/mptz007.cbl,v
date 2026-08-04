@@ -1,0 +1,5600 @@
+head	1.15;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.15
+date	2026.07.31.12.08.25;	author rj132422;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2026.07.31.11.56.10;	author rj132422;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2026.07.31.11.36.23;	author rj132422;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2026.07.31.11.28.10;	author rj132422;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2026.07.30.21.14.11;	author rj132422;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2026.07.30.15.29.35;	author rj132422;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2021.11.02.19.09.26;	author pg2697;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2019.01.24.06.46.58;	author pg2697;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2014.10.07.02.35.39;	author pg2697;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2014.05.18.02.18.27;	author pg2697;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2014.05.18.02.04.47;	author pg2697;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2010.07.07.18.40.29;	author pg2697;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2008.04.01.17.46.37;	author jw97143;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.18.04.56.42;	author lm5200;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.03.12.18.56.02;	author gw8440;	state Exp;
+branches;
+next	;
+
+
+desc
+@ race initial checkin
+@
+
+
+1.15
+log
+@AIX to RHEL conversion
+@
+text
+@      *$SET TRACE ASMLIST COPYLIST PARAS REF
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.   MPTZ007.
+       AUTHOR.       PENNY GENOVESE.
+       DATE-WRITTEN. FEBRUARY 26, 1992.
+      *****************************************************************
+      *SYSTEM NAME:   EDITORIAL SYSTEMS
+      *APPL NAME:     OEM PARTS UPDATE
+      *PROGRAM NAME:  MPTZ007 - OEM PARTS UPDATE REPORTING
+      *LANGUAGE:      COBOL - Oracle
+      *
+      *DESCRIPTION: THIS PROGRAM PRODUCES THE OEM BATCH UPDATE REPORTS.
+      *
+      *  INPUT:    CONTROL INFORMATION (PROGRAM PARM FILE)
+      *            Oracle OEM TABLE
+      *
+      *  I/O:      Oracle REPORT TABLE
+      *
+      *  OUTPUT:   MPTZ007-01  TRANSACTION ERROR REPORT
+      *            MPTZ007-02  MULTIPLE SUPERSESSION DETAILS REPORT
+      *            MPTZ007-03  PRICE UPDATE VARIANCE (CEG) REPORT
+      *            MPTZ007-04  OEM BATCH UPDATE CONTROL REPORTS
+      *            MPTZ007-05  ZERO-PRICED PARTS WITH LINES REPORTS
+      *
+      * SIGNIFICANT PROCESSING NARRATIVE:
+      *            PROGRAM FETCHES ALL ROWS ASSOCIATED WITH EACH REPORT
+      *            FROM THE Oracle TABLE ACQ_BATCH_REPORTS. (THESE ROWS
+      *            WERE ENTERED VIA THE OEM PARTS UPDATE PROGRAMS.)
+      *            AFTER ALL REPORTS ARE WRITTEN, THE ASSOCIATED Oracle
+      *            ROWS ARE DELETED FROM THE TABLE.
+      *
+      * CALLED PROGRAMS:
+      *            ILBOABNO - ABEND ROUTINE
+      *     CALL "dberrmsg" USING SQLCA ERROR-MESSAGE ERROR-LENGTH.
+      *
+      * CONTROL CARD:
+      *  (SAME CONTROL CARD THAT'S USED IN THE UPDATE PROGRAMS)
+      *
+      *  OEM=XXX,REGN=XX,EFFDT=XX/XX/XXXX,REPLACE=X,RUNTYP=XXX,
+      *       1       2            3              4         5
+      *
+      *  NAGSTYP=XXXXXXXX
+      *              6
+      *
+      *       1 - NUMERIC; OEM NUMBER WHICH YOU ARE PROCESSING
+      *
+      *       2 - ALPHA; REGION OF THE OEM
+      *
+      *       3 - NUMERIC; PRICE EFFECTIVE DATE AS SPECIFIED BY THE
+      *           OEM  (FORMAT MM/DD/YYYY; MUST BE GREATER THAN LAST RUN
+      *           UNLESS THIS IS REPLACEMENT RUN - THEN MUST = LAST RUN)
+      *
+      *       4 - ALPHA; REPLACEMENT INDICATOR (FOR PRICE UPDATE PGM);
+      *           (N = NEW RUN, PRICES WILL BE UPDATED - CURRENT MOVED
+      *           TO PREVIOUS THEN TRANSACTION PRICE MOVED TO CURRENT;
+      *           Y = REPLACEMENT RUN, TRANSACTION PRICE MOVED DIRECTLY
+      *           OVER CURRENT PRICE; USED FOR CORRECTING MISPRICING.)
+      *
+      *       5 - ALPHA; TYPE OF RUN (OEM = OEM, SUP = SUPPLIMENTAL)
+      *           (USED BY REPORT PROGRAM MPTZ007)
+      *
+      *       6 - ALPHA; TYPE OF NAGS RUN (FOR NAGS RUN, EITHER "IMPORT"
+      *           OR "DOMESTIC"; ANY OTHER RUNS, "N/A")
+      *           (PRINTED IN HEADING - JUST TO DISTINGUISH BETWEEN THE
+      *            IMPORT AND DOMESTIC RUN REPORTS)
+      *
+      *
+      * MODIFICATION LOG:
+      * ----------------------------------------------------------------
+      * 10/25/2021  BY:   PENNY GENOVESE
+      *             DESC: Changed creation of Price Variance from rpt to
+      *                   pipe-delimitted file and omit service info.
+      * ----------------------------------------------------------------
+      * 01/23/2019  BY:   PENNY GENOVESE
+      *             DESC: No code change. Added mod note so pgm could be
+      *                   recompiled with new version of mptb002.cpy.
+      * ----------------------------------------------------------------
+      * 10/06/2014  BY:   PENNY GENOVESE
+      *             DESC: Added Mod Note. Test new check_in & prod_move
+      * ----------------------------------------------------------------
+      * 05/17/2014  BY:   PENNY GENOVESE
+      *             DESC: NO CODE CHANGES MADE. ADDED MOD NOTE SO THAT 
+      *                   PROGRAM COULD BE RECOMPILED FOR ORACLE 11G /
+      *                   IBM 770 MIGRATION. Attempt 2
+      * ----------------------------------------------------------------
+      * 07/01/2010  BY: PENNY GENOVESE
+      *           DESC: SINCE REPORTS ARE NO LONGER PRINTED, ONLY PRINT
+      *                 HEADINGS ONCE.
+      * ----------------------------------------------------------------
+      * 03/31/08    BY: Janet Wilson
+      *           DESC: MPTZ007-01 Transaction Error Report
+      *                 Only create MPTZ007-01 report file when
+      *                 Transaction Errors are found.
+      *                 The COS Report distribution goes to Rpt.OEM.Fixit
+      *                 so that when a MTPZ007-01 report is created,
+      *                 it will be distributed.
+      * ----------------------------------------------------------------
+      * 06/16/04  BY: LITA MIRANDA
+      *           DESC: ORACLE 9i MIGRATION
+      *                 COMMENTED OUT WS-NAGS-TYPE IN WORKING STORAGE
+      *                 (VARIABLE IS ALSO IN procedures_ws.cpy)
+      * ----------------------------------------------------------------
+      * 01/18/02  BY: GAIL WALDER
+      *           DESC: 1. CORRECTED INITIALIZATION OF UPDATE BALANCE
+      *                    FIELDS FOR INSERT INTO ACQ_UPDATE_BALANCE TABLE.
+      *                    THE DATA WAS NOT BEING INSERTED.
+      *                    NOTE: SQLCODE RETURNED FROM PROCEDURE CALL
+      *                          WAS ZEROES (SUCCESSFUL CALL/INSERT)
+      *                 2. DELETED VERIFIED-DATE, VERIFIED-USER AND
+      *                    UPDATE-COMMENT FROM UPDATE BALANCE TABLE INSERT.
+      *                    THESE COLUMNS ARE VALUED BY EDITORIAL STAFF.
+      * ----------------------------------------------------------------
+      * 03/15/01  BY: GAIL WALDER
+      *           DESC: CORRECTED COMBINED CONTROL REPORT, MPTZ007-04,
+      *                 SECTION B TOTALS ROUTINE
+      * ----------------------------------------------------------------
+      * 03/06/01  BY: GAIL WALDER
+      *           DESC: RESTORED Y1000-SQL-ERROR PROCESSING FOR
+      *                 EMBEDDED SQL
+      * ----------------------------------------------------------------
+      * 02/14/01  BY: MARINA BOGOPOLSKY
+      *           DESC: ADDED Y1500-SQL-PROCEDURE-ERROR PARAGRAPH
+      * ----------------------------------------------------------------
+      * 05/17/00  BY:    JOHN NERIO
+      *           DESC:  RACE II REVISIONS
+      *                  1. CONVERTED FOR NEW DATABASE STRUCTURE
+      *                  2. CONVERTED EMBEDDED SQL TO PKG/PROCEDURE CALLS
+      * ----------------------------------------------------------------
+      * 05/08/2000  BY :  KIM DINH
+      *           DESC:  ADD LOGIC TO UPDATE THE UPDT_RUN_DT IN THE REFTBAL
+      *                  TABLE WITH RUN DATE OF UPDATE JOB. ALSO ADD
+      *                  CURR_EFF_DT TO ALL QUERIES THAT ACCESS IIST001 AND
+      *                  IIST002 TABLES.
+      * ----------------------------------------------------------------
+      * 01/13/2000  BY:   KIM DINH
+      *           DESC: ADDED LOGIC TO CAPTURE CONTROL & COMBINED ACTIVITY
+      *                 RECORD COUNTS FOR ALL RECORD TYPES AND INSERT TO
+      *                 UPDATE INFORMATION TABLE. ALSO UPDATED THE MDETAIL
+      *                 RECORD UPDATE RUN DATE
+      * ----------------------------------------------------------------
+      * 03/23/99  BY:   JOHN CUSUMANO
+      *           DESC: RACE- REMOVED REFERENCES TO FLAT RATE COPYS AND
+      *                 REPLACED WITH WIP.
+      * ----------------------------------------------------------------
+      * MM/DD/YY  BY:   GAIL WALDER
+      *           DESC: REMOVED REFERENCES TO 'UK' AND SPECIAL CANADIAN
+      *                 OEM NUMBERS.  PREPARATION FOR GLOBALIZATION.
+      * ----------------------------------------------------------------
+      * 03/28/97  BY:   Al Faelschle
+      *           DESC: Removed moves to ws-paragraph in abend routines.
+      * ----------------------------------------------------------------
+      * 11/15/96  BY:   Al Faelschle
+      *           DESC: Converted to Unix for Rehost project.
+      * ----------------------------------------------------------------
+      * 09/08/96  BY:   STEVE CARROLL
+      *           DESC: REMOVE ALL REFERENCES TO THE INTERCHANGE DB.
+      * ----------------------------------------------------------------
+      * 11/28/95  BY:   PATTY BECOTTE
+      *           DESC: CHANGED TO CHECK 'NAGSTYP' FOR 'N/A'. IF SO, DO
+      *                 NOT PRINT, ELSE MOVE VALUE IN CNTL-NAGS-TYP TO
+      *                 HEADING.
+      * ----------------------------------------------------------------
+      * 05/10/95  BY:   PENNY GENOVESE
+      *           DESC: ELIMINATED ICHG ZERO-PRICE REPORT. ADDED LOGIC
+      *                 FOR CEG VERSUS FLR MULTIPLE SUPERSESSION REPORT.
+      * ----------------------------------------------------------------
+      * 05/10/95  BY:   PENNY GENOVESE
+      *           DESC: ADDED LST_UPDT_DT TO ZERO-PRICE REPORTS
+      * ----------------------------------------------------------------
+      * 02/28/95  BY:   PENNY GENOVESE
+      *           DESC: CHANGED RPT02 & RPT03 TO CONTAIN PART DESC.
+      * ----------------------------------------------------------------
+      * 01/27/95  BY:   PENNY GENOVESE
+      *           DESC: ADDED PRINT OF INCR VS. DECR PRICE CHANGE LINES
+      * ---------------------------------------------------------------
+      * 07/30/26  BY:   RODRIGO JASINSKI - rj132422
+      *           DESC: AIX to RHEL conversion
+      ******************************************************************
+       EJECT
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.        IBM-370.
+       OBJECT-COMPUTER.        IBM-370.
+
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+
+           SELECT CONTROL-PARMS ASSIGN TO EXTERNAL PARMSIN
+                  ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT REPORT-01     ASSIGN TO EXTERNAL RPT01
+                  ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT REPORT-02A    ASSIGN TO EXTERNAL RPT02A
+                  ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT REPORT-02B    ASSIGN TO EXTERNAL RPT02B
+                 ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT REPORT-03     ASSIGN TO EXTERNAL RPT03
+                 ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT REPORT-04A    ASSIGN TO EXTERNAL RPT04A
+                 ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT REPORT-04B    ASSIGN TO EXTERNAL RPT04B
+                 ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT REPORT-05A    ASSIGN TO EXTERNAL RPT05A
+                 ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT REPORT-05B    ASSIGN TO EXTERNAL RPT05B
+                 ORGANIZATION IS LINE SEQUENTIAL.
+       EJECT
+
+
+       DATA DIVISION.
+       FILE SECTION.
+
+       FD  CONTROL-PARMS
+           RECORDING MODE IS F
+           RECORD CONTAINS 80 CHARACTERS
+           BLOCK CONTAINS 0 RECORDS
+           LABEL RECORDS ARE STANDARD.
+       01  CNTL-PARM-REC           PIC X(80).
+
+       FD  REPORT-01
+           RECORDING MODE IS F
+           RECORD CONTAINS 133 CHARACTERS
+           BLOCK CONTAINS 0 RECORDS
+           LABEL RECORDS ARE OMITTED.
+       01  RPT01-LINE                 PIC X(133).
+
+       FD  REPORT-02A
+           RECORDING MODE IS F
+           RECORD CONTAINS 133 CHARACTERS
+           BLOCK CONTAINS 0 RECORDS
+           LABEL RECORDS ARE OMITTED.
+       01  RPT02A-LINE                PIC X(133).
+
+       FD  REPORT-02B
+           RECORDING MODE IS F
+           RECORD CONTAINS 133 CHARACTERS
+           BLOCK CONTAINS 0 RECORDS
+           LABEL RECORDS ARE OMITTED.
+       01  RPT02B-LINE                PIC X(133).
+
+       FD  REPORT-03
+           RECORDING MODE IS F
+           RECORD CONTAINS 133 CHARACTERS
+           BLOCK CONTAINS 0 RECORDS
+           LABEL RECORDS ARE OMITTED.
+       01  RPT03-LINE                 PIC X(133).
+
+       FD  REPORT-04A
+           RECORDING MODE IS F
+           RECORD CONTAINS 133 CHARACTERS
+           BLOCK CONTAINS 0 RECORDS
+           LABEL RECORDS ARE OMITTED.
+       01  RPT04A-LINE                PIC X(133).
+
+       FD  REPORT-04B
+           RECORDING MODE IS F
+           RECORD CONTAINS 133 CHARACTERS
+           BLOCK CONTAINS 0 RECORDS
+           LABEL RECORDS ARE OMITTED.
+       01  RPT04B-LINE                PIC X(133).
+
+       FD  REPORT-05A
+           RECORDING MODE IS F
+           RECORD CONTAINS 133 CHARACTERS
+           BLOCK CONTAINS 0 RECORDS
+           LABEL RECORDS ARE OMITTED.
+       01  RPT05A-LINE                PIC X(133).
+
+       FD  REPORT-05B
+           RECORDING MODE IS F
+           RECORD CONTAINS 133 CHARACTERS
+           BLOCK CONTAINS 0 RECORDS
+           LABEL RECORDS ARE OMITTED.
+       01  RPT05B-LINE                PIC X(133).
+
+       EJECT
+
+       WORKING-STORAGE SECTION.
+       77  PGMNAME            PIC X(08) VALUE "mptz007".
+       01  RCS-FILE            PIC X(60) VALUE
+      -"$RCSfile: mptz007.cbl,v $".
+       01  RCS-REV             PIC X(60) VALUE
+      -"$Revision: 1.14 $".
+       01  RCS-DATE            PIC X(60) VALUE
+      -"$Date: 2026/07/31 11:56:10 $".
+       01  RCS-AUTH            PIC X(60) VALUE
+      -"$Author: rj132422 $".
+       01  RCS-STATE           PIC X(60) VALUE
+      -"$State: Exp $".
+       01  RCS-LOCKER          PIC X(60) VALUE
+      -"$Locker: rj132422 $".
+
+       77  FILLER PIC X(30)
+           VALUE "WORKING STORAGE BEGINS HERE".
+
+           COPY iisb999.cpy.
+           COPY iisb998.cpy.
+
+           EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       01  SQLGLM-TEXT         PIC X(120).
+
+       77  DELETE-REPORT-NUMBER       PIC X(8)   VALUE "MPTZ007%".
+
+       01  WS-SEL-OEM-NUM             PIC X(03).
+       01  WS-SEL-REGN-CD             PIC X(02).
+       01  WS-SEL-SORT-DATA           PIC X(100).
+
+       01 WS-UPDATE-BALANCE-FIELDS.
+          05 WS-REPLACEMENT-FLAG            PIC X(01).
+          05 WS-REPLACEMENT-RUN-COUNT       PIC S9(02) COMP-3 VALUE 0.
+      *   05 WS-NAGS-TYPE                   PIC X(10).
+          05 WS-RUN-TYPE                    PIC X(03).
+
+       01  APPLICATIONCSR-01 SQL-CURSOR.
+       01  APPLICATIONCSR-03 SQL-CURSOR.
+
+           EXEC SQL END   DECLARE SECTION END-EXEC.
+
+       01  WS-COUNTRY-EXCEPTIONS-INFO.
+           03  COUNTRY-EXCEPTIONS     PIC X(02).
+               88  COUNTRY-EXCEPTION1 VALUE "PR".
+
+       01  WS-HOLD-FIELDS.
+           03  WS-PREV-OLD-PART-NUM   PIC X(25)  VALUE SPACES.
+           03  WS-PREV-NEW-PART-NUM   PIC X(25)  VALUE SPACES.
+           03  WS-PREV-LINE-INFO      PIC X(22)  VALUE SPACES.
+
+       01  TEMP-FIELDS.
+      * DATE ACCEPTED FROM SYSTEM
+           03  WS-CURRENT-DT.
+               05  WS-CD-YEAR         PIC X(02).
+               05  WS-CD-MONTH        PIC X(02).
+               05  WS-CD-DAY          PIC X(02).
+      * TIME ACCEPTED FROM SYSTEM
+           03  WS-CURRENT-TM.
+               05  WS-CT-HOUR         PIC X(02).
+               05  WS-CT-MINUTE       PIC X(02).
+               05  WS-CT-SECOND       PIC X(02).
+               05  WS-CT-HUNDREDTH    PIC X(02).
+      * SYSTEM DATE PRINTED IN REPORT
+           03  WS-FORMAT-DT.
+               05  WS-FD-MONTH        PIC X(02).
+               05  FILLER             PIC X(01)  VALUE "/".
+               05  WS-FD-DAY          PIC X(02).
+               05  FILLER             PIC X(01)  VALUE "/".
+               05  WS-FD-YEAR         PIC X(02).
+      * SYSTEM TIME PRINTED IN REPORT
+           03  WS-FORMAT-TM.
+               05  WS-FT-HOUR         PIC X(02).
+               05  FILLER             PIC X(01)  VALUE ":".
+               05  WS-FT-MINUTE       PIC X(02).
+               05  FILLER             PIC X(01)  VALUE ":".
+               05  WS-FT-SECOND       PIC X(02).
+      * CONTROL EFFECTIVE DATE USED IN DATE COMPARISON
+           03  WS-TEMP-EFF-DT.
+               05  WS-TEMP-EFF-YEAR   PIC X(04).
+               05  WS-TEMP-EFF-MONTH  PIC X(02).
+               05  WS-TEMP-EFF-DAY    PIC X(02).
+      * OEM LAST UPDATE DATE FROM Oracle TABLE (FOR REFORMATTING)
+           03  WS-LST-UPD-DT.
+               05  WS-LST-UPD-MONTH   PIC X(02).
+               05  FILLER             PIC X(01).
+               05  WS-LST-UPD-DAY     PIC X(02).
+               05  FILLER             PIC X(01).
+               05  WS-LST-UPD-YEAR    PIC X(04).
+      * OEM LAST UPDATE DATE USED IN DATE COMPARISON
+           03  WS-TEMP-UPD-DT.
+               05  WS-TEMP-UPD-YEAR   PIC X(04).
+               05  WS-TEMP-UPD-MONTH  PIC X(02).
+               05  WS-TEMP-UPD-DAY    PIC X(02).
+      * TOTALS FOR ZERO-PRICED REPORT
+           03  WS-ZERO-PRICED-TOTALS.
+               05  WS-ZERO-PART-CTR     PIC 9(9)  COMP-3  VALUE 0.
+               05  WS-ZERO-LINE-CTR     PIC 9(9)  COMP-3  VALUE 0.
+      * TOTALS FOR COMBINED CONTROL REPORT
+           03  WS-CONTROL-TRANSACTION-AMTS.
+               05  WS-TRANS-READ-AMT    PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-PROC-AMT          PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-NOT-PROC-AMT      PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-PRIOR-SUPE-AMT    PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-ALREADY-SUPE-AMT  PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-PART-NOT-DB-AMT   PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-TRANS-READ-TOT    PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-PROC-TOT          PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-NOT-PROC-TOT      PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-PRIOR-SUPE-TOT    PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-ALREADY-SUPE-TOT  PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-PART-NOT-DB-TOT   PIC 9(7)  COMP-3  VALUE 0.
+           03  WS-CONTROL-DATABASE-AMTS.
+               05  WS-TEMP-AMT          PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-READ-AMT          PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-INSRT-AMT         PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-UPDT-AMT          PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-DLET-AMT          PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-TOTAL-AMT         PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-DBASE-READ-AMT    PIC 9(8)  COMP-3  VALUE 0.
+               05  WS-DBASE-INSRT-AMT   PIC 9(8)  COMP-3  VALUE 0.
+               05  WS-DBASE-UPDT-AMT    PIC 9(8)  COMP-3  VALUE 0.
+               05  WS-DBASE-DLET-AMT    PIC 9(8)  COMP-3  VALUE 0.
+               05  WS-DBASE-TOTAL-AMT   PIC 9(9)  COMP-3  VALUE 0.
+               05  WS-READ-TOT          PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-INSRT-TOT         PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-UPDT-TOT          PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-DLET-TOT          PIC 9(7)  COMP-3  VALUE 0.
+               05  WS-DBASE-READ-TOT    PIC 9(8)  COMP-3  VALUE 0.
+               05  WS-DBASE-INSRT-TOT   PIC 9(8)  COMP-3  VALUE 0.
+               05  WS-DBASE-UPDT-TOT    PIC 9(8)  COMP-3  VALUE 0.
+               05  WS-DBASE-DLET-TOT    PIC 9(8)  COMP-3  VALUE 0.
+               05  WS-DBASE-ACTIV-TOT   PIC 9(9)  COMP-3  VALUE 0.
+           03  WS-RPT-ROW-CTR           PIC 9(8)  VALUE 0.
+
+       01  PROGRAM-SWITCHES.
+           03  WS-CONTROL-REPORT-SW   PIC X      VALUE "N".
+               88  CONTROL-RPT-ROWS-AVAIL        VALUE "Y".
+               88  CONTROL-ROWS-NOT-FOUND        VALUE "N".
+           03  WS-REPORT-SW           PIC X      VALUE " ".
+               88  RPT-ROW-FOUND                 VALUE "Y".
+               88  RPT-ROW-NOT-FOUND             VALUE "N".
+               88  END-OF-RPT-ROWS               VALUE "E".
+           03  WS-OEM-SW              PIC X      VALUE " ".
+               88  VALID-OEM VALUE "Y".
+               88  NOT-VALID-OEM                 VALUE "N".
+
+       01  WS-RUN-DT.
+           05  WS-RFD-MONTH            PIC X(02).
+           05  FILLER                  PIC X(01)  VALUE "/".
+           05  WS-RFD-DAY              PIC X(02).
+           05  FILLER                  PIC X(01)  VALUE "/".
+           05  WS-RFD-CENT             PIC X(02)  VALUE "20".
+           05  WS-RFD-YEAR             PIC X(2).
+           05  FILLER                  PIC X.
+           05  WS-RFT-HOUR             PIC X(02).
+           05  FILLER                  PIC X(01)  VALUE ":".
+           05  WS-RFT-MINUTE           PIC X(02).
+           05  FILLER                  PIC X(01)  VALUE ":".
+           05  WS-RFT-SECOND           PIC X(02).
+
+       01  NUMERIC-COUNTS.
+           05  WS-RPT04-CEG-PRT-CTR    PIC 9(07).
+           05  WS-RPT04-CEG-LN-CTR     PIC 9(07).
+           05  WS-RPT04-WIP-PRT-CTR    PIC 9(07).
+           05  WS-RPT04-WIP-LN-CTR     PIC 9(07).
+           05  WS-RPT04-PRT-DB-CTR     PIC 9(08).
+
+      *   mptb002 => Reports   
+           COPY mptb002.cpy.
+           COPY mptb003.cpy.
+           COPY mptb004.cpy.
+           COPY mptb005.cpy.
+
+      *****************************************************************
+      * SQL COMMUNICATIONS AREA                                       *
+      *****************************************************************
+           EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+
+           EXEC SQL INCLUDE SQLCA                     END-EXEC.
+           EXEC SQL INCLUDE acq_batch_reports.cpy     END-EXEC.
+           EXEC SQL INCLUDE acq_media_detail.cpy      END-EXEC.
+           EXEC SQL INCLUDE acq_update_balance.cpy    END-EXEC.
+           EXEC SQL INCLUDE part_supplier.cpy         END-EXEC.
+           EXEC SQL INCLUDE part_supplier_country.cpy END-EXEC.
+           EXEC SQL INCLUDE procedures_ws.cpy         END-EXEC.
+
+       01  WS-RUN-DATE                      PIC X(19).
+       01  OKAY-COMMENT                     PIC X(08).
+       01  CNTL-EFF-DT1                     PIC X(10).
+
+       01  W-UPDINFO-TBL-KEY.
+           05  W-EFF-DT                     PIC X(10).
+           05  W-REPL-IND                   PIC X.
+      *    05  W-NAGS-TYP                    PIC X(10).
+      *    05  W-RUN-TYP                     PIC X(15).
+
+           EXEC SQL END   DECLARE SECTION END-EXEC.
+
+       EJECT
+      *****************************************************************
+       01  END-WORKING        PIC X(08) VALUE "END".
+      *LINKAGE SECTION.
+      *    and Connect to Oracle RDBMS
+      *****************************************************************
+
+       PROCEDURE DIVISION.
+           CALL "mfconnect" USING  PGMNAME.
+
+      ***************************************************************
+      * MAIN-CONTROL:                                               *
+      *     1. CONTROL PROGRAM PROCESSES.                           *
+      *     2. DETERMINE END-OF-JOB.                                *
+      ***************************************************************
+       MAIN-CONTROL.
+           MOVE "MAIN-CONTROL" TO WS-PARAGRAPH.
+           MOVE "MPTZ007" TO WS-PGMNAME.
+
+      *    READY TRACE.
+
+           OPEN INPUT  CONTROL-PARMS
+                OUTPUT REPORT-01
+                       REPORT-02A
+                       REPORT-02B
+                       REPORT-03
+                       REPORT-04A
+                       REPORT-04B
+                       REPORT-05A
+                       REPORT-05B.
+
+           PERFORM A0000-PROCESS-PARMS   THRU A0000-EXIT.
+
+           PERFORM B0000-PRODUCE-REPORTS THRU B0000-EXIT.
+
+           PERFORM R9900-DELETE-REPORT   THRU R9900-EXIT.
+
+           CLOSE CONTROL-PARMS
+                 REPORT-01
+                 REPORT-02A
+                 REPORT-02B
+                 REPORT-03
+                 REPORT-04A
+                 REPORT-04B
+                 REPORT-05A
+                 REPORT-05B.
+
+           EXEC SQL
+            COMMIT WORK
+            RELEASE
+           END-EXEC.
+       
+           GOBACK.
+
+       MAIN-EXIT. EXIT.
+
+      ***************************************************************
+      * A0000-PROCESS-PARMS:                                        *
+      *     1. VERIFY CONTROL PARMS PASSED IN EXECUTE OF PROGRAM    *
+      *     2. ACCEPT SYSTEM DATE AND TIME                          *
+      *     3. MOVE THIS INFORMATION TO HEADINGS                    *
+      ***************************************************************
+       A0000-PROCESS-PARMS.
+           MOVE "A0000-PROCESS-PARMS" TO WS-PARAGRAPH.
+
+           READ CONTROL-PARMS INTO WS-CNTL-PARM-REC
+             AT END
+               DISPLAY WS-ERR-MSG-CP1
+               MOVE V-MISSING-CNTL-PARM TO WS-ABEND-CODE
+               PERFORM Y2000-ABEND-RTN THRU Y2000-EXIT.
+
+           MOVE CNTL-REGN-CD      TO WS-SEL-REGN-CD.
+           MOVE CNTL-EFF-MONTH    TO WS-TEMP-EFF-MONTH.
+           MOVE CNTL-EFF-DAY      TO WS-TEMP-EFF-DAY.
+           MOVE CNTL-EFF-YEAR     TO WS-TEMP-EFF-YEAR.
+
+           IF WS-TEMP-EFF-DT NOT NUMERIC OR WS-TEMP-EFF-DT <= ZEROES
+             DISPLAY WS-ERR-MSG-CP3
+             DISPLAY "WS-TEMP-EFF-DT: " WS-TEMP-EFF-DT
+             MOVE V-INVALID-DATE TO WS-ABEND-CODE
+             PERFORM Y2000-ABEND-RTN THRU Y2000-EXIT.
+
+           MOVE CNTL-OEM-NUM      TO WS-SEL-OEM-NUM
+                                     WS-PART-SUPPLIER-NUMBER.
+           MOVE WS-SEL-REGN-CD    TO WS-REGN-LIT-NM
+                                     WS-PART-SUPPLIER-COUNTRY-ABBR
+                                     COUNTRY-EXCEPTIONS.
+           MOVE WS-REGN-LIT       TO WS-REGN-LIT-X.
+
+           PERFORM R1000-READ-OEM THRU R1000-EXIT.
+           IF NOT-VALID-OEM
+             DISPLAY WS-ERR-MSG-CP2
+             DISPLAY "CNTL-OEM: " CNTL-OEM-NUM
+             MOVE V-INVALID-CNTL-PARM TO WS-ABEND-CODE
+             PERFORM Y2000-ABEND-RTN THRU Y2000-EXIT.
+
+           ACCEPT WS-CURRENT-DT FROM DATE.
+           MOVE WS-CD-MONTH  TO WS-FD-MONTH.
+           MOVE WS-CD-DAY    TO WS-FD-DAY.
+           MOVE WS-CD-YEAR   TO WS-FD-YEAR.
+           MOVE WS-FORMAT-DT TO HDG-DT.
+
+           ACCEPT WS-CURRENT-TM FROM TIME.
+           MOVE WS-CT-HOUR   TO WS-FT-HOUR.
+           MOVE WS-CT-MINUTE TO WS-FT-MINUTE.
+           MOVE WS-CT-SECOND TO WS-FT-SECOND.
+           MOVE WS-FORMAT-TM TO HDG-TM.
+
+           MOVE CNTL-EFF-DT  TO HDG-EFF-DT.
+           MOVE CNTL-EFF-DT  TO WS-CURRENT-EFFECTIVE-DATE.
+           MOVE CNTL-OEM-NUM TO HDG-OEM-NUM.
+
+           MOVE WS-PART-SUPPLIER-NAME-RGN TO HDG-OEM-NM.
+           MOVE WS-PGMNAME TO HDG-PGMNAME, EOR-PGMNAME.
+
+           IF CNTL-NAGS-TYP = "N/A     "
+             NEXT SENTENCE
+           ELSE
+             MOVE CNTL-NAGS-TYP TO HDG-NAGS-TYP.
+
+           MOVE CNTL-NAGS-TYP    TO  WS-NAGS-TYPE.
+           MOVE CNTL-EFF-DT      TO  W-EFF-DT.
+           MOVE CNTL-RUNTYP      TO  WS-RUN-TYPE.
+           MOVE CNTL-REPLACE-IND TO  WS-REPLACEMENT-FLAG.
+
+      *  BUILD THE RUN DATE WITH TIME STAMP
+
+           MOVE WS-FD-MONTH      TO  WS-RFD-MONTH.
+           MOVE WS-FD-DAY        TO  WS-RFD-DAY.
+           MOVE WS-FD-YEAR       TO  WS-RFD-YEAR.
+           MOVE WS-FT-HOUR       TO  WS-RFT-HOUR.
+           MOVE WS-FT-SECOND     TO  WS-RFT-SECOND.
+           MOVE WS-FT-MINUTE     TO  WS-RFT-MINUTE.
+           MOVE WS-RUN-DT        TO  WS-RUN-DATE.
+
+       A0000-EXIT. EXIT.
+
+
+      ***************************************************************
+      * B0000-PRODUCE-REPORTS:                                      *
+      *     1. PRODUCE REPORT #01 - TRANSACTION ERRORS              *
+      *   * 2. PRODUCE REPORTS #02 - MULTIPLE SUPERSESSION          *
+      *     3. PRODUCE REPORT #03 - PRICE VARIANCE OF CEG PARTS     *
+      *     4. PRODUCE REPORTS #04- COMBINED CONTROL REPORTS        *
+      *   * 5. PRODUCE REPORTS #05- ZERO PRICED PARTS W/ LINES      *
+      *                                                             *
+      *   * THESE REPORTS ARE ONLY GENERATED FOR FULL OEM TAPE RUN  *
+      *     (I.E. NOT FOR SUPPLIMENTAL RUNS)                        *
+      ***************************************************************
+       B0000-PRODUCE-REPORTS.
+           MOVE "B0000-PRODUCE-REPORTS" TO WS-PARAGRAPH.
+
+           IF COUNTRY-EXCEPTION1
+              DISPLAY "Country is PR - COUNTRY-EXCEPTION1"
+              PERFORM B3000-PRODUCE-REPORT03 THRU B3000-EXIT
+              PERFORM B4000-PRODUCE-REPORT04 THRU B4000-EXIT
+              GO TO B0000-EXIT.
+
+           PERFORM B1000-PRODUCE-REPORT01 THRU B1000-EXIT.
+
+           IF OEM-TAPE-RUN
+             PERFORM B2000-PRODUCE-REPORT02 THRU B2000-EXIT.
+
+           PERFORM B3000-PRODUCE-REPORT03 THRU B3000-EXIT.
+
+           PERFORM B4000-PRODUCE-REPORT04 THRU B4000-EXIT.
+
+           IF OEM-TAPE-RUN
+             PERFORM B5000-PRODUCE-REPORT05 THRU B5000-EXIT.
+
+       B0000-EXIT. EXIT.
+
+      ***************************************************************
+      * B1000-PRODUCE-REPORT01:                                     *
+      *     PRODUCE MPTZ007-01 TRANSACTION ERROR REPORT             *
+      *     1. PERFORM INITIAL FETCH OF REPORT ROWS                 *
+      *     2. IF ROWS NOT FOUND, PRODUCE EMPTY REPORT PAGE         *
+      *        OTHERWISE, CONTINUE REPORT PROCESS.                  *
+      *     3. WHEN ALL ROWS HAVE BEEN RETRIEVED AND REPORTED,      *
+      *        PRODUCE END-OF-REPORT PAGE.                          *
+      ***************************************************************
+       B1000-PRODUCE-REPORT01.
+           MOVE "B1000-PRODUCE-REPORT01" TO WS-PARAGRAPH.
+
+           MOVE "MPTZ007-01" TO WS-REPORT-NUMBER.
+           PERFORM R9000-READ-RPT01-03-REPORT THRU R9000-EXIT.
+
+           IF RPT-ROW-NOT-FOUND
+      *    JW - IF NOT ROWS FOUND, DON'T PRINT REPORT.
+      *       PERFORM H1000-REPORT01-HDG-RTN  THRU H1000-EXIT
+      *       PERFORM G9998-EMPTY-RPT-RTN     THRU G9998-EXIT
+             DISPLAY "Bypassing creation of empty MPTZ007-01 Report"
+           ELSE
+             PERFORM H1000-REPORT01-HDG-RTN  THRU H1000-EXIT
+             PERFORM B1100-CONTINUE-REPORT01 THRU B1100-EXIT
+                     UNTIL END-OF-RPT-ROWS
+             PERFORM G9999-END-OF-RPT-RTN    THRU G9999-EXIT.
+
+       B1000-EXIT. EXIT.
+
+      ***************************************************************
+      * B1100-CONTINUE-REPORT01:                                    *
+      *     1. PERFORM DETAIL LINE ROUTINE                          *
+      *     2. PERFORM FETCH NEXT PRODUCE EMPTY REPORT PAGE         *
+      *        OTHERWISE, CONTINUE REPORT PROCESS.                  *
+      *     3. WHEN ALL ROWS HAVE BEEN RETRIEVED AND REPORTED,      *
+      *        PRODUCE END-OF-REPORT PAGE.                          *
+      ***************************************************************
+       B1100-CONTINUE-REPORT01.
+           MOVE "B1100-CONTINUE-REPORT01" TO WS-PARAGRAPH.
+
+           PERFORM G1000-REPORT01-DTL-RTN   THRU G1000-EXIT.
+
+           PERFORM R9050-FETCH-RPT01-03-ROW THRU R9050-EXIT.
+
+       B1100-EXIT. EXIT.
+
+      ***************************************************************
+      * B2000-PRODUCE-REPORT02:                                     *
+      *     PRODUCE MPTZ007-02A & B MULTIPLE SUPERSESSION REPORTS   *
+      *     1. PERFORM INITIAL FETCH OF REPORT ROWS                 *
+      *     2. IF ROWS NOT FOUND, PRODUCE EMPTY REPORT PAGE         *
+      *        OTHERWISE, CONTINUE REPORT PROCESS.                  *
+      *     3. WHEN ALL ROWS HAVE BEEN RETRIEVED AND REPORTED,      *
+      *        PRODUCE END-OF-REPORT PAGE.                          *
+      ***************************************************************
+       B2000-PRODUCE-REPORT02.
+           MOVE "B2000-PRODUCE-REPORT02" TO WS-PARAGRAPH.
+
+           MOVE "MPTZ007-02" TO WS-REPORT-NUMBER.
+
+      * PRODUCE CEG REPORT
+           MOVE SPACES       TO WS-SEL-SORT-DATA.
+           MOVE SPACES       TO WS-PREV-OLD-PART-NUM.
+           MOVE SPACES       TO WS-PREV-NEW-PART-NUM.
+           MOVE "_CEG%"      TO WS-SEL-SORT-DATA.
+           MOVE "A"          TO HDG-RPTLETR, EOR-RPTLETR.
+           PERFORM R9200-READ-RPT02-05-REPORT THRU R9200-EXIT.
+           PERFORM H2000-REPORT02-HDG-RTN  THRU H2000-EXIT.
+
+           IF RPT-ROW-NOT-FOUND
+             PERFORM G9998-EMPTY-RPT-RTN     THRU G9998-EXIT
+           ELSE
+             PERFORM B2100-CONTINUE-REPORT02 THRU B2100-EXIT
+                     UNTIL END-OF-RPT-ROWS.
+
+           PERFORM G9999-END-OF-RPT-RTN   THRU G9999-EXIT.
+
+      * PRODUCE WIP REPORT
+           MOVE SPACES       TO WS-SEL-SORT-DATA.
+           MOVE SPACES       TO WS-PREV-OLD-PART-NUM.
+           MOVE SPACES       TO WS-PREV-NEW-PART-NUM.
+           MOVE "_WIP%"      TO WS-SEL-SORT-DATA.
+
+           MOVE "B"  TO HDG-RPTLETR, EOR-RPTLETR.
+           PERFORM R9200-READ-RPT02-05-REPORT THRU R9200-EXIT.
+           PERFORM H2000-REPORT02-HDG-RTN  THRU H2000-EXIT.
+
+           IF RPT-ROW-NOT-FOUND
+             PERFORM G9998-EMPTY-RPT-RTN     THRU G9998-EXIT
+           ELSE
+             PERFORM B2100-CONTINUE-REPORT02 THRU B2100-EXIT
+                     UNTIL END-OF-RPT-ROWS.
+
+           PERFORM G9999-END-OF-RPT-RTN   THRU G9999-EXIT.
+
+       B2000-EXIT. EXIT.
+
+      ***************************************************************
+      * B2100-CONTINUE-REPORT02:                                    *
+      *     1. PERFORM DETAIL LINE ROUTINE                          *
+      *     2. PERFORM FETCH NEXT PRODUCE EMPTY REPORT PAGE         *
+      *        OTHERWISE, CONTINUE REPORT PROCESS.                  *
+      *     3. WHEN ALL ROWS HAVE BEEN RETRIEVED AND REPORTED,      *
+      *        PRODUCE END-OF-REPORT PAGE.                          *
+      ***************************************************************
+       B2100-CONTINUE-REPORT02.
+           MOVE "B2100-CONTINUE-REPORT02" TO WS-PARAGRAPH.
+
+           IF HDG-RPTLETR EQUAL "A"
+             PERFORM G2000-REPORT02-DTLA-RTN THRU G2000-EXIT
+           ELSE
+             PERFORM G2100-REPORT02-DTLB-RTN THRU G2100-EXIT.
+
+           PERFORM R9250-FETCH-RPT02-05-ROW THRU R9250-EXIT.
+
+       B2100-EXIT. EXIT.
+
+      ***************************************************************
+      * B3000-PRODUCE-REPORT03:                                     *
+      *     PRODUCE MPTZ007-03 PRICE UPDATE VARIANCE REPORT         *
+      *     1. PERFORM INITIAL FETCH OF REPORT ROWS                 *
+      *     2. IF ROWS NOT FOUND, PRODUCE EMPTY REPORT PAGE         *
+      *        OTHERWISE, CONTINUE REPORT PROCESS.                  *
+      *     3. WHEN ALL ROWS HAVE BEEN RETRIEVED AND REPORTED,      *
+      *        PRODUCE END-OF-REPORT PAGE.                          *
+      ***************************************************************
+       B3000-PRODUCE-REPORT03.
+           MOVE "B3000-PRODUCE-REPORT03" TO WS-PARAGRAPH.
+
+           MOVE "MPTZ007-03"   TO WS-REPORT-NUMBER.
+
+           PERFORM R9000-READ-RPT01-03-REPORT THRU R9000-EXIT.
+           PERFORM H3000-REPORT03-HDG-RTN  THRU H3000-EXIT.
+
+           IF RPT-ROW-NOT-FOUND
+             PERFORM G9998-EMPTY-RPT-RTN     THRU G9998-EXIT
+           ELSE
+             PERFORM B3100-CONTINUE-REPORT03 THRU B3100-EXIT
+                     UNTIL END-OF-RPT-ROWS.
+
+           PERFORM G9999-END-OF-RPT-RTN   THRU G9999-EXIT.
+
+       B3000-EXIT. EXIT.
+
+      ***************************************************************
+      * B3100-CONTINUE-REPORT03:                                    *
+      *     1. PERFORM DETAIL LINE ROUTINE                          *
+      *     2. PERFORM FETCH NEXT PRODUCE EMPTY REPORT PAGE         *
+      *        OTHERWISE, CONTINUE REPORT PROCESS.                  *
+      *     3. WHEN ALL ROWS HAVE BEEN RETRIEVED AND REPORTED,      *
+      *        PRODUCE END-OF-REPORT PAGE.                          *
+      ***************************************************************
+       B3100-CONTINUE-REPORT03.
+           MOVE "B3100-CONTINUE-REPORT03" TO WS-PARAGRAPH.
+
+           PERFORM G3000-REPORT03-DTL-RTN   THRU G3000-EXIT.
+
+           PERFORM R9050-FETCH-RPT01-03-ROW THRU R9050-EXIT.
+
+       B3100-EXIT. EXIT.
+
+      ***************************************************************
+      * B4000-PRODUCE-REPORT04:                                     *
+      *     PRODUCE TWO MPTZ007-04 OEM UPDATE COMBINED CONTROL RPTS *
+      *     A- FOR INFORMATION SYSTEMS ONLY                         *
+      *        CONTAINS TRANS AND DATABASE ACTIVITY INFORMATION     *
+      *     B- FOR EDITORIAL CLIENTS AND INFORMATION SYSTEMS        *
+      *        CONTAINS UPDATE ACTIVITY INFORMATION                 *
+      *                                                             *
+      *     1. WRITE HEADINGS FOR REPORTS "A" AND "B"               *
+      *     2. TO PRODUCE SECTION 1 (TRANSACTION INFO):             *
+      *        EACH SPECIFIC LINE IS SELECTED FROM THE Oracle TABLE *
+      *        AND PRINTED. THE LINE INFORMATION IS ALSO TOTALED    *
+      *        AND AFTER THE "PRICING" LINE IS PRINTED, A TOTAL     *
+      *        LINE IS FORMATTED AND WRITTEN.                       *
+      *     3. IF NO TRANS CONTROL REPORT ROWS WERE FOUND, FORCE AN *
+      *        ABEND.                                               *
+      *     4. TO PRODUCE SECTION 2 (DATABASE ACTIVITY):            *
+      *        EACH PRINTED REPORT LINE IS CREATED BY FETCHING ALL  *
+      *        THE RELATED UPDATE LINES (E.G. "A" PARTS DB TOTALS,  *
+      *        "C" PARTS DB TOTALS, "N" PARTS DB TOTALS, "D" PARTS  *
+      *        DB TOTALS AND "P" PARTS DB TOTALS), TOTALLING THEM   *
+      *        IN WORKING STORAGE, AND THEN WRITING THE TOTALS IN   *
+      *        ONE LINE.                                            *
+      *        THE COLUMNS IN THE PRINTED LINES ARE TOTALLED AS WELL*
+      *        AND AFTER THE "TRANS REPORTS" LINE IS PRINTED, A     *
+      *        TOTAL LINE IS FORMATTED AND WRITTEN.                 *
+      *     5. TO PRODUCE THE UPDATE ACTIVITY INFORMATION:          *
+      *        EACH SPECIFIC LINE IS SELECTED FROM THE Oracle TABLE *
+      *        AND PRINTED.                                         *
+      *                                                             *
+      ***************************************************************
+       B4000-PRODUCE-REPORT04.
+           MOVE "B4000-PRODUCE-REPORT04" TO WS-PARAGRAPH.
+
+           MOVE "MPTZ007-04"   TO WS-REPORT-NUMBER.
+
+           PERFORM H4000-REPORT04-HDG-RTN THRU H4000-EXIT.
+
+           INITIALIZE ACQ-UPDATE-BALANCE
+             REPLACING ALPHANUMERIC BY SPACES
+                       NUMERIC BY ZEROES.
+
+      * REPORT A - TRANSACTION INFO
+
+           WRITE RPT04A-LINE FROM SUBHEAD-04-1A AFTER 5 LINES.
+           WRITE RPT04A-LINE FROM SUBHEAD-04-1B AFTER 1 LINE.
+           WRITE RPT04A-LINE FROM SUBHEAD-04-2  AFTER 1 LINE.
+
+      * REPORT A - REVERSE SUPERSESSION TRANS INFO
+           MOVE SPACES              TO WS-SEL-SORT-DATA.
+           MOVE "RA1"               TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4000-REPORT04-DTLA-RTN    THRU G4000-EXIT.
+           MOVE WS-TRANS-READ-AMT   TO   REVERSE-SUPER-READ-CNT.
+           MOVE WS-PROC-AMT         TO   REVERSE-SUPER-PROC-CNT.
+           MOVE WS-NOT-PROC-AMT     TO   REVERSE-SUPER-BYPASSED-CNT.
+
+      * REPORT A - ASSEMBLY-TO-COMPONENT TRANS INFO
+           MOVE "AA1"               TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4000-REPORT04-DTLA-RTN    THRU G4000-EXIT.
+           MOVE WS-TRANS-READ-AMT   TO ASSY-TO-COMPNT-READ-CNT.
+           MOVE WS-PROC-AMT         TO ASSY-TO-COMPNT-PROC-CNT.
+           MOVE WS-NOT-PROC-AMT     TO ASSY-TO-COMPNT-BYPASSED-CNT.
+
+      * REPORT A - COMPONENT-TO-ASSEMBLY TRANS INFO
+           MOVE "CA1"               TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4000-REPORT04-DTLA-RTN    THRU G4000-EXIT.
+           MOVE WS-TRANS-READ-AMT   TO COMPNT-TO-ASSY-READ-CNT.
+           MOVE WS-PROC-AMT         TO COMPNT-TO-ASSY-PROC-CNT.
+           MOVE WS-NOT-PROC-AMT     TO COMPNT-TO-ASSY-BYPASSED-CNT.
+
+      * REPORT A - SUPERSESSION TRANS INFO
+           MOVE "NA1"               TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4000-REPORT04-DTLA-RTN    THRU G4000-EXIT.
+           MOVE WS-TRANS-READ-AMT   TO SUPER-READ-CNT.
+           MOVE WS-PROC-AMT         TO SUPER-PROC-CNT.
+           MOVE WS-NOT-PROC-AMT     TO SUPER-BYPASSED-CNT.
+
+      * REPORT A - DISCONTINUE TRANS INFO
+           MOVE "DA1"               TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4000-REPORT04-DTLA-RTN    THRU G4000-EXIT.
+           MOVE WS-TRANS-READ-AMT   TO DISC-READ-CNT.
+           MOVE WS-PROC-AMT         TO DISC-PROC-CNT.
+           MOVE WS-NOT-PROC-AMT     TO DISC-BYPASSED-CNT.
+
+      * REPORT A - PRICING TRANS INFO
+           MOVE "PA1"               TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4000-REPORT04-DTLA-RTN    THRU G4000-EXIT.
+           MOVE WS-TRANS-READ-AMT   TO PRICE-READ-CNT.
+           MOVE WS-PROC-AMT         TO PRICE-PROC-CNT.
+           MOVE WS-NOT-PROC-AMT     TO PRICE-BYPASSED-CNT.
+
+           IF CONTROL-ROWS-NOT-FOUND
+             PERFORM G9998-EMPTY-RPT-RTN THRU G9998-EXIT
+             DISPLAY WS-ERR-MSG-CP8
+             DISPLAY "WS-REPORT-SW: " WS-REPORT-SW
+             MOVE V-INVALID-CNTL-PARM TO WS-ABEND-CODE
+             PERFORM Y2000-ABEND-RTN THRU Y2000-EXIT.
+
+           PERFORM G4050-REPORT04-TOTLNA-RTN THRU G4050-EXIT.
+
+      * REPORT A - SECTION B - DATABASE INFO
+
+           WRITE RPT04A-LINE FROM SUBHEAD-04-3 AFTER 5 LINES.
+           WRITE RPT04A-LINE FROM SUBHEAD-04-4 AFTER 1 LINE.
+           WRITE RPT04A-LINE FROM SUBHEAD-04-5 AFTER 1 LINE.
+
+      * REPORT A - PARTS DATABASE INFO
+           MOVE SPACES       TO WS-SEL-SORT-DATA.
+           MOVE "%B1"        TO WS-SEL-SORT-DATA.
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT.
+           PERFORM G4100-REPORT04-DTLB-RTN        THRU G4100-EXIT.
+
+      * REPORT A - SUPERSESSION DATABASE INFO
+           MOVE "%B2"        TO WS-SEL-SORT-DATA.
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT.
+           PERFORM G4100-REPORT04-DTLB-RTN        THRU G4100-EXIT.
+
+      * REPORT A - CEG LINES DATABASE INFO
+           MOVE "%B3"        TO WS-SEL-SORT-DATA.
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT.
+           PERFORM G4100-REPORT04-DTLB-RTN        THRU G4100-EXIT.
+      * REPORT A - WIP LINES DATABASE INFO
+           MOVE "%B4"        TO WS-SEL-SORT-DATA.
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT.
+           PERFORM G4100-REPORT04-DTLB-RTN        THRU G4100-EXIT.
+
+      * REPORT A - ALTPARTS DATABASE INFO
+           MOVE "%B6"        TO WS-SEL-SORT-DATA.
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT.
+           PERFORM G4100-REPORT04-DTLB-RTN        THRU G4100-EXIT.
+
+      * REPORT A - TRANS REPORTS INFO
+           MOVE "%B7"        TO WS-SEL-SORT-DATA.
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT.
+           PERFORM G4100-REPORT04-DTLB-RTN        THRU G4100-EXIT.
+
+      * REPORT A - ERROR REPORTS INFO
+           MOVE "%B8"        TO WS-SEL-SORT-DATA.
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT.
+           PERFORM G4100-REPORT04-DTLB-RTN        THRU G4100-EXIT.
+
+           PERFORM G4150-REPORT04-TOTLNB-RTN THRU G4150-EXIT.
+
+      * REPORT B - UPDATE ACTIVITY INFO
+
+           WRITE RPT04B-LINE FROM SUBHEAD-04-6 AFTER 3 LINES.
+           WRITE RPT04B-LINE FROM SUBHEAD-04-7 AFTER 1 LINE.
+           WRITE RPT04B-LINE FROM SUBHEAD-04-8 AFTER 1 LINE.
+
+           MOVE SUPER-UPDT-TYPE TO RPT04-UPDT-TYPE.
+           WRITE RPT04B-LINE FROM SUBHEAD-04-9 AFTER 1 LINE.
+
+      * REPORT B - ASSEMBLY-TO-COMPONENT UPDATE ACTIVITY
+           MOVE SPACES                TO WS-SEL-SORT-DATA.
+           MOVE "SC1"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-ASSY-TO-COMPNT-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-ASSY-TO-COMPNT-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-ASSY-TO-COMPNT-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-ASSY-TO-COMPNT-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO ASSY-TO-COMPNT-PART-CNT.
+
+      * REPORT B - COMPONENT-TO-ASSEMBLY UPDATE ACTIVITY
+           MOVE "SC2"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-COMPNT-TO-ASSY-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-COMPNT-TO-ASSY-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-COMPNT-TO-ASSY-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-COMPNT-TO-ASSY-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO COMPNT-TO-ASSY-PART-CNT.
+
+      * REPORT B - SUPERSEDED NEWLY UPDATE ACTIVITY
+           MOVE "SC3"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-NEW-SUPER-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-NEW-SUPER-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-NEW-SUPER-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-NEW-SUPER-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO NEW-SUPER-PART-CNT.
+
+      * REPORT B - SUPERSEDED PRIOR (SAME) UPDATE ACTIVITY
+           MOVE "SC4"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-PRIORSAME-SUPER-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-PRIORSAME-SUPER-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-PRIORSAME-SUPER-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-PRIORSAME-SUPER-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO PRIORSAME-SUPER-PART-CNT.
+
+      * REPORT B - SUPERSEDED PRIOR (NOT SAME) UPDATE ACTIVITY
+           MOVE "SC5"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-PRIORDIFF-SUPER-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-PRIORDIFF-SUPER-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-PRIORDIFF-SUPER-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-PRIORDIFF-SUPER-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO PRIORDIFF-SUPER-PART-CNT.
+
+      * REPORT B - SUPERSEDED REVERSAL UPDATE ACTIVITY
+           MOVE "SC6"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-REVERSE-SUPER-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-REVERSE-SUPER-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-REVERSE-SUPER-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-REVERSE-SUPER-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO REVERSE-SUPER-PART-CNT.
+
+           MOVE DISC-UPDT-TYPE TO RPT04-UPDT-TYPE.
+           WRITE RPT04B-LINE FROM SUBHEAD-04-9 AFTER 2 LINES.
+
+      * REPORT B - DISCONTINUED VIA TRANS UPDATE ACTIVITY
+           MOVE "DC1"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-OEM-NEWLY-DISC-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-OEM-NEWLY-DISC-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-OEM-NEWLY-DISC-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-OEM-NEWLY-DISC-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO OEM-NEWLY-DISC-PART-CNT.
+
+      * REPORT B - DISCONTINUED VIA DATE UPDATE ACTIVITY
+           MOVE "DC2"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-DATE-NEWLY-DISC-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-DATE-NEWLY-DISC-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-DATE-NEWLY-DISC-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-DATE-NEWLY-DISC-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO DATE-NEWLY-DISC-PART-CNT.
+
+      * REPORT B - DISCONTINUED PRIOR UPDATE ACTIVITY
+           MOVE "DC3"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-PRIOR-DISC-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-PRIOR-DISC-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-PRIOR-DISC-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-PRIOR-DISC-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO PRIOR-DISC-PART-CNT.
+
+           MOVE PRICE-UPDT-TYPE TO RPT04-UPDT-TYPE.
+           WRITE RPT04B-LINE FROM SUBHEAD-04-9 AFTER 2 LINES.
+
+      * REPORT B - PRICE UPDT NOT SUPPLIED - UPDATE ACTIVITY
+           MOVE "PC1"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-NO-UPDATE-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-NO-UPDATE-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-NO-UPDATE-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-NO-UPDATE-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO NO-UPDATE-PART-CNT.
+
+      * REPORT B - ZERO PRICED - NOT UPDT - UPDATE ACTIVITY
+           MOVE "PC2"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-NO-UPDATE-ZPRC-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-NO-UPDATE-ZPRC-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-NO-UPDATE-ZPRC-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-NO-UPDATE-ZPRC-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO NO-UPDATE-ZPRC-PART-CNT.
+
+      * REPORT B - ZERO PRICED - NEWLY - UPDATE ACTIVITY
+           MOVE "PC3"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-NEWLY-ZPRC-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-NEWLY-ZPRC-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-NEWLY-ZPRC-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-NEWLY-ZPRC-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO NEWLY-ZPRC-PART-CNT.
+
+      * REPORT B - PRICE UPDATED SAME - UPDATE ACTIVITY
+           MOVE "PC4"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-SAME-PRICE-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-SAME-PRICE-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-SAME-PRICE-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-SAME-PRICE-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO SAME-PRICE-PART-CNT.
+
+      * REPORT B - PRICE UPDATED INCREASED - UPDATE ACTIVITY
+           MOVE "PC5"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-INCR-PRICE-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-INCR-PRICE-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-INCR-PRICE-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-INCR-PRICE-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO INCR-PRICE-PART-CNT.
+
+      * REPORT B - PRICE UPDATED DECREASED - UPDATE ACTIVITY
+           MOVE "PC6"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-DECR-PRICE-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-DECR-PRICE-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-DECR-PRICE-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-DECR-PRICE-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO DECR-PRICE-PART-CNT.
+
+      * REPORT B - PRICE 25% VAR. INCREASED - UPDATE ACTIVITY
+           MOVE "PC7"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-INCR-GT25-PRICE-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-INCR-GT25-PRICE-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-INCR-GT25-PRICE-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-INCR-GT25-PRICE-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO INCR-GT25-PRICE-PART-CNT.
+
+      * REPORT B - PRICE 25% VAR. DECREASED - UPDATE ACTIVITY
+           MOVE "PC8"                 TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT.
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-DECR-GT25-PRICE-PART-CNT.
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-DECR-GT25-PRICE-QX-CNT.
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-DECR-GT25-PRICE-PART-CNT.
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-DECR-GT25-PRICE-QX-CNT.
+           MOVE  WS-RPT04-PRT-DB-CTR  TO DECR-GT25-PRICE-PART-CNT.
+
+      * REPORT B - UPDATE ACTIVITY INFO (REPLACEMENT RUN)
+
+           IF REPLACEMENT-RUN
+             MOVE REPL-UPDT-TYPE TO RPT04-UPDT-TYPE
+             WRITE RPT04B-LINE FROM SUBHEAD-04-9 AFTER 2 LINES
+      * REPORT B - REPLACEMENT SAME
+             MOVE "RC1"                 TO WS-SEL-SORT-DATA
+             PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT
+             PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT
+             MOVE  WS-RPT04-CEG-PRT-CTR TO PR-REPL-SAME-PRICE-PART-CNT
+             MOVE  WS-RPT04-CEG-LN-CTR  TO PR-REPL-SAME-PRICE-QX-CNT
+             MOVE  WS-RPT04-WIP-PRT-CTR TO WP-REPL-SAME-PRICE-PART-CNT
+             MOVE  WS-RPT04-WIP-LN-CTR  TO WP-REPL-SAME-PRICE-QX-CNT
+             MOVE  WS-RPT04-PRT-DB-CTR  TO REPL-SAME-PRICE-PART-CNT
+
+      * REPORT B - REPLACEMENT INCREASED
+             MOVE "RC2"                 TO WS-SEL-SORT-DATA
+             PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT
+             PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT
+             MOVE  WS-RPT04-CEG-PRT-CTR TO PR-REPL-INCR-PRICE-PART-CNT
+             MOVE  WS-RPT04-CEG-LN-CTR  TO PR-REPL-INCR-PRICE-QX-CNT
+             MOVE  WS-RPT04-WIP-PRT-CTR TO WP-REPL-INCR-PRICE-PART-CNT
+             MOVE  WS-RPT04-WIP-LN-CTR  TO WP-REPL-INCR-PRICE-QX-CNT
+             MOVE  WS-RPT04-PRT-DB-CTR  TO REPL-INCR-PRICE-PART-CNT
+
+      * REPORT B - REPLACEMENT DECREASED
+             MOVE "RC3"                 TO WS-SEL-SORT-DATA
+             PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT
+             PERFORM G4200-REPORT04-DTLC-RTN    THRU G4200-EXIT
+             MOVE  WS-RPT04-CEG-PRT-CTR TO PR-REPL-DECR-PRICE-PART-CNT
+             MOVE  WS-RPT04-CEG-LN-CTR  TO PR-REPL-DECR-PRICE-QX-CNT
+             MOVE  WS-RPT04-WIP-PRT-CTR TO WP-REPL-DECR-PRICE-PART-CNT
+             MOVE  WS-RPT04-WIP-LN-CTR  TO WP-REPL-DECR-PRICE-QX-CNT
+             MOVE  WS-RPT04-PRT-DB-CTR  TO REPL-DECR-PRICE-PART-CNT.
+
+           MOVE SPACES TO RPT04B-LINE.
+           WRITE RPT04B-LINE AFTER 1 LINE.
+
+      * REPORT B - AVERAGE CEG PERCENT INFO
+           MOVE "PD1"              TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4300-REPORT04-DTLD-RTN    THRU G4300-EXIT.
+           MOVE ZEROES TO   PR-PRICE-CHANGE-PCT,
+                            PR-PRICE-INCR-PCT,
+                            PR-PRICE-DECR-PCT.
+           MOVE RPT04-CEG-AVG-PCT  TO PR-PRICE-CHANGE-PCT.
+           MOVE RPT04-CEG-AVG-PCTI TO PR-PRICE-INCR-PCT.
+           MOVE RPT04-CEG-AVG-PCTD TO PR-PRICE-DECR-PCT.
+
+
+      * REPORT B - AVERAGE WIP PERCENT INFO
+           MOVE "PE1"               TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4400-REPORT04-DTLE-RTN    THRU G4400-EXIT.
+           MOVE ZEROES TO  WP-PRICE-CHANGE-PCT,
+                           WP-PRICE-INCR-PCT,
+                           WP-PRICE-DECR-PCT.
+           MOVE  RPT04-WIP-AVG-PCT  TO WP-PRICE-CHANGE-PCT.
+           MOVE  RPT04-WIP-AVG-PCTI TO WP-PRICE-INCR-PCT.
+           MOVE  RPT04-WIP-AVG-PCTD TO WP-PRICE-DECR-PCT.
+
+
+      * REPORT B - AVERAGE OVERALL PERCENT INFO
+           MOVE "PF1"        TO WS-SEL-SORT-DATA.
+           PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT.
+           PERFORM G4500-REPORT04-DTLF-RTN    THRU G4500-EXIT.
+
+           MOVE  RPT04-ALL-AVG-PCT   TO PRICE-CHANGE-PCT.
+           MOVE  RPT04-ALL-AVG-PCTI  TO PRICE-INCR-PCT.
+           MOVE  RPT04-ALL-AVG-PCTD  TO PRICE-DECR-PCT.
+
+
+      * END OF BOTH REPORTS (A & B)
+           PERFORM G9999-END-OF-RPT-RTN   THRU G9999-EXIT.
+
+           IF CNTL-NAGS-TYP = 'SPEC FIX'
+              NEXT SENTENCE
+           ELSE
+              PERFORM R0300-INSERT-TO-UPDINFO THRU R0300-EXIT.
+
+       B4000-EXIT. EXIT.
+
+      ***************************************************************
+      * B5000-PRODUCE-REPORT05:                                     *
+      *     PRODUCE MPTZ007-05 ZERO PRICED PARTS WITH LINES REPORTS *
+      *                                                             *
+      *     FOR EACH LINE-OF-BUSINESS (CEG, WIP):                   *
+      *     1. PERFORM INITIAL FETCH OF REPORT ROWS                 *
+      *     2. IF ROWS NOT FOUND, PRODUCE EMPTY REPORT PAGE         *
+      *        OTHERWISE, CONTINUE REPORT PROCESS.                  *
+      *     3. WHEN ALL ROWS HAVE BEEN RETRIEVED AND REPORTED,      *
+      *        PRODUCE END-OF-REPORT PAGE.                          *
+      ***************************************************************
+       B5000-PRODUCE-REPORT05.
+           MOVE "B5000-PRODUCE-REPORT05" TO WS-PARAGRAPH.
+
+           MOVE "MPTZ007-05" TO WS-REPORT-NUMBER.
+           MOVE SPACES       TO WS-SEL-SORT-DATA.
+           MOVE SPACES       TO WS-PREV-OLD-PART-NUM.
+           MOVE "CEG%"       TO WS-SEL-SORT-DATA.
+           MOVE "A"          TO HDG-RPTLETR, EOR-RPTLETR.
+           PERFORM R9200-READ-RPT02-05-REPORT THRU R9200-EXIT.
+           PERFORM H5000-REPORT05-HDG-RTN THRU H5000-EXIT.
+
+           IF RPT-ROW-NOT-FOUND
+             PERFORM G9998-EMPTY-RPT-RTN    THRU G9998-EXIT
+           ELSE
+             PERFORM B5100-CONTINUE-REPORT05 THRU B5100-EXIT
+                     UNTIL END-OF-RPT-ROWS.
+           PERFORM G9999-END-OF-RPT-RTN   THRU G9999-EXIT.
+
+           MOVE SPACES       TO WS-PREV-OLD-PART-NUM.
+           MOVE SPACES       TO WS-SEL-SORT-DATA.
+           MOVE "WIP%"       TO WS-SEL-SORT-DATA.
+           MOVE "B"          TO HDG-RPTLETR, EOR-RPTLETR.
+           PERFORM R9200-READ-RPT02-05-REPORT THRU R9200-EXIT.
+           PERFORM H5000-REPORT05-HDG-RTN  THRU H5000-EXIT.
+
+           IF RPT-ROW-NOT-FOUND
+             PERFORM G9998-EMPTY-RPT-RTN     THRU G9998-EXIT
+           ELSE
+             PERFORM B5100-CONTINUE-REPORT05 THRU B5100-EXIT
+                     UNTIL END-OF-RPT-ROWS.
+           PERFORM G9999-END-OF-RPT-RTN   THRU G9999-EXIT.
+
+       B5000-EXIT. EXIT.
+
+      ***************************************************************
+      * B5100-CONTINUE-REPORT05:                                    *
+      *     1. PERFORM DETAIL LINE ROUTINE                          *
+      *     2. PERFORM FETCH NEXT                                   *
+      ***************************************************************
+       B5100-CONTINUE-REPORT05.
+           MOVE "B5100-CONTINUE-REPORT05" TO WS-PARAGRAPH.
+
+           MOVE SORT-DATA TO REPORT-SORT-CRITERIA.
+           IF SRT5-LN-OF-BUS EQUAL "CEG "
+             PERFORM G5000-REPORT05-DTLA-RTN THRU G5000-EXIT
+           ELSE
+             IF SRT5-LN-OF-BUS EQUAL "WIP "
+               PERFORM G5100-REPORT05-DTLB-RTN THRU G5100-EXIT.
+
+           PERFORM R9250-FETCH-RPT02-05-ROW THRU R9250-EXIT.
+
+       B5100-EXIT. EXIT.
+
+      ***************************************************************
+      * G1000-REPORT01-DTL-RTN:                                     *
+      *     THIS ROUTINE WRITES  REPORT 01 DETAIL LINES.            *
+      *     1. CHECK IF HEADING NEEDS TO BE WRITTEN AND IF SO,      *
+      *        PERFORM HEADING ROUTINE.                             *
+      *     2. MOVE Oracle REPORT ROW INFO TO DETAIL LINE AREA.     *
+      *     3. PRINT DETAIL LINE.                                   *
+      ***************************************************************
+       G1000-REPORT01-DTL-RTN.
+           MOVE "G1000-REPORT01-DTL-RTN" TO WS-PARAGRAPH.
+
+           MOVE REPORT-DATA TO DETAIL-01.
+           WRITE RPT01-LINE FROM DETAIL-01 AFTER 1 LINE.
+
+       G1000-EXIT. EXIT.
+
+      ***************************************************************
+      * G2000-REPORT02-DTLA-RTN:                                    *
+      *     THIS ROUTINE WRITES REPORT 02 CEG DTL LINES.            *
+      *     1. CHECK IF HEADING NEEDS TO BE WRITTEN AND IF SO,      *
+      *        PERFORM HEADING ROUTINE.                             *
+      *     2. MOVE Oracle REPORT ROW INFO TO DETAIL LINE AREA.     *
+      *     3. PRINT DETAIL LINE.                                   *
+      ***************************************************************
+       G2000-REPORT02-DTLA-RTN.
+           MOVE "G2000-REPORT02-DTLA-RTN" TO WS-PARAGRAPH.
+
+           MOVE SORT-DATA   TO REPORT-SORT-CRITERIA.
+           MOVE REPORT-DATA TO DETAIL-02.
+
+           IF RPT02-SUPE-IND EQUAL "A"
+             IF RPT02-OLD-PART-NUM EQUAL WS-PREV-OLD-PART-NUM
+               MOVE SPACES                TO RPT02-OLD-PART-NUM
+               MOVE SPACES                TO RPT02-OLD-PART-DESC
+               IF RPT02-NEW-PART-NUM EQUAL WS-PREV-NEW-PART-NUM
+                 MOVE SPACES              TO RPT02-NEW-PART-NUM
+                 MOVE SPACES              TO RPT02-NEW-PART-DESC
+               ELSE
+                 MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+             ELSE
+               IF WS-PREV-OLD-PART-NUM EQUAL SPACES AND 
+                  WS-PREV-NEW-PART-NUM EQUAL SPACES 
+                 MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+                 MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+               ELSE
+                 MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+                 MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+                 WRITE RPT02A-LINE FROM SUBHEAD-02-3 AFTER 1 LINE.
+
+           IF RPT02-SUPE-IND EQUAL "C"
+             IF RPT02-NEW-PART-NUM EQUAL WS-PREV-NEW-PART-NUM
+               MOVE SPACES             TO RPT02-NEW-PART-NUM
+               MOVE SPACES             TO RPT02-NEW-PART-DESC
+               IF RPT02-OLD-PART-NUM EQUAL WS-PREV-OLD-PART-NUM
+                 MOVE SPACES             TO RPT02-OLD-PART-NUM
+                 MOVE SPACES             TO RPT02-OLD-PART-DESC
+               ELSE
+                 MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+             ELSE
+               IF WS-PREV-OLD-PART-NUM EQUAL SPACES AND 
+                  WS-PREV-NEW-PART-NUM EQUAL SPACES 
+                 MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+                 MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+               ELSE
+                 MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+                 MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+                 WRITE RPT02A-LINE FROM SUBHEAD-02-3 AFTER 1 LINE.
+
+           WRITE RPT02A-LINE FROM DETAIL-02 AFTER 1 LINE.
+
+       G2000-EXIT. EXIT.
+
+      ***************************************************************
+      * G2100-REPORT02-DTLB-RTN:                                    *
+      *     THIS ROUTINE WRITES REPORT 02 WIP DETAIL LINES.         *
+      *     1. CHECK IF HEADING NEEDS TO BE WRITTEN AND IS SO,      *
+      *        PERFORM HEADING ROUTINE.                             *
+      *     2. MOVE Oracle REPORT ROW INFO TO DETAIL LINE AREA.     *
+      *     3. PRINT DETAIL LINE.                                   *
+      ***************************************************************
+       G2100-REPORT02-DTLB-RTN.
+           MOVE "G2100-REPORT02-DTLB-RTN" TO WS-PARAGRAPH.
+
+           MOVE SORT-DATA   TO REPORT-SORT-CRITERIA.
+           MOVE REPORT-DATA TO DETAIL-02.
+
+           IF RPT02-LINE-INFO EQUAL WS-PREV-LINE-INFO
+             MOVE SPACES          TO RPT02-LINE-INFO
+           ELSE
+             MOVE RPT02-LINE-INFO TO WS-PREV-LINE-INFO.
+
+           IF RPT02-SUPE-IND EQUAL "A"
+             IF RPT02-OLD-PART-NUM EQUAL WS-PREV-OLD-PART-NUM
+               MOVE SPACES                TO RPT02-OLD-PART-NUM
+               MOVE SPACES                TO RPT02-OLD-PART-DESC
+               IF RPT02-NEW-PART-NUM EQUAL WS-PREV-NEW-PART-NUM
+                 MOVE SPACES              TO RPT02-NEW-PART-NUM
+                 MOVE SPACES              TO RPT02-NEW-PART-DESC
+               ELSE
+                 MOVE RPT02-NEW-PART-NUM  TO WS-PREV-NEW-PART-NUM
+             ELSE
+               IF WS-PREV-OLD-PART-NUM EQUAL SPACES AND 
+                  WS-PREV-NEW-PART-NUM EQUAL SPACES 
+                 MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+                 MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+               ELSE
+                 MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+                 MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+                 WRITE RPT02B-LINE FROM SUBHEAD-02-3 AFTER 1 LINE.
+
+           IF RPT02-SUPE-IND EQUAL "C"
+             IF RPT02-NEW-PART-NUM EQUAL WS-PREV-NEW-PART-NUM
+               MOVE SPACES                  TO RPT02-NEW-PART-NUM
+               MOVE SPACES                  TO RPT02-NEW-PART-DESC
+               IF RPT02-OLD-PART-NUM EQUAL WS-PREV-OLD-PART-NUM
+                 MOVE SPACES                TO RPT02-OLD-PART-NUM
+                 MOVE SPACES                TO RPT02-OLD-PART-DESC
+               ELSE
+                 MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+             ELSE
+               IF WS-PREV-OLD-PART-NUM EQUAL SPACES AND 
+                  WS-PREV-NEW-PART-NUM EQUAL SPACES 
+                 MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+                 MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+               ELSE
+                 MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+                 MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+                 WRITE RPT02B-LINE FROM SUBHEAD-02-3 AFTER 1 LINE.
+
+           WRITE RPT02B-LINE FROM DETAIL-02 AFTER 1 LINE.
+
+       G2100-EXIT. EXIT.
+
+      ***************************************************************
+      * G3000-REPORT03-DTL-RTN:                                     *
+      *     THIS ROUTINE WRITES REPORT 03 DETAIL LINES.             *
+      *     1. CHECK IF HEADING NEEDS TO BE WRITTEN AND IS SO,      *
+      *        PERFORM HEADING ROUTINE.                             *
+      *     2. MOVE Oracle REPORT ROW INFO TO DETAIL LINE AREA.     *
+      *     3. PRINT DETAIL LINE.                                   *
+      ***************************************************************
+       G3000-REPORT03-DTL-RTN.
+           MOVE "G3000-REPORT03-DTL-RTN" TO WS-PARAGRAPH.
+
+           MOVE REPORT-DATA TO DETAIL-03.
+000100
+000200* 2021/10/21 PG DON'T WRITE RPT INFO IF PART IS SAME AS PREV.
+000210*            THIS CODE WAS USED TO DISPLAY SERVICE INFO ASSOC             
+000220*            TO REPORTED PART NUMBER. DLMT FILE OMITS THIS INFO.          
+           IF RPT03-OLD-PART-NUM EQUAL WS-PREV-OLD-PART-NUM
+      *        MOVE SPACES  TO RPT03-OLD-PART-NUM
+      *        MOVE SPACES  TO RPT03-OLD-PART-DESC
+      *        MOVE SPACES  TO RPT03-CURR-PRICE-AMT-X
+      *        MOVE SPACES  TO RPT03-PREV-PRICE-AMT-X
+      *        MOVE SPACES  TO RPT03-PRICE-VAR-AMT-X
+      *        MOVE SPACES  TO RPT03-PRICE-VAR-PCT-X
+000100         CONTINUE
+           ELSE
+000100         MOVE RPT03-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM                  
+000200* 2021/10/21 PG MOVE INFO FROM OLD DETAIL LINE TO DLMT "LINE"
+000100         MOVE RPT03-OLD-PART-NUM TO RPT03D-OLD-PART-NUM
+000200         MOVE RPT03-OLD-PART-DESC TO RPT03D-OLD-PART-DESC
+000300         MOVE RPT03-CURR-PRICE-AMT TO RPT03D-CURR-PRICE-AMT
+000400         MOVE RPT03-PREV-PRICE-AMT TO RPT03D-PREV-PRICE-AMT
+000500         MOVE RPT03-PRICE-VAR-AMT TO RPT03D-PRICE-VAR-AMT
+000600         MOVE RPT03-PRICE-VAR-PCT TO RPT03D-PRICE-VAR-PCT
+               WRITE RPT03-LINE FROM DETAIL-03-DELIM BEFORE 1 LINE.
+
+       G3000-EXIT. EXIT.
+
+      ***************************************************************
+      * G4000-REPORT04-DTLA-RTN:                                    *
+      *     THIS ROUTINE PRINTS REPORT 04 DETAIL LINES FOR FIRST    *
+      *     PART OF THE CONTROL REPORT (TRANSACTION ACTIVITY)       *
+      *                                                             *
+      *     NOTE - IF REPORT ROW IS NOT FOUND, IT WILL FORMAT A     *
+      *            CORRESPONDING LINE WITH ZERO AMOUNTS.            *
+      ***************************************************************
+       G4000-REPORT04-DTLA-RTN.
+           MOVE "G4000-REPORT04-DTLA-RTN" TO WS-PARAGRAPH.
+
+           IF RPT-ROW-FOUND
+             MOVE "Y" TO WS-CONTROL-REPORT-SW
+             MOVE REPORT-DATA             TO DETAIL-04A
+             WRITE RPT04A-LINE FROM DETAIL-04A AFTER 1 LINE
+             MOVE RPT04-TOTAL-READ        TO WS-TRANS-READ-AMT
+             ADD  WS-TRANS-READ-AMT       TO WS-TRANS-READ-TOT
+             MOVE RPT04-PROC-AMT          TO WS-PROC-AMT
+             ADD  WS-PROC-AMT             TO WS-PROC-TOT
+             MOVE RPT04-NOT-PROC-AMT      TO WS-NOT-PROC-AMT
+             ADD  WS-NOT-PROC-AMT         TO WS-NOT-PROC-TOT
+             MOVE RPT04-PRIOR-SUPE-AMT    TO WS-PRIOR-SUPE-AMT
+             ADD  WS-PRIOR-SUPE-AMT       TO WS-PRIOR-SUPE-TOT
+             MOVE RPT04-ALREADY-SUPE-AMT  TO WS-ALREADY-SUPE-AMT
+             ADD  WS-ALREADY-SUPE-AMT     TO WS-ALREADY-SUPE-TOT
+             MOVE RPT04-PART-NOT-DB-AMT   TO WS-PART-NOT-DB-AMT
+             ADD  WS-PART-NOT-DB-AMT      TO WS-PART-NOT-DB-TOT
+             GO TO G4000-EXIT.
+
+      * RPT ROW NOT FOUND
+
+           MOVE WS-SEL-SORT-DATA TO REPORT-SORT-CRITERIA.
+           INITIALIZE DETAIL-04A
+                      REPLACING ALPHANUMERIC DATA BY SPACES
+                                NUMERIC-EDITED DATA BY ZEROES.
+
+           IF SRT4-TRANS-TYPE EQUAL "A"
+             MOVE REPORT-ATRANS-DESC TO RPT04-TRANS-DESC
+           ELSE
+             IF SRT4-TRANS-TYPE EQUAL "C"
+               MOVE REPORT-CTRANS-DESC TO RPT04-TRANS-DESC
+           ELSE
+             IF SRT4-TRANS-TYPE EQUAL "N"
+               MOVE REPORT-NTRANS-DESC TO RPT04-TRANS-DESC
+           ELSE
+             IF SRT4-TRANS-TYPE EQUAL "D"
+               MOVE REPORT-DTRANS-DESC TO RPT04-TRANS-DESC
+           ELSE
+             IF SRT4-TRANS-TYPE EQUAL "P"
+               MOVE REPORT-PTRANS-DESC TO RPT04-TRANS-DESC
+             ELSE
+               IF SRT4-TRANS-TYPE EQUAL "R"
+                 MOVE REPORT-RTRANS-DESC TO RPT04-TRANS-DESC.
+
+           WRITE RPT04A-LINE FROM DETAIL-04A AFTER 1 LINE.
+
+       G4000-EXIT. EXIT.
+
+      ***************************************************************
+      * G4050-REPORT04-TOTLNA-RTN:                                  *
+      *     THIS ROUTINE WRITES AND PRINTS REPORT 04 TRANSACTION    *
+      *     ACTIVITY TOTAL LINE                                     *
+      ***************************************************************
+       G4050-REPORT04-TOTLNA-RTN.
+           MOVE "G4050-REPORT04-TOTLNA-RTN" TO WS-PARAGRAPH.
+
+           WRITE RPT04A-LINE FROM SUBHEAD-04-2 AFTER 1 LINE.
+           MOVE REPORT-TOTAL-DESC   TO RPT04-TRANS-DESC.
+           MOVE WS-TRANS-READ-TOT   TO RPT04-TOTAL-READ.
+           MOVE WS-PROC-TOT         TO RPT04-PROC-AMT.
+           MOVE WS-NOT-PROC-TOT     TO RPT04-NOT-PROC-AMT.
+           MOVE WS-PRIOR-SUPE-TOT   TO RPT04-PRIOR-SUPE-AMT.
+           MOVE WS-ALREADY-SUPE-TOT TO RPT04-ALREADY-SUPE-AMT.
+           MOVE WS-PART-NOT-DB-TOT  TO RPT04-PART-NOT-DB-AMT.
+           WRITE RPT04A-LINE FROM DETAIL-04A AFTER 1 LINE.
+
+       G4050-EXIT. EXIT.
+
+      ***************************************************************
+      * G4100-REPORT04-DTLB-RTN:                                    *
+      *     THIS ROUTINE PRINTS REPORT 04 DETAIL LINES FOR SECOND   *
+      *     PART OF THE CONTROL REPORT (DATABASE ACTIVITY)          *
+      ***************************************************************
+       G4100-REPORT04-DTLB-RTN.
+           MOVE "G4100-REPORT04-DTLB-RTN" TO WS-PARAGRAPH.
+
+           MOVE WS-READ-AMT           TO RPT04-READ-AMT.
+           MOVE WS-INSRT-AMT          TO RPT04-INSRT-AMT.
+           MOVE WS-UPDT-AMT           TO RPT04-UPDT-AMT.
+           MOVE WS-DLET-AMT           TO RPT04-DLET-AMT.
+           ADD WS-READ-AMT, WS-INSRT-AMT, WS-UPDT-AMT, WS-DLET-AMT
+                  GIVING WS-TOTAL-AMT.
+           MOVE WS-TOTAL-AMT          TO RPT04-TOTAL-AMT.
+           WRITE RPT04A-LINE FROM DETAIL-04B AFTER 1 LINE.
+           ADD WS-READ-AMT            TO WS-DBASE-READ-TOT.
+           ADD WS-INSRT-AMT           TO WS-DBASE-INSRT-TOT.
+           ADD WS-UPDT-AMT            TO WS-DBASE-UPDT-TOT.
+           ADD WS-DLET-AMT            TO WS-DBASE-DLET-TOT.
+
+       G4100-EXIT. EXIT.
+
+      ***************************************************************
+      * G4150-REPORT04-TOTLNB-RTN:                                  *
+      *     THIS ROUTINE WRITES AND PRINTS REPORT 04 DATABASE       *
+      *     ACTIVITY TOTAL LINE                                     *
+      ***************************************************************
+       G4150-REPORT04-TOTLNB-RTN.
+           MOVE "G4150-REPORT04-TOTLNB-RTN" TO WS-PARAGRAPH.
+
+           WRITE RPT04A-LINE FROM SUBHEAD-04-5 AFTER 1 LINE.
+           MOVE "TOTAL                   " TO RPT04-DATABASE.
+           MOVE WS-DBASE-READ-TOT          TO RPT04-READ-AMT.
+           MOVE WS-DBASE-INSRT-TOT         TO RPT04-INSRT-AMT.
+           MOVE WS-DBASE-UPDT-TOT          TO RPT04-UPDT-AMT.
+           MOVE WS-DBASE-DLET-TOT          TO RPT04-DLET-AMT.
+           ADD WS-DBASE-READ-TOT, WS-DBASE-INSRT-TOT,
+               WS-DBASE-UPDT-TOT, WS-DBASE-DLET-TOT
+               GIVING WS-DBASE-TOTAL-AMT.
+           MOVE WS-DBASE-TOTAL-AMT TO RPT04-TOTAL-AMT.
+           WRITE RPT04A-LINE FROM DETAIL-04B AFTER 1 LINE.
+
+       G4150-EXIT. EXIT.
+
+      ***************************************************************
+      * G4200-REPORT04-DTLC-RTN:                                    *
+      *     THIS ROUTINE PRINTS REPORT 04 DETAIL LINES FOR THIRD    *
+      *     PART OF THE CONTROL REPORT (UPDATE ACTIVITY). IF ROW    *
+      *     NOT FOUND, PRINT CORRESPONDING LINE WITH ZERO AMOUNTS.  *
+      *                                                             *
+      *     NOTE - FOR REGULAR OEM RUN, THERE SHOULD ALWAYS BE AN   *
+      *            UPDATE ACTIVITY ROW FOR EACH REPORT LINE; HOWEVER*
+      *            IF SPECIAL JCL IS EVER RUN WHERE ONLY ONE OR TWO *
+      *            UPDATES ARE PERFORMED, THIS WILL VALUE THE       *
+      *            MISSING LINES.                                   *
+      ***************************************************************
+       G4200-REPORT04-DTLC-RTN.
+           MOVE "G4200-REPORT04-DTLC-RTN" TO WS-PARAGRAPH.
+
+           MOVE ZEROES      TO    WS-RPT04-CEG-PRT-CTR,
+                                  WS-RPT04-CEG-LN-CTR,
+                                  WS-RPT04-WIP-PRT-CTR,
+                                  WS-RPT04-WIP-LN-CTR,
+                                  WS-RPT04-PRT-DB-CTR.
+
+           IF RPT-ROW-FOUND
+             MOVE REPORT-DATA       TO DETAIL-04C
+             WRITE RPT04B-LINE FROM DETAIL-04C AFTER 1 LINE
+             MOVE RPT04-CEG-PRT-CTR TO  WS-RPT04-CEG-PRT-CTR
+             MOVE RPT04-CEG-LN-CTR  TO  WS-RPT04-CEG-LN-CTR
+             MOVE RPT04-WIP-PRT-CTR TO  WS-RPT04-WIP-PRT-CTR
+             MOVE RPT04-WIP-LN-CTR  TO  WS-RPT04-WIP-LN-CTR
+             MOVE RPT04-PRT-DB-CTR  TO  WS-RPT04-PRT-DB-CTR
+             GO TO G4200-EXIT.
+
+      * ROW WAS NOT FOUND; SETUP CORRESPONDING LINE WITH ZEROES
+
+           MOVE WS-SEL-SORT-DATA TO REPORT-SORT-CRITERIA.
+           INITIALIZE DETAIL-04C
+                      REPLACING ALPHANUMERIC DATA BY SPACES
+                                NUMERIC-EDITED DATA BY ZEROES.
+      * "S"UPERSESSION
+           IF SRT4-TRANS-TYPE = "S"
+             IF SRT4-REC-TYPE-CTR = 1
+               MOVE SUPER-ACTVY-1 TO RPT04-UPDT-ACTVY
+             ELSE
+               IF SRT4-REC-TYPE-CTR = 2
+                 MOVE SUPER-ACTVY-2 TO RPT04-UPDT-ACTVY
+               ELSE
+                 IF SRT4-REC-TYPE-CTR = 3
+                   MOVE SUPER-ACTVY-3 TO RPT04-UPDT-ACTVY
+                 ELSE
+                   IF SRT4-REC-TYPE-CTR = 4
+                     MOVE SUPER-ACTVY-4 TO RPT04-UPDT-ACTVY
+                   ELSE
+                     IF SRT4-REC-TYPE-CTR = 5
+                       MOVE SUPER-ACTVY-5 TO RPT04-UPDT-ACTVY
+                     ELSE
+                       IF SRT4-REC-TYPE-CTR = 6
+                         MOVE SUPER-ACTVY-6 TO RPT04-UPDT-ACTVY.
+
+      * "D"ISCONTINUE
+           IF SRT4-TRANS-TYPE = "D"
+             IF SRT4-REC-TYPE-CTR = 1
+               MOVE DISC-ACTVY-1 TO RPT04-UPDT-ACTVY
+             ELSE
+               IF SRT4-REC-TYPE-CTR = 2
+                 MOVE DISC-ACTVY-2 TO RPT04-UPDT-ACTVY
+               ELSE
+                 IF SRT4-REC-TYPE-CTR = 3
+                   MOVE DISC-ACTVY-3 TO RPT04-UPDT-ACTVY.
+
+      * "P"RICE
+           IF SRT4-TRANS-TYPE = "P"
+             IF SRT4-REC-TYPE-CTR = 1
+               MOVE PRICE-ACTVY-1 TO RPT04-UPDT-ACTVY
+             ELSE
+               IF SRT4-REC-TYPE-CTR = 2
+                 MOVE PRICE-ACTVY-2 TO RPT04-UPDT-ACTVY
+               ELSE
+                 IF SRT4-REC-TYPE-CTR = 3
+                   MOVE PRICE-ACTVY-3 TO RPT04-UPDT-ACTVY
+                 ELSE
+                   IF SRT4-REC-TYPE-CTR = 4
+                     MOVE PRICE-ACTVY-4 TO RPT04-UPDT-ACTVY
+                   ELSE
+                     IF SRT4-REC-TYPE-CTR = 5
+                       MOVE PRICE-ACTVY-5 TO RPT04-UPDT-ACTVY
+                     ELSE
+                       IF SRT4-REC-TYPE-CTR = 6
+                         MOVE PRICE-ACTVY-6 TO RPT04-UPDT-ACTVY
+                       ELSE
+                         IF SRT4-REC-TYPE-CTR = 7
+                           MOVE PRICE-ACTVY-7 TO RPT04-UPDT-ACTVY
+                         ELSE
+                           IF SRT4-REC-TYPE-CTR = 8
+                             MOVE PRICE-ACTVY-8 TO RPT04-UPDT-ACTVY.
+
+      * "R"EPLACEMENT
+           IF SRT4-TRANS-TYPE = "R"
+             IF SRT4-REC-TYPE-CTR = 1
+               MOVE REPL-ACTVY-1 TO RPT04-UPDT-ACTVY
+             ELSE
+               IF SRT4-REC-TYPE-CTR = 2
+                 MOVE REPL-ACTVY-2 TO RPT04-UPDT-ACTVY
+               ELSE
+                 IF SRT4-REC-TYPE-CTR = 3
+                   MOVE REPL-ACTVY-3 TO RPT04-UPDT-ACTVY.
+
+           WRITE RPT04B-LINE FROM DETAIL-04C AFTER 1 LINE.
+
+       G4200-EXIT. EXIT.
+
+      ***************************************************************
+      * G4300-REPORT04-DTLD-RTN:                                    *
+      *     THIS ROUTINE PRINTS REPORT 04 LINE "D" FOR THE THIRD    *
+      *     PART OF THE CONTROL REPORT (UPDATE ACTIVITY). IF ROW    *
+      *     NOT FOUND, PRINT CORRESPONDING LINE WITH ZERO AMOUNTS.  *
+      ***************************************************************
+       G4300-REPORT04-DTLD-RTN.
+           MOVE "G4300-REPORT04-DTLD-RTN" TO WS-PARAGRAPH.
+
+           IF RPT-ROW-FOUND
+             MOVE REPORT-DATA     TO DETAIL-04D
+             WRITE RPT04B-LINE FROM DETAIL-04D AFTER 1 LINE
+             GO TO G4300-EXIT.
+
+      * REPORT ROW NOT FOUND
+           MOVE ZEROES TO RPT04-CEG-AVG-PCT
+                          RPT04-CEG-AVG-PCTI
+                          RPT04-CEG-AVG-PCTD.
+           WRITE RPT04B-LINE FROM DETAIL-04D AFTER 1 LINE.
+
+       G4300-EXIT. EXIT.
+
+      ***************************************************************
+      * G4400-REPORT04-DTLE-RTN:                                    *
+      *     THIS ROUTINE PRINTS REPORT 04 LINE "E" FOR THE THIRD    *
+      *     PART OF THE CONTROL REPORT (UPDATE ACTIVITY). IF ROW    *
+      *     NOT FOUND, PRINT CORRESPONDING LINE WITH ZERO AMOUNTS.  *
+      ***************************************************************
+       G4400-REPORT04-DTLE-RTN.
+           MOVE "G4400-REPORT04-DTLE-RTN" TO WS-PARAGRAPH.
+
+           IF RPT-ROW-FOUND
+             MOVE REPORT-DATA     TO DETAIL-04E
+             WRITE RPT04B-LINE FROM DETAIL-04E AFTER 1 LINE
+             GO TO G4400-EXIT.
+
+      * REPORT ROW NOT FOUND
+           MOVE ZEROES TO RPT04-WIP-AVG-PCT
+                          RPT04-WIP-AVG-PCTI
+                          RPT04-WIP-AVG-PCTD.
+
+           WRITE RPT04B-LINE FROM DETAIL-04E AFTER 1 LINE.
+
+       G4400-EXIT. EXIT.
+
+      ***************************************************************
+      * G4500-REPORT04-DTLF-RTN:                                    *
+      *     THIS ROUTINE PRINTS REPORT 04 LINE "F" FOR THE THIRD    *
+      *     PART OF THE CONTROL REPORT (UPDATE ACTIVITY). IF ROW    *
+      *     NOT FOUND, PRINT CORRESPONDING LINE WITH ZERO AMOUNTS.  *
+      ***************************************************************
+       G4500-REPORT04-DTLF-RTN.
+           MOVE "G4500-REPORT04-DTLF-RTN" TO WS-PARAGRAPH.
+
+           IF RPT-ROW-FOUND
+             MOVE REPORT-DATA     TO DETAIL-04F
+             WRITE RPT04B-LINE FROM DETAIL-04F AFTER 1 LINE
+             GO TO G4500-EXIT.
+
+      * REPORT ROW NOT FOUND
+           MOVE ZEROES TO RPT04-ALL-AVG-PCT
+                          RPT04-ALL-AVG-PCTI
+                          RPT04-ALL-AVG-PCTD.
+           WRITE RPT04B-LINE FROM DETAIL-04F AFTER 1 LINE.
+
+       G4500-EXIT. EXIT.
+
+      ***************************************************************
+      * G5000-REPORT05-DTLA-RTN:                                    *
+      *     THIS ROUTINE WRITES REPORT 05 CEG DETAIL LINES          *
+      *     1. CHECK IF HEADING NEEDS TO BE WRITTEN AND IS SO,      *
+      *        PERFORM HEADING ROUTINE.                             *
+      *     2. MOVE Oracle REPORT ROW INFO TO DETAIL LINE AREA.     *
+      *     3. PRINT DETAIL LINE.                                   *
+      ***************************************************************
+       G5000-REPORT05-DTLA-RTN.
+           MOVE "G5000-REPORT05-DTLA-RTN" TO WS-PARAGRAPH.
+
+           MOVE REPORT-DATA  TO DETAIL-05A.
+
+           IF SRT5-PART-NUM EQUAL WS-PREV-OLD-PART-NUM
+             MOVE SPACES  TO RPT05A-PART-NUM
+             MOVE SPACES  TO RPT05A-DISC-DT
+             MOVE SPACES  TO RPT05A-WIPLN-IND
+           ELSE
+             MOVE RPT05A-PART-NUM TO WS-PREV-OLD-PART-NUM.
+
+           WRITE RPT05A-LINE FROM DETAIL-05A AFTER 1 LINE.
+
+       G5000-EXIT. EXIT.
+
+      ***************************************************************
+      * G5100-REPORT05-DTLB-RTN:                                    *
+      *     THIS ROUTINE WRITES REPORT 05 WIP DETAIL LINES          *
+      *     1. CHECK IF HEADING NEEDS TO BE WRITTEN AND IS SO,      *
+      *        PERFORM HEADING ROUTINE.                             *
+      *     2. MOVE Oracle REPORT ROW INFO TO DETAIL LINE AREA.     *
+      *     3. PRINT DETAIL LINE.                                   *
+      ***************************************************************
+       G5100-REPORT05-DTLB-RTN.
+           MOVE "G5100-REPORT05-DTLB-RTN" TO WS-PARAGRAPH.
+
+           MOVE REPORT-DATA  TO DETAIL-05B.
+
+           IF SRT5-PART-NUM EQUAL WS-PREV-OLD-PART-NUM
+             MOVE SPACES  TO RPT05B-PART-NUM
+             MOVE SPACES  TO RPT05B-DISC-DT
+             MOVE SPACES  TO RPT05B-CEGLN-IND
+           ELSE
+             MOVE RPT05B-PART-NUM TO WS-PREV-OLD-PART-NUM.
+
+           WRITE RPT05B-LINE FROM DETAIL-05B AFTER 1 LINE.
+
+       G5100-EXIT. EXIT.
+
+      ***************************************************************
+      * G9998-EMPTY-RPT-RTN:                                        *
+      *     THIS ROUTINE WRITES AN EMPTY REPORT MESSAGE TO INFORM   *
+      *     USER THAT REPORT IS NOT MISSING; THERE IS JUST NO DATA  *
+      *     TO REPORT.                                              *
+      ***************************************************************
+       G9998-EMPTY-RPT-RTN.
+           MOVE "G9998-EMPTY-RPT-RTN" TO WS-PARAGRAPH.
+
+           IF WS-REPORT-NUMBER EQUAL "MPTZ007-01"
+             WRITE RPT01-LINE FROM EMPTY-NOTE AFTER 5 LINES
+           ELSE
+             IF WS-REPORT-NUMBER EQUAL "MPTZ007-02"
+               IF HDG-RPTLETR EQUAL "A"
+                 WRITE RPT02A-LINE FROM EMPTY-NOTE AFTER 5 LINES
+               ELSE
+                 WRITE RPT02B-LINE FROM EMPTY-NOTE AFTER 5 LINES
+           ELSE
+             IF WS-REPORT-NUMBER EQUAL "MPTZ007-03"
+               WRITE RPT03-LINE FROM EMPTY-NOTE AFTER 5 LINES
+           ELSE
+             IF WS-REPORT-NUMBER EQUAL "MPTZ007-04"
+               WRITE RPT04A-LINE FROM EMPTY-NOTE AFTER 5 LINES
+           ELSE
+      * REPORT-NUMBER EQUALS MPTZ007-05
+             IF HDG-RPTLETR EQUAL "A"
+               WRITE RPT05A-LINE FROM EMPTY-NOTE AFTER 5 LINES
+             ELSE
+               IF HDG-RPTLETR EQUAL "B"
+                 WRITE RPT05B-LINE FROM EMPTY-NOTE AFTER 5 LINES.
+
+       G9998-EXIT. EXIT.
+
+      ***************************************************************
+      * G9999-END-OF-RPT-RTN:                                       *
+      *     THIS ROUTINE WRITES THE END OF REPORT PAGE.             *
+      ***************************************************************
+       G9999-END-OF-RPT-RTN.
+           MOVE "G9999-END-OF-RPT-RTN" TO WS-PARAGRAPH.
+
+           MOVE WS-REPORT-NUMBER       TO EOR-RPTNUM.
+
+           IF WS-REPORT-NUMBER EQUAL "MPTZ007-01"
+             WRITE RPT01-LINE FROM EOR-NOTE AFTER 5 LINES
+           ELSE
+             IF WS-REPORT-NUMBER EQUAL "MPTZ007-02"
+               IF HDG-RPTLETR EQUAL "A"
+                 WRITE RPT02A-LINE FROM EOR-NOTE AFTER 5 LINES
+               ELSE
+                 WRITE RPT02B-LINE FROM EOR-NOTE AFTER 5 LINES
+           ELSE
+             IF WS-REPORT-NUMBER EQUAL "MPTZ007-03"
+      *        WRITE RPT03-LINE FROM EOR-NOTE AFTER 5 LINES
+               CONTINUE
+           ELSE
+             IF WS-REPORT-NUMBER EQUAL "MPTZ007-04"
+               WRITE RPT04A-LINE FROM EOR-NOTE AFTER 5 LINES
+               WRITE RPT04B-LINE FROM EOR-NOTE AFTER 5 LINES
+           ELSE
+      * REPORT-NUMBER EQUALS MPTZ007-05
+             IF HDG-RPTLETR EQUAL "A"
+               WRITE RPT05A-LINE FROM EOR-NOTE AFTER 5 LINES
+             ELSE
+               IF HDG-RPTLETR EQUAL "B"
+                 WRITE RPT05B-LINE FROM EOR-NOTE AFTER 5 LINES.
+
+       G9999-EXIT. EXIT.
+
+      ***************************************************************
+      * H1000-REPORT01-HDG-RTN:                                     *
+      *     THIS ROUTINE FORMATS REPORT 01 HEADINGS.                *
+      ***************************************************************
+       H1000-REPORT01-HDG-RTN.
+           MOVE "H1000-REPORT01-HDG-RTN" TO WS-PARAGRAPH.
+
+           MOVE WS-REPORT-NUMBER   TO HDG-RPTNUM.
+           MOVE SPACES             TO HDG-RPTLETR.
+
+           WRITE RPT01-LINE FROM HEADING1
+                 AFTER PAGE.
+
+           MOVE REPORT-SEQ-01       TO HDG-SEQ.
+           IF SUPPLIMENTAL-RUN
+             MOVE REPORT-TITLE-01S TO HDG-TITLE
+           ELSE
+             MOVE REPORT-TITLE-01     TO HDG-TITLE.
+           WRITE RPT01-LINE FROM HEADING2     AFTER 1 LINE.
+           WRITE RPT01-LINE FROM HEADING3     AFTER 2 LINES.
+           WRITE RPT01-LINE FROM SUBHEAD-01-1 AFTER 3 LINES.
+           WRITE RPT01-LINE FROM SUBHEAD-01-2 AFTER 1 LINE.
+
+       H1000-EXIT. EXIT.
+
+      ***************************************************************
+      * H2000-REPORT02-HDG-RTN:                                     *
+      *     THIS ROUTINE FORMATS REPORT 02 HEADINGS.                *
+      ***************************************************************
+       H2000-REPORT02-HDG-RTN.
+           MOVE "H2000-REPORT02-HDG-RTN" TO WS-PARAGRAPH.
+
+           MOVE WS-REPORT-NUMBER   TO HDG-RPTNUM.
+
+           IF HDG-RPTLETR = "A"
+             MOVE REPORT-TITLE-02A  TO HDG-TITLE
+             MOVE REPORT-SEQ-02A    TO HDG-SEQ
+             WRITE RPT02A-LINE FROM HEADING1     AFTER PAGE
+             WRITE RPT02A-LINE FROM HEADING2     AFTER 1 LINE
+             WRITE RPT02A-LINE FROM HEADING3     AFTER 2 LINES
+             WRITE RPT02A-LINE FROM SUBHEAD-02-1 AFTER 3 LINES
+             WRITE RPT02A-LINE FROM SUBHEAD-02-2 AFTER 1 LINE
+             WRITE RPT02A-LINE FROM SUBHEAD-02-3 AFTER 1 LINE
+           ELSE
+             MOVE REPORT-TITLE-02B  TO HDG-TITLE
+             MOVE REPORT-SEQ-02B    TO HDG-SEQ
+             WRITE RPT02B-LINE FROM HEADING1     AFTER PAGE
+             WRITE RPT02B-LINE FROM HEADING2     AFTER 1 LINE
+             WRITE RPT02B-LINE FROM HEADING3     AFTER 2 LINES
+             WRITE RPT02B-LINE FROM SUBHEAD-02-1 AFTER 3 LINES
+             WRITE RPT02B-LINE FROM SUBHEAD-02-2 AFTER 1 LINE
+             WRITE RPT02B-LINE FROM SUBHEAD-02-3 AFTER 1 LINE.
+
+       H2000-EXIT. EXIT.
+
+      ***************************************************************
+      * H3000-REPORT03-HDG-RTN:                                     *
+      *     THIS ROUTINE FORMATS REPORT 03 HEADINGS.                *
+      ***************************************************************
+       H3000-REPORT03-HDG-RTN.
+           MOVE "H3000-REPORT03-HDG-RTN" TO WS-PARAGRAPH.
+       
+000100* 2021/10/21 PG COMMENT OUT HEAD AND SUB-HEADS FOR DLMT FILE              
+000110*               EXCEPT FOR 1 THAT IS DELIMITED.                           
+000200     WRITE RPT03-LINE FROM SUBHEAD-03-DLMT BEFORE 1 LINE.
+000300 
+      *    MOVE WS-REPORT-NUMBER  TO HDG-RPTNUM.
+      *    MOVE SPACES         TO HDG-RPTLETR.
+      *    WRITE RPT03-LINE FROM SUBHEAD-03-OEM1 AFTER PAGE.
+      *    WRITE RPT03-LINE FROM SUBHEAD-03-OEM1.
+      *    WRITE RPT03-LINE FROM SUBHEAD-03-OEM2 AFTER 1 LINE.
+000100*
+000100*
+      *    WRITE RPT03-LINE FROM HEADING1 AFTER 3 LINES.
+      *
+      *    MOVE REPORT-SEQ-03      TO HDG-SEQ.
+      *    IF SUPPLIMENTAL-RUN
+      *      MOVE REPORT-TITLE-03S TO HDG-TITLE
+      *    ELSE
+      *      MOVE REPORT-TITLE-03  TO HDG-TITLE.
+      *
+      *    WRITE RPT03-LINE FROM HEADING2     AFTER 1 LINE.
+      *    WRITE RPT03-LINE FROM HEADING3     AFTER 2 LINES.
+      *
+      *    WRITE RPT03-LINE FROM SUBHEAD-03-1 AFTER 3 LINES.
+      *    WRITE RPT03-LINE FROM SUBHEAD-03-2 AFTER 1 LINE.
+      *    WRITE RPT03-LINE FROM SUBHEAD-03-3 AFTER 1 LINE.
+       
+       H3000-EXIT. EXIT.
+
+      ***************************************************************
+      * H4000-REPORT04-HDG-RTN:                                     *
+      *     THIS ROUTINE FORMATS REPORTS 04A AND 04B HEADINGS.      *
+      ***************************************************************
+       H4000-REPORT04-HDG-RTN.
+           MOVE "H4000-REPORT04-HDG-RTN" TO WS-PARAGRAPH.
+
+           MOVE WS-REPORT-NUMBER      TO HDG-RPTNUM.
+           MOVE "A"                   TO HDG-RPTLETR.
+           WRITE RPT04A-LINE FROM HEADING1
+                 AFTER PAGE.
+
+           MOVE "B"                   TO HDG-RPTLETR.
+           WRITE RPT04B-LINE FROM HEADING1
+                 AFTER PAGE.
+
+           MOVE REPORT-SEQ-04         TO HDG-SEQ.
+           IF SUPPLIMENTAL-RUN
+             MOVE REPORT-TITLE-04SA   TO HDG-TITLE
+             WRITE RPT04A-LINE FROM HEADING2 AFTER 1 LINE
+             MOVE REPORT-TITLE-04SB   TO HDG-TITLE
+             WRITE RPT04B-LINE FROM HEADING2 AFTER 1 LINE
+           ELSE
+             MOVE REPORT-TITLE-04A    TO HDG-TITLE
+             WRITE RPT04A-LINE FROM HEADING2 AFTER 1 LINE
+             MOVE REPORT-TITLE-04B    TO HDG-TITLE
+             WRITE RPT04B-LINE FROM HEADING2 AFTER 1 LINE.
+
+           WRITE RPT04A-LINE FROM HEADING3 AFTER 2 LINE.
+           WRITE RPT04B-LINE FROM HEADING3 AFTER 2 LINE.
+
+       H4000-EXIT. EXIT.
+
+      ***************************************************************
+      * H5000-REPORT05-HDG-RTN:                                     *
+      *     THIS ROUTINE FORMATS REPORT 05 HEADINGS.                *
+      ***************************************************************
+       H5000-REPORT05-HDG-RTN.
+           MOVE "H5000-REPORT05-HDG-RTN" TO WS-PARAGRAPH.
+
+           MOVE WS-REPORT-NUMBER  TO HDG-RPTNUM.
+           MOVE REPORT-SEQ-05     TO HDG-SEQ.
+
+           IF HDG-RPTLETR EQUAL "A"
+             MOVE REPORT-TITLE-05A    TO HDG-TITLE
+             WRITE RPT05A-LINE FROM HEADING1      AFTER PAGE
+             WRITE RPT05A-LINE FROM HEADING2      AFTER 1 LINE
+             WRITE RPT05A-LINE FROM HEADING3      AFTER 2 LINE
+             WRITE RPT05A-LINE FROM SUBHEAD-05A-1 AFTER 2 LINE
+             WRITE RPT05A-LINE FROM SUBHEAD-05A-2 AFTER 1 LINE
+             WRITE RPT05A-LINE FROM SUBHEAD-05A-3 AFTER 1 LINE
+           ELSE
+             IF HDG-RPTLETR EQUAL "B"
+               MOVE REPORT-TITLE-05B    TO HDG-TITLE
+               WRITE RPT05B-LINE FROM HEADING1      AFTER PAGE
+               WRITE RPT05B-LINE FROM HEADING2      AFTER 1 LINE
+               WRITE RPT05B-LINE FROM HEADING3      AFTER 2 LINE
+               WRITE RPT05B-LINE FROM SUBHEAD-05B-1 AFTER 2 LINE
+               WRITE RPT05B-LINE FROM SUBHEAD-05B-2 AFTER 1 LINE
+               WRITE RPT05B-LINE FROM SUBHEAD-05B-3 AFTER 1 LINE.
+
+       H5000-EXIT. EXIT.
+
+      ***************************************************************
+      * R1000-READ-OEM:                                             *
+      *     1. READ PART/"PART SUPPLIER COUNTRY" TABLE              *
+      ***************************************************************
+       R1000-READ-OEM.
+           MOVE "R1000-READ-OEM"        TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH           TO WS-PARNAME.
+           MOVE "PART_SUPLRCNTRY_SUPLR" TO WS-TBLNAME.
+           MOVE "SELECT    "            TO WS-FUNCTION.
+
+           EXEC SQL EXECUTE
+             BEGIN
+              PKG_SUPPLIER.P_PART_SUPLRCNTRY_SUPLR_SEL_01
+                              (:WS-PART-SUPPLIER-NUMBER,
+                               :WS-REGN-LIT-X,
+                               :WS-PART-SUPPLIER-COUNTRY-ABBR,
+                               :WS-PART-SUPPLIER-NUMBER-OUT,
+                               :WS-PART-SUPPLIER-NAME-RGN,
+                               :WS-PART-SUPPLIER-NAME,
+                               :WS-LAST-ASSY-DATE,
+                               :WS-LAST-ASSY-IND,
+                               :WS-LAST-COMPONENT-DATE,
+                               :WS-LAST-COMPONENT-IND,
+                               :WS-LAST-SUPERSESSION-DATE,
+                               :WS-LAST-SUPER-IND,
+                               :WS-LAST-DISCONTINUED-DATE,
+                               :WS-LAST-DISC-IND,
+                               :WS-LAST-PRICE-DATE,
+                               :WS-LAST-PRICE-IND,
+                               :WS-DISCONTINUED-TRAN-FLAG,
+                               :WS-DISCONTINUED-MONTHLY-COUNT,
+                               :WS-PART-COUNT,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE EQUAL SUCCESSFUL
+             MOVE "Y" TO WS-OEM-SW
+           ELSE
+            IF SQLCODE EQUAL NOT-FOUND
+              MOVE "N" TO WS-OEM-SW
+            ELSE
+              DISPLAY WS-DB-ERR-MSG
+              PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+       R1000-EXIT. EXIT.
+
+      ***************************************************************
+      * R9000-READ-RPT01-03-REPORT:                                 *
+      *     1. PREPARE TO READ REPORT TABLE                         *
+      *     2. OPEN CURSOR                                          *
+      *     3. PERFORM INITIAL FETCH                                *
+      ***************************************************************
+       R9000-READ-RPT01-03-REPORT.
+           MOVE "R9000-READ-RPT01-03-REPORT" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH                TO WS-PARNAME.
+           MOVE "ACQ_BATCH_REPORTS         " TO WS-TBLNAME.
+           MOVE "SELECT    "                 TO WS-FUNCTION.
+
+           EXEC SQL
+                ALLOCATE :APPLICATIONCSR-01
+           END-EXEC.
+
+           EXEC SQL EXECUTE
+            BEGIN
+            PKG_APPLICATION.P_ACQ_BATCH_REPORTS_CSR_01
+                              (:APPLICATIONCSR-01,
+                               :WS-REPORT-NUMBER,
+                               :WS-PART-SUPPLIER-NUMBER,
+                               :WS-PART-SUPPLIER-COUNTRY-ABBR,
+                               :WS-CURRENT-EFFECTIVE-DATE,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE NOT EQUAL SUCCESSFUL
+             DISPLAY WS-DB-ERR-MSG
+             DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+           MOVE "N"    TO WS-REPORT-SW.
+           MOVE ZEROES TO WS-RPT-ROW-CTR.
+           PERFORM R9050-FETCH-RPT01-03-ROW THRU R9050-EXIT.
+
+       R9000-EXIT. EXIT.
+
+      ***************************************************************
+      * R9050-FETCH-RPT01-03-ROW:                                   *
+      *     1. FETCH ACQ_BATCH_REPORTS Oracle REPORT ROW            *
+      *     2. AT END OR IF NOT FOUND, CLOSE CURSOR                 *
+      ***************************************************************
+       R9050-FETCH-RPT01-03-ROW.
+           MOVE "R9050-FETCH-RPT01-03-ROW  " TO WS-PARAGRAPH.
+           MOVE "ACQ_BATCH_REPORTS         " TO WS-TBLNAME.
+           MOVE "FETCH     "                 TO WS-FUNCTION.
+
+           EXEC SQL
+               FETCH :APPLICATIONCSR-01
+               INTO :WS-REPORT-NUMBER,
+                    :WS-SORT-DATA,
+                    :WS-REPORT-DATA
+            END-EXEC.
+
+           IF SQLCODE EQUAL SUCCESSFUL
+             MOVE "Y" TO WS-REPORT-SW
+             ADD 1    TO WS-RPT-ROW-CTR
+             MOVE WS-SORT-DATA   TO SORT-DATA
+             MOVE WS-REPORT-DATA TO REPORT-DATA
+
+
+             GO TO R9050-EXIT
+           ELSE
+             IF SQLCODE EQUAL NOT-FOUND
+               IF WS-RPT-ROW-CTR > 0
+                 MOVE "E" TO WS-REPORT-SW
+                 GO TO R9050-CLOSE
+               ELSE
+                 MOVE "N" TO WS-REPORT-SW
+                 GO TO R9050-CLOSE
+             ELSE
+               DISPLAY WS-DB-ERR-MSG
+               DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER
+               PERFORM Y1000-SQL-ERROR THRU Y1000-EXIT.
+
+
+       R9050-CLOSE.
+           MOVE "R9050-CLOSE.             " TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH               TO WS-PARNAME.
+           MOVE "ACQ_BATCH_REPORTS        " TO WS-TBLNAME.
+           MOVE "CLOSE  "                   TO WS-FUNCTION.
+
+           EXEC SQL EXECUTE
+             BEGIN
+             PKG_APPLICATION.P_ACQ_BATCH_REPORTS_CLO_01
+                              (:APPLICATIONCSR-01,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+            END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE NOT EQUAL SUCCESSFUL
+              DISPLAY WS-DB-ERR-MSG
+              DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER
+              PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+       R9050-EXIT. EXIT.
+
+      ***************************************************************
+      * R9100-READ-RPT04-ACTVY-ROW:                                 *
+      *     1. READ SINGLE TRANS OR UPDATE ACTIVITY CONTROL RPT ROW *
+      ***************************************************************
+       R9100-READ-RPT04-ACTVY-ROW.
+           MOVE "R9100-READ-RPT04-ACTVY-ROW" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH                TO WS-PARNAME.
+           MOVE "ACQ_BATCH_REPORTS         " TO WS-TBLNAME.
+           MOVE "SELECT    "                 TO WS-FUNCTION.
+
+           EXEC SQL EXECUTE
+           BEGIN
+              PKG_APPLICATION.P_ACQ_BATCH_REPORTS_SEL_02
+                              (:WS-REPORT-NUMBER,
+                               :WS-PART-SUPPLIER-NUMBER,
+                               :WS-PART-SUPPLIER-COUNTRY-ABBR,
+                               :WS-SEL-SORT-DATA,
+                               :WS-CURRENT-EFFECTIVE-DATE,
+                               :WS-REPORT-NUMBER-OUT,
+                               :WS-SORT-DATA-OUT,
+                               :WS-REPORT-DATA,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE EQUAL SUCCESSFUL
+             MOVE "Y" TO WS-REPORT-SW
+             MOVE WS-REPORT-DATA TO REPORT-DATA
+           ELSE
+           IF SQLCODE EQUAL NOT-FOUND
+             MOVE "N" TO WS-REPORT-SW
+           ELSE
+             DISPLAY WS-DB-ERR-MSG
+             DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+       R9100-EXIT. EXIT.
+
+      ***************************************************************
+      * R9150-READ-RPT04-DB-ACTVY-ROWS:                             *
+      *     1. PREPARE TO READ REPORT TABLE FOR DATABASE ACTIVITY   *
+      *        ROWS                                                 *
+      *     2. OPEN CURSOR                                          *
+      *     3. PERFORM FETCH OF ROW AND TOTAL INTO WSTG UNTIL ALL   *
+      *        ROWS HAVE BEEN FETCHED.                              *
+      ***************************************************************
+       R9150-READ-RPT04-DB-ACTVY-ROWS.
+           MOVE "R9150-READ-RPT04-DB-ACTVY-ROWS" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH                    TO WS-PARNAME.
+           MOVE "ACQ_BATCH_REPORTS             " TO WS-TBLNAME.
+           MOVE "SELECT    "                     TO WS-FUNCTION.
+
+           EXEC SQL
+                ALLOCATE :APPLICATIONCSR-03
+           END-EXEC.
+
+           EXEC SQL EXECUTE
+            BEGIN
+            PKG_APPLICATION.P_ACQ_BATCH_REPORTS_CSR_03
+                              (:APPLICATIONCSR-03,
+                               :WS-REPORT-NUMBER,
+                               :WS-PART-SUPPLIER-NUMBER,
+                               :WS-PART-SUPPLIER-COUNTRY-ABBR,
+                               :WS-SEL-SORT-DATA,
+                               :WS-CURRENT-EFFECTIVE-DATE,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE NOT EQUAL SUCCESSFUL
+             DISPLAY WS-DB-ERR-MSG
+             DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+           INITIALIZE DETAIL-04B
+                      REPLACING ALPHANUMERIC DATA BY SPACES
+                                NUMERIC-EDITED DATA BY ZEROES.
+           MOVE SPACES TO WS-REPORT-SW.
+           MOVE ZEROES TO WS-READ-AMT.
+           MOVE ZEROES TO WS-INSRT-AMT.
+           MOVE ZEROES TO WS-UPDT-AMT.
+           MOVE ZEROES TO WS-DLET-AMT.
+           MOVE ZEROES TO WS-RPT-ROW-CTR.
+           PERFORM R9155-FETCH-RPT04-DB-ACTVY-ROW THRU R9155-EXIT
+                   UNTIL RPT-ROW-NOT-FOUND OR END-OF-RPT-ROWS.
+
+           MOVE "CLOSE  " TO WS-FUNCTION.
+
+           EXEC SQL EXECUTE
+             BEGIN
+             PKG_APPLICATION.P_ACQ_BATCH_REPORTS_CLO_01
+                              (:APPLICATIONCSR-03,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+            END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE NOT EQUAL SUCCESSFUL
+             DISPLAY WS-DB-ERR-MSG
+             DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+       R9150-EXIT. EXIT.
+
+      ***************************************************************
+      * R9155-FETCH-RPT04-DB-ACTVY-ROW:                             *
+      *     1. FETCH COMMON DB ACTVY CONTROL REPORT ROWS AND TOTAL  *
+      *        THEM IN WRK STG.                                     *
+      *     2. WHEN ALL DONE, CLOSE CURSOR                          *
+      ***************************************************************
+       R9155-FETCH-RPT04-DB-ACTVY-ROW.
+           MOVE "R9155-FETCH-RPT04-DB-ACTVY-ROW" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH                    TO WS-PARNAME.
+           MOVE "ACQ_BATCH_REPORTS             " TO WS-TBLNAME.
+           MOVE "FETCH     "                     TO WS-FUNCTION.
+
+           EXEC SQL
+              FETCH :APPLICATIONCSR-03
+              INTO :WS-REPORT-NUMBER,
+                   :WS-SORT-DATA,
+                   :WS-REPORT-DATA
+           END-EXEC.
+
+           IF SQLCODE EQUAL SUCCESSFUL
+             ADD 1 TO WS-RPT-ROW-CTR
+             MOVE WS-REPORT-DATA   TO DETAIL-04B
+             MOVE RPT04-READ-AMT   TO WS-TEMP-AMT
+             ADD WS-TEMP-AMT       TO WS-READ-AMT
+             MOVE RPT04-INSRT-AMT  TO WS-TEMP-AMT
+             ADD WS-TEMP-AMT       TO WS-INSRT-AMT
+             MOVE RPT04-UPDT-AMT   TO WS-TEMP-AMT
+             ADD WS-TEMP-AMT       TO WS-UPDT-AMT
+             MOVE RPT04-DLET-AMT   TO WS-TEMP-AMT
+             ADD WS-TEMP-AMT       TO WS-DLET-AMT
+             MOVE WS-SORT-DATA     TO SORT-DATA
+             MOVE WS-REPORT-DATA   TO REPORT-DATA
+           ELSE
+             IF SQLCODE EQUAL NOT-FOUND
+               IF WS-RPT-ROW-CTR > 0
+                 MOVE "E" TO WS-REPORT-SW
+               ELSE
+                 MOVE "N" TO WS-REPORT-SW
+             ELSE
+               DISPLAY WS-DB-ERR-MSG
+               DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER
+               DISPLAY "SORT DATA : ", WS-SEL-SORT-DATA
+               PERFORM Y1000-SQL-ERROR THRU Y1000-EXIT.
+
+       R9155-EXIT. EXIT.
+
+      ***************************************************************
+      * R9200-READ-RPT02-05-REPORT:                                 *
+      *     1. PREPARE TO READ REPORT TABLE                         *
+      *     2. OPEN CURSOR                                          *
+      *     3. PERFORM INITIAL FETCH                                *
+      ***************************************************************
+       R9200-READ-RPT02-05-REPORT.
+           MOVE "R9200-READ-RPT02-05-REPORT    " TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH                    TO WS-PARNAME.
+           MOVE "ACQ_BATCH_REPORTS             " TO WS-TBLNAME.
+           MOVE "DECLARE   "                     TO WS-FUNCTION.
+
+           EXEC SQL
+                ALLOCATE :APPLICATIONCSR-03
+           END-EXEC.
+
+           EXEC SQL EXECUTE
+            BEGIN
+            PKG_APPLICATION.P_ACQ_BATCH_REPORTS_CSR_03
+                              (:APPLICATIONCSR-03,
+                               :WS-REPORT-NUMBER,
+                               :WS-PART-SUPPLIER-NUMBER,
+                               :WS-PART-SUPPLIER-COUNTRY-ABBR,
+                               :WS-SEL-SORT-DATA,
+                               :WS-CURRENT-EFFECTIVE-DATE,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE NOT EQUAL SUCCESSFUL
+             DISPLAY WS-DB-ERR-MSG
+             DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+           MOVE "N"    TO WS-REPORT-SW.
+           MOVE ZEROES TO WS-RPT-ROW-CTR.
+           PERFORM R9250-FETCH-RPT02-05-ROW THRU R9250-EXIT.
+
+       R9200-EXIT. EXIT.
+
+      ***************************************************************
+      * R9250-FETCH-RPT02-05-ROW:                                   *
+      *     1. FETCH ACQ_BATCH_REPORTS DB REPORT ROW                *
+      *     2. AT END OR IF NOT FOUND, CLOSE CURSOR                 *
+      ***************************************************************
+       R9250-FETCH-RPT02-05-ROW.
+           MOVE "R9250-FETCH-RPT02-05-ROW      " TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH                    TO WS-PARNAME.
+           MOVE "ACQ_BATCH_REPORTS             " TO WS-TBLNAME.
+           MOVE "FETCH     "                     TO WS-FUNCTION.
+
+           EXEC SQL
+              FETCH :APPLICATIONCSR-03
+              INTO :WS-REPORT-NUMBER,
+                   :WS-SORT-DATA,
+                   :WS-REPORT-DATA
+           END-EXEC.
+
+           IF SQLCODE EQUAL SUCCESSFUL
+             MOVE "Y" TO WS-REPORT-SW
+             ADD 1    TO WS-RPT-ROW-CTR
+             MOVE WS-SORT-DATA   TO SORT-DATA
+             MOVE WS-REPORT-DATA TO REPORT-DATA
+             GO TO R9250-EXIT
+           ELSE
+             IF SQLCODE EQUAL NOT-FOUND
+               IF WS-RPT-ROW-CTR > 0
+                 MOVE "E" TO WS-REPORT-SW
+                 GO TO R9250-CLOSE
+               ELSE
+                 MOVE "N" TO WS-REPORT-SW
+                 GO TO R9250-CLOSE
+             ELSE
+               DISPLAY WS-DB-ERR-MSG
+               DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER
+               PERFORM Y1000-SQL-ERROR THRU Y1000-EXIT.
+
+
+       R9250-CLOSE.
+           MOVE "R9250-CLOSE.             " TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH               TO WS-PARNAME.
+
+           MOVE "CLOSE  " TO WS-FUNCTION.
+
+           EXEC SQL EXECUTE
+             BEGIN
+             PKG_APPLICATION.P_ACQ_BATCH_REPORTS_CLO_01
+                              (:APPLICATIONCSR-03,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+            END;
+           END-EXEC.
+
+           IF SQLCODE NOT EQUAL SUCCESSFUL
+              DISPLAY WS-DB-ERR-MSG
+              DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER
+              PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+       R9250-EXIT. EXIT.
+
+      ***************************************************************
+      * R0300-INSERT-TO-UPDINFO :                                   *
+      *     1.  INSERT UPDATE RECORD TO UPDINFO TABLE               *
+      ***************************************************************
+       R0300-INSERT-TO-UPDINFO.
+           PERFORM R0310-READ-MEDIA-HEADER THRU R0310-EXIT.
+           MOVE "R0300-INSERT-TO-UPDINFO       " TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH                    TO WS-PARNAME.
+           MOVE "ACQ_UPDATE_BALANCE            " TO WS-TBLNAME.
+           MOVE "INSERT    "                     TO WS-FUNCTION.
+
+           EXEC SQL EXECUTE
+             BEGIN
+              PKG_APPLICATION.P_ACQ_UPDATE_BALANCE_INS_01
+                   (:WS-PART-SUPPLIER-NUMBER,
+                   :WS-PART-SUPPLIER-COUNTRY-ABBR,
+                   :WS-CURRENT-EFFECTIVE-DATE,
+                   :WS-REPLACEMENT-FLAG,
+                   :WS-REPLACEMENT-RUN-COUNT,
+                   :WS-RUN-DATE,
+                   :WS-NAGS-TYPE,
+                   :WS-RUN-TYPE,
+                   :REVERSE-SUPER-READ-CNT,
+                   :REVERSE-SUPER-PROC-CNT,
+                   :REVERSE-SUPER-BYPASSED-CNT,
+                   :ASSY-TO-COMPNT-READ-CNT,
+                   :ASSY-TO-COMPNT-PROC-CNT,
+                   :ASSY-TO-COMPNT-BYPASSED-CNT,
+                   :COMPNT-TO-ASSY-READ-CNT,
+                   :COMPNT-TO-ASSY-PROC-CNT,
+                   :COMPNT-TO-ASSY-BYPASSED-CNT,
+                   :SUPER-READ-CNT,
+                   :SUPER-PROC-CNT,
+                   :SUPER-BYPASSED-CNT,
+                   :DISC-READ-CNT,
+                   :DISC-PROC-CNT,
+                   :DISC-BYPASSED-CNT,
+                   :PRICE-READ-CNT,
+                   :PRICE-PROC-CNT,
+                   :PRICE-BYPASSED-CNT,
+                   :PR-ASSY-TO-COMPNT-PART-CNT,
+                   :PR-ASSY-TO-COMPNT-QX-CNT,
+                   :WP-ASSY-TO-COMPNT-PART-CNT,
+                   :WP-ASSY-TO-COMPNT-QX-CNT,
+                   :ASSY-TO-COMPNT-PART-CNT,
+                   :PR-COMPNT-TO-ASSY-PART-CNT,
+                   :PR-COMPNT-TO-ASSY-QX-CNT,
+                   :WP-COMPNT-TO-ASSY-PART-CNT,
+                   :WP-COMPNT-TO-ASSY-QX-CNT,
+                   :COMPNT-TO-ASSY-PART-CNT,
+                   :PR-NEW-SUPER-PART-CNT,
+                   :PR-NEW-SUPER-QX-CNT,
+                   :WP-NEW-SUPER-PART-CNT,
+                   :WP-NEW-SUPER-QX-CNT,
+                   :NEW-SUPER-PART-CNT,
+                   :PR-PRIORSAME-SUPER-PART-CNT,
+                   :PR-PRIORSAME-SUPER-QX-CNT,
+                   :WP-PRIORSAME-SUPER-PART-CNT,
+                   :WP-PRIORSAME-SUPER-QX-CNT,
+                   :PRIORSAME-SUPER-PART-CNT,
+                   :PR-PRIORDIFF-SUPER-PART-CNT,
+                   :PR-PRIORDIFF-SUPER-QX-CNT,
+                   :WP-PRIORDIFF-SUPER-PART-CNT,
+                   :WP-PRIORDIFF-SUPER-QX-CNT,
+                   :PRIORDIFF-SUPER-PART-CNT,
+                   :PR-REVERSE-SUPER-PART-CNT,
+                   :PR-REVERSE-SUPER-QX-CNT,
+                   :WP-REVERSE-SUPER-PART-CNT,
+                   :WP-REVERSE-SUPER-QX-CNT,
+                   :REVERSE-SUPER-PART-CNT,
+                   :PR-OEM-NEWLY-DISC-PART-CNT,
+                   :PR-OEM-NEWLY-DISC-QX-CNT,
+                   :WP-OEM-NEWLY-DISC-PART-CNT,
+                   :WP-OEM-NEWLY-DISC-QX-CNT,
+                   :OEM-NEWLY-DISC-PART-CNT,
+                   :PR-DATE-NEWLY-DISC-PART-CNT,
+                   :PR-DATE-NEWLY-DISC-QX-CNT,
+                   :WP-DATE-NEWLY-DISC-PART-CNT,
+                   :WP-DATE-NEWLY-DISC-QX-CNT,
+                   :DATE-NEWLY-DISC-PART-CNT,
+                   :PR-PRIOR-DISC-PART-CNT,
+                   :PR-PRIOR-DISC-QX-CNT,
+                   :WP-PRIOR-DISC-PART-CNT,
+                   :WP-PRIOR-DISC-QX-CNT,
+                   :PRIOR-DISC-PART-CNT,
+                   :PR-NO-UPDATE-PART-CNT,
+                   :PR-NO-UPDATE-QX-CNT,
+                   :WP-NO-UPDATE-PART-CNT,
+                   :WP-NO-UPDATE-QX-CNT,
+                   :NO-UPDATE-PART-CNT,
+                   :PR-NO-UPDATE-ZPRC-PART-CNT,
+                   :PR-NO-UPDATE-ZPRC-QX-CNT,
+                   :WP-NO-UPDATE-ZPRC-PART-CNT,
+                   :WP-NO-UPDATE-ZPRC-QX-CNT,
+                   :NO-UPDATE-ZPRC-PART-CNT,
+                   :PR-NEWLY-ZPRC-PART-CNT,
+                   :PR-NEWLY-ZPRC-QX-CNT,
+                   :WP-NEWLY-ZPRC-PART-CNT,
+                   :WP-NEWLY-ZPRC-QX-CNT,
+                   :NEWLY-ZPRC-PART-CNT,
+                   :PR-SAME-PRICE-PART-CNT,
+                   :PR-SAME-PRICE-QX-CNT,
+                   :WP-SAME-PRICE-PART-CNT,
+                   :WP-SAME-PRICE-QX-CNT,
+                   :SAME-PRICE-PART-CNT,
+                   :PR-INCR-PRICE-PART-CNT,
+                   :PR-INCR-PRICE-QX-CNT,
+                   :WP-INCR-PRICE-PART-CNT,
+                   :WP-INCR-PRICE-QX-CNT,
+                   :INCR-PRICE-PART-CNT,
+                   :PR-DECR-PRICE-PART-CNT,
+                   :PR-DECR-PRICE-QX-CNT,
+                   :WP-DECR-PRICE-PART-CNT,
+                   :WP-DECR-PRICE-QX-CNT,
+                   :DECR-PRICE-PART-CNT,
+                   :PR-INCR-GT25-PRICE-PART-CNT,
+                   :PR-INCR-GT25-PRICE-QX-CNT,
+                   :WP-INCR-GT25-PRICE-PART-CNT,
+                   :WP-INCR-GT25-PRICE-QX-CNT,
+                   :INCR-GT25-PRICE-PART-CNT,
+                   :PR-DECR-GT25-PRICE-PART-CNT,
+                   :PR-DECR-GT25-PRICE-QX-CNT,
+                   :WP-DECR-GT25-PRICE-PART-CNT,
+                   :WP-DECR-GT25-PRICE-QX-CNT,
+                   :DECR-GT25-PRICE-PART-CNT,
+                   :PR-PRICE-CHANGE-PCT,
+                   :PR-PRICE-INCR-PCT,
+                   :PR-PRICE-DECR-PCT,
+                   :WP-PRICE-CHANGE-PCT,
+                   :WP-PRICE-INCR-PCT,
+                   :WP-PRICE-DECR-PCT,
+                   :PRICE-CHANGE-PCT,
+                   :PRICE-INCR-PCT,
+                   :PRICE-DECR-PCT,
+                   :PR-REPL-SAME-PRICE-PART-CNT,
+                   :PR-REPL-SAME-PRICE-QX-CNT,
+                   :WP-REPL-SAME-PRICE-PART-CNT,
+                   :WP-REPL-SAME-PRICE-QX-CNT,
+                   :REPL-SAME-PRICE-PART-CNT,
+                   :PR-REPL-INCR-PRICE-PART-CNT,
+                   :PR-REPL-INCR-PRICE-QX-CNT,
+                   :WP-REPL-INCR-PRICE-PART-CNT,
+                   :WP-REPL-INCR-PRICE-QX-CNT,
+                   :REPL-INCR-PRICE-PART-CNT,
+                   :PR-REPL-DECR-PRICE-PART-CNT,
+                   :PR-REPL-DECR-PRICE-QX-CNT,
+                   :WP-REPL-DECR-PRICE-PART-CNT,
+                   :WP-REPL-DECR-PRICE-QX-CNT,
+                   :REPL-DECR-PRICE-PART-CNT,
+                   :WS-ROW-COUNT,
+                   :WS-ERROR-TEXT,
+                   :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE EQUAL SUCCESSFUL
+            NEXT SENTENCE
+           ELSE
+            DISPLAY WS-DB-ERR-MSG
+            DISPLAY "SUPPLIER-NUMBER  = " WS-PART-SUPPLIER-NUMBER
+            DISPLAY "SUPPLIER-COUNTRY = " WS-PART-SUPPLIER-COUNTRY-ABBR
+            DISPLAY "EFFECTIVE-DATE   = " WS-CURRENT-EFFECTIVE-DATE
+            DISPLAY "REPLACEMENT-FLAG = " WS-REPLACEMENT-FLAG
+            DISPLAY "REPLACEMENT-RUN-COUNT = " WS-REPLACEMENT-RUN-COUNT
+            PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+           PERFORM R0400-UPDATE-MEDIA-DETAIL THRU R0400-EXIT.
+           PERFORM R0500-UPDT-REFORMAT-BAL   THRU R0500-EXIT.
+
+       R0300-EXIT.  EXIT.
+
+      ****************************************************************
+      * R0310-READ-MEDIA-HEADER:                                     *
+      *     1.  READ MEDIA HEADER RECORD AND COMPARE THE EFFECTIVE DT*
+      ****************************************************************
+       R0310-READ-MEDIA-HEADER.
+           MOVE "R0310-READ-MEDIA-HEADER" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH             TO WS-PARNAME.
+           MOVE "ACQ_MEDIA_HEADER       " TO WS-TBLNAME.
+           MOVE "READ      "              TO WS-FUNCTION.
+
+           EXEC SQL EXECUTE
+           BEGIN
+            PKG_APPLICATION.P_ACQ_MEDIA_HEADER_SEL_01
+                   (:WS-PART-SUPPLIER-NUMBER,
+                    :WS-PART-SUPPLIER-COUNTRY-ABBR,
+                    :WS-CURRENT-EFFECTIVE-DATE,
+                    :WS-REPLACEMENT-FLAG,
+                    :WS-REPLACEMENT-RUN-COUNT,
+                    :WS-ROW-COUNT,
+                    :WS-ERROR-TEXT,
+                    :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE EQUAL SUCCESSFUL
+              GO TO R0310-EXIT
+           ELSE
+      * if not successful, abend
+              IF SQLCODE EQUAL NOT-FOUND
+                DISPLAY "MEDIA HEADER ROW NOT FOUND"
+                MOVE V-PARM-DOESNT-MATCH-MHEADER TO WS-ABEND-CODE.
+
+           DISPLAY "SUPPLIER-NUMBER  =" WS-PART-SUPPLIER-NUMBER.
+           DISPLAY "SUPPLIER-COUNTRY ="
+               WS-PART-SUPPLIER-COUNTRY-ABBR.
+           DISPLAY "EFFECTIVE-DATE   =" WS-CURRENT-EFFECTIVE-DATE.
+           DISPLAY "REPLACEMENT IND  =" WS-REPLACEMENT-FLAG.
+           PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+       R0310-EXIT.  EXIT.
+
+      ***************************************************************
+      * R0400-UPDATE-ACQ-MEDIA-DETAIL:                              *
+      *     1. UPDATE THE "UPDATE RUN" DATE                         *
+      ***************************************************************
+       R0400-UPDATE-MEDIA-DETAIL.
+           MOVE "R0400-UPDATE-MEDIA-DETAIL     " TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH                    TO WS-PARNAME.
+           MOVE "ACQ_MEDIA_DETAIL              " TO WS-TBLNAME.
+           MOVE "UPDATE    "                     TO WS-FUNCTION.
+
+           MOVE "GOOD" TO  WS-VERIFIED-COMMENT.
+
+           EXEC SQL EXECUTE
+           BEGIN
+              PKG_APPLICATION.P_ACQ_MEDIA_DETAIL_UPD_01
+                              (:WS-PART-SUPPLIER-NUMBER,
+                               :WS-PART-SUPPLIER-COUNTRY-ABBR,
+                               :WS-CURRENT-EFFECTIVE-DATE,
+                               :WS-REPLACEMENT-FLAG,
+                               :WS-VERIFIED-COMMENT,
+                               :WS-RUN-DATE,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE EQUAL SUCCESSFUL
+              GO TO R0400-EXIT
+           ELSE
+           IF SQLCODE EQUAL NOT-FOUND
+              DISPLAY "GOOD MEDIA DETAIL ROW NOT FOUND"
+              MOVE V-PARM-DOESNT-MATCH-MDETAIL TO WS-ABEND-CODE.
+
+           DISPLAY "SUPPLIER-NUMBER  : " WS-PART-SUPPLIER-NUMBER.
+           DISPLAY "SUPPLIER-COUNTRY : " WS-PART-SUPPLIER-COUNTRY-ABBR.
+           DISPLAY "EFFECTIVE-DATE   : " WS-CURRENT-EFFECTIVE-DATE.
+           DISPLAY "REPLACEMENT IND  : " WS-REPLACEMENT-FLAG.
+           PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+       R0400-EXIT. EXIT.
+
+      ***************************************************************
+      * R0500-UPDT-REFORMAT-BAL:                                    *
+      *     1. UPDATE THE UPDATE RUN DATE IN REFORMAT BALANCE RECORD*
+      ***************************************************************
+       R0500-UPDT-REFORMAT-BAL.
+           MOVE "R0500-UPDT-REFORMAT-BAL" TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH             TO WS-PARNAME.
+           MOVE "ACQ_REFORMAT_BALANCE   " TO WS-TBLNAME.
+           MOVE "UPDATE   "               TO WS-FUNCTION.
+
+           MOVE "OKAY"  TO  OKAY-COMMENT.
+
+           EXEC SQL EXECUTE
+           BEGIN
+            PKG_APPLICATION.P_ACQ_REFORMAT_BALANCE_UPD_01
+                              (:WS-PART-SUPPLIER-NUMBER,
+                               :WS-PART-SUPPLIER-COUNTRY-ABBR,
+                               :WS-CURRENT-EFFECTIVE-DATE,
+                               :WS-REPLACEMENT-FLAG,
+                               :WS-REPLACEMENT-RUN-COUNT,
+                               :OKAY-COMMENT,
+                               :WS-RUN-DATE,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE EQUAL SUCCESSFUL
+             GO TO R0500-EXIT
+           ELSE
+      * if not successful, abend
+           IF SQLCODE EQUAL NOT-FOUND
+                 DISPLAY "OKAY REFTBAL ROW NOT FOUND"
+           ELSE
+               NEXT SENTENCE.
+
+           DISPLAY "SUPPLIER-NUMBER  =" WS-PART-SUPPLIER-NUMBER.
+           DISPLAY "SUPPLIER-COUNTRY =" WS-PART-SUPPLIER-COUNTRY-ABBR.
+           DISPLAY "EFFECTIVE-DATE   =" WS-CURRENT-EFFECTIVE-DATE.
+           DISPLAY "REPLACEMENT IND  =" WS-REPLACEMENT-FLAG.
+           DISPLAY "REPLACEMENT COUNT=" WS-REPLACEMENT-RUN-COUNT.
+           PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+       R0500-EXIT. EXIT.
+
+      ***************************************************************
+      * R9900-DELETE-REPORT:                                        *
+      *     1. DELETE ACQ_BATCH_REPORTS Oracle REPORT ROWS          *
+      ***************************************************************
+       R9900-DELETE-REPORT.
+           MOVE "R9900-DELETE-REPORT           " TO WS-PARAGRAPH.
+           MOVE  WS-PARAGRAPH                    TO WS-PARNAME.
+           MOVE "ACQ_BATCH_REPORTS             " TO WS-TBLNAME.
+           MOVE "DELETE    "                     TO WS-FUNCTION.
+
+           EXEC SQL EXECUTE
+           BEGIN
+              PKG_APPLICATION.P_ACQ_BATCH_REPORTS_DEL_01
+                              (:DELETE-REPORT-NUMBER,
+                               :WS-PART-SUPPLIER-NUMBER,
+                               :WS-PART-SUPPLIER-COUNTRY-ABBR,
+                               :WS-CURRENT-EFFECTIVE-DATE,
+                               :WS-ROW-COUNT,
+                               :WS-ERROR-TEXT,
+                               :WS-SQLCODE);
+             END;
+           END-EXEC.
+
+           MOVE WS-SQLCODE TO SQLCODE.
+
+           IF SQLCODE EQUAL SUCCESSFUL
+             GO TO R9900-EXIT
+           ELSE
+             DISPLAY "DELETE RECORD DOESN'T EXIST"
+             DISPLAY "OEM-NUM =" WS-SEL-OEM-NUM
+             DISPLAY "REGN-CD =" WS-SEL-REGN-CD
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT.
+
+       R9900-EXIT. EXIT.
+
+      ***************************************************************
+      * Y1000-SQL-ERROR:                                            *
+      *  1. PREPARE TO ABORT PROGRAM DUE TO SQL ERROR               *
+      *  2. ROLLBACK ANY Oracle UPDATES SINCE LAST COMMIT PERFORMED *
+      ***************************************************************
+       Y1000-SQL-ERROR.
+
+           IF SQLCODE < 0
+               COMPUTE WS-ABEND-CODE = SQLCODE * -1
+           ELSE
+               MOVE SQLCODE TO WS-ABEND-CODE.
+
+           CALL "dberrmsg" USING SQLCA ERROR-MESSAGE ERROR-LENGTH.
+           IF RETURN-CODE = 0
+               DISPLAY ERROR-TEXT (1)
+               DISPLAY ERROR-TEXT (2)
+               DISPLAY ERROR-TEXT (3)
+               DISPLAY ERROR-TEXT (4)
+               DISPLAY ERROR-TEXT (5)
+               DISPLAY ERROR-TEXT (6)
+               DISPLAY ERROR-TEXT (7)
+               DISPLAY ERROR-TEXT (8)
+           ELSE
+               DISPLAY "ERROR OCCURRED DURING MESSAGE RTN"
+               DISPLAY "RETURN CODE = " SQLCODE.
+
+           PERFORM Y2000-ABEND-RTN THRU Y2000-EXIT.
+
+       Y1000-EXIT.  EXIT.
+
+      ***************************************************************
+      * Y1500-SQL-PROCEDURE-ERROR                                   *
+      *   1. PREPARE TO ABORT PROGRAM DUE TO SQL ERROR              *
+      *   2. ROLLBACK ANY ORACLE UPDATES SINCE LAST COMMIT PERFORMD *
+      ***************************************************************
+       Y1500-SQL-PROCEDURE-ERROR.
+
+           IF SQLCODE < 0
+               COMPUTE WS-ABEND-CODE = SQLCODE * -1
+           ELSE
+               MOVE SQLCODE TO WS-ABEND-CODE.
+
+           DISPLAY "SQLCODE " WS-ABEND-CODE.
+           DISPLAY "        " WS-ERROR-TEXT.
+
+           PERFORM Y2000-ABEND-RTN THRU Y2000-EXIT.
+
+       Y1500-EXIT. EXIT.
+
+      ***************************************************************
+      * Y2000-ABEND-RTN:                                            *
+      *     1. CALL ABEND PROGRAM.                                  *
+      ***************************************************************
+       Y2000-ABEND-RTN.
+
+           EXEC SQL
+               ROLLBACK
+           END-EXEC.
+
+           CALL "cobabend" USING PGMNAME, END-WORKING, WS-ABEND-AREA.
+
+       Y2000-EXIT. EXIT.
+
+@
+
+
+1.14
+log
+@AIX to RHEL conversion
+@
+text
+@d175 2
+a176 2
+      *****************************************************************
+      * 07/30/26  BY:   RODRIGO JASINSKI
+d178 1
+a178 1
+      *****************************************************************
+d282 1
+a282 1
+      -"$Revision: 1.13 $".
+d284 1
+a284 1
+      -"$Date: 2026/07/31 11:36:23 $".
+@
+
+
+1.13
+log
+@AIX to RHEL conversion
+@
+text
+@d6 1
+a6 1
+      ******************************************************************
+d282 1
+a282 1
+      -"$Revision: 1.12 $".
+d284 1
+a284 1
+      -"$Date: 2026/07/31 11:28:10 $".
+@
+
+
+1.12
+log
+@AIX to RHEL conversion
+@
+text
+@d6 1
+a6 1
+      *******************************************************************
+d282 1
+a282 1
+      -"$Revision: 1.11 $".
+d284 1
+a284 1
+      -"$Date: 2026/07/30 21:14:11 $".
+@
+
+
+1.11
+log
+@AIX to RHEL conversion
+@
+text
+@d6 1
+a6 1
+      ******************************************************************
+d282 1
+a282 1
+      -"$Revision: 1.10 $".
+d284 1
+a284 1
+      -"$Date: 2026/07/30 15:29:35 $".
+@
+
+
+1.10
+log
+@Testing RHEL
+@
+text
+@d176 3
+d282 1
+a282 1
+      -"$Revision: 1.9 $".
+d284 1
+a284 1
+      -"$Date: 2021/11/02 19:09:26 $".
+d286 1
+a286 1
+      -"$Author: pg2697 $".
+@
+
+
+1.9
+log
+@Price Variance chg from rpt to csv
+@
+text
+@d6 1
+a6 1
+      *****************************************************************
+d279 1
+a279 1
+      -"$Revision: 1.8 $".
+d281 1
+a281 1
+      -"$Date: 2019/01/24 06:46:58 $".
+d287 1
+a287 1
+      -"$Locker: pg2697 $".
+@
+
+
+1.8
+log
+@ No code change. Added mod note so pgm could be recompiled with new version of mptb002.cpy
+@
+text
+@d70 4
+d91 1
+a91 1
+			*           DESC: MPTZ007-01 Transaction Error Report
+a115 1
+      *
+a184 1
+
+d189 15
+a203 15
+      *           LINE ADVANCING RPT01.
+           SELECT REPORT-02A    ASSIGN TO EXTERNAL
+                   LINE ADVANCING RPT02A.
+           SELECT REPORT-02B    ASSIGN TO EXTERNAL
+                   LINE ADVANCING RPT02B.
+           SELECT REPORT-03     ASSIGN TO EXTERNAL
+                   LINE ADVANCING RPT03.
+           SELECT REPORT-04A    ASSIGN TO EXTERNAL
+                   LINE ADVANCING RPT04A.
+           SELECT REPORT-04B    ASSIGN TO EXTERNAL
+                   LINE ADVANCING RPT04B.
+           SELECT REPORT-05A    ASSIGN TO EXTERNAL
+                   LINE ADVANCING RPT05A.
+           SELECT REPORT-05B    ASSIGN TO EXTERNAL
+                   LINE ADVANCING RPT05B.
+a204 1
+       EJECT
+d279 1
+a279 1
+      -"$Revision: 1.7 $".
+d281 1
+a281 1
+      -"$Date: 2014/10/07 02:35:39 $".
+d441 1
+d523 1
+a523 1
+
+d663 1
+a663 1
+              DISPLAY "Bypassing creation of empty MPTZ007-01 Report"
+d1430 4
+a1433 1
+
+d1435 17
+a1451 10
+               MOVE SPACES  TO RPT03-OLD-PART-NUM
+               MOVE SPACES  TO RPT03-OLD-PART-DESC
+               MOVE SPACES  TO RPT03-CURR-PRICE-AMT-X
+               MOVE SPACES  TO RPT03-PREV-PRICE-AMT-X
+               MOVE SPACES  TO RPT03-PRICE-VAR-AMT-X
+               MOVE SPACES  TO RPT03-PRICE-VAR-PCT-X
+           ELSE
+               MOVE RPT03-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM.
+
+           WRITE RPT03-LINE FROM DETAIL-03 AFTER 1 LINE.
+d1854 2
+a1855 1
+               WRITE RPT03-LINE FROM EOR-NOTE AFTER 5 LINES
+d1931 27
+a1957 23
+
+           MOVE WS-REPORT-NUMBER  TO HDG-RPTNUM.
+           MOVE SPACES         TO HDG-RPTLETR.
+
+           WRITE RPT03-LINE FROM SUBHEAD-03-OEM1 AFTER PAGE.
+           WRITE RPT03-LINE FROM SUBHEAD-03-OEM2 AFTER 1 LINE.
+           WRITE RPT03-LINE FROM SUBHEAD-03-OEM3 AFTER 2 LINES.
+
+           WRITE RPT03-LINE FROM HEADING1 AFTER 3 LINES.
+
+           MOVE REPORT-SEQ-03      TO HDG-SEQ.
+           IF SUPPLIMENTAL-RUN
+             MOVE REPORT-TITLE-03S TO HDG-TITLE
+           ELSE
+             MOVE REPORT-TITLE-03  TO HDG-TITLE.
+
+           WRITE RPT03-LINE FROM HEADING2     AFTER 1 LINE.
+           WRITE RPT03-LINE FROM HEADING3     AFTER 2 LINES.
+
+           WRITE RPT03-LINE FROM SUBHEAD-03-1 AFTER 3 LINES.
+           WRITE RPT03-LINE FROM SUBHEAD-03-2 AFTER 1 LINE.
+           WRITE RPT03-LINE FROM SUBHEAD-03-3 AFTER 1 LINE.
+
+@
+
+
+1.7
+log
+@ Added mod note. Testing new rcheck_in and prod_move.
+@
+text
+@d70 4
+d278 1
+a278 1
+      -"$Revision: 1.6 $".
+d280 1
+a280 1
+      -"$Date: 2014/05/18 02:18:27 $".
+@
+
+
+1.6
+log
+@ no code chg. added mod history to allow check_in and recompile in prod (for Oracle 11G IBM 770 Migration).
+@
+text
+@d70 3
+d82 2
+a83 2
+      * 03/31/08  BY: Janet Wilson
+      *           DESC: MPTZ007-01 Transaction Error Report
+d274 1
+a274 1
+      -"$Revision: 1.5 $".
+d276 1
+a276 1
+      -"$Date: 2014/05/18 02:04:47 $".
+@
+
+
+1.5
+log
+@ no code chg. added mod history to allow check_in and recompile in prod (for Oracle 11G / IBM 770 Migration).
+@
+text
+@d73 1
+a73 1
+      *                   IBM 770 MIGRATION.
+d271 1
+a271 1
+      -"$Revision: 1.4 $".
+d273 1
+a273 1
+      -"$Date: 2010/07/07 18:40:29 $".
+@
+
+
+1.4
+log
+@ Removed print of headings every 58 or so lines. Added print of OEM email blurb in Price Variance report.
+@
+text
+@d70 5
+d271 1
+a271 1
+      -"$Revision: 1.3 $".
+d273 1
+a273 1
+      -"$Date: 2008/04/01 17:46:37 $".
+d275 1
+a275 1
+      -"$Author: jw97143 $".
+@
+
+
+1.3
+log
+@ Suppress empty MPTZ007-01 reports and distribute populated reports to Rpt.OEM.Fixit - Transaction Error Report
+@
+text
+@d70 4
+d78 1
+a78 1
+      *                 The COS Report distribution turn to Rpt.OEM.Fixit
+d266 1
+a266 1
+      -"$Revision: 1.2 $".
+d268 1
+a268 1
+      -"$Date: 2004/06/18 04:56:42 $".
+d270 1
+a270 1
+      -"$Author: lm5200 $".
+d274 1
+a274 1
+      -"$Locker: jw97143 $".
+a392 3
+      * COUNTERS FOR PAGE CONTROL
+           03  WS-LINE-CTR              PIC 9(2)  VALUE 0.
+           03  WS-PAGE-CTR              PIC 9(4)  VALUE 0.
+a611 1
+              MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR
+a612 1
+              MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR
+a615 1
+           MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR.
+a618 1
+             MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR
+a620 1
+           MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR.
+a622 1
+           MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR.
+a625 1
+             MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR
+d646 1
+d651 1
+a653 1
+             PERFORM H1000-REPORT01-HDG-RTN  THRU H1000-EXIT
+d692 1
+d696 2
+a698 1
+             PERFORM H2000-REPORT02-HDG-RTN  THRU H2000-EXIT
+d703 1
+a703 1
+           PERFORM H2000-REPORT02-HDG-RTN THRU H2000-EXIT.
+d709 1
+a712 1
+           MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR.
+d714 2
+a716 1
+             PERFORM H2000-REPORT02-HDG-RTN  THRU H2000-EXIT
+d721 1
+a721 1
+           PERFORM H2000-REPORT02-HDG-RTN THRU H2000-EXIT.
+d761 1
+a763 1
+             PERFORM H3000-REPORT03-HDG-RTN  THRU H3000-EXIT
+a768 1
+           PERFORM H3000-REPORT03-HDG-RTN THRU H3000-EXIT.
+a1197 1
+           PERFORM H4000-REPORT04-HDG-RTN THRU H4000-EXIT.
+d1227 2
+a1229 1
+             PERFORM H5000-REPORT05-HDG-RTN THRU H5000-EXIT
+a1233 1
+           PERFORM H5000-REPORT05-HDG-RTN THRU H5000-EXIT.
+a1239 1
+           MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR.
+d1241 2
+a1243 1
+             PERFORM H5000-REPORT05-HDG-RTN  THRU H5000-EXIT
+a1247 1
+           PERFORM H5000-REPORT05-HDG-RTN THRU H5000-EXIT.
+a1281 3
+           IF WS-LINE-CTR > 55 OR WS-LINE-CTR = 0
+             PERFORM H1000-REPORT01-HDG-RTN THRU H1000-EXIT.
+
+a1283 1
+           ADD 1 TO WS-LINE-CTR.
+a1297 3
+           IF WS-LINE-CTR > 55 OR WS-LINE-CTR = 0
+             PERFORM H2000-REPORT02-HDG-RTN THRU H2000-EXIT.
+
+a1300 8
+      * IF BEGINNING OF NEW PAGE, PRINT ALL INFORMATION
+           IF WS-LINE-CTR = 8
+             WRITE RPT02A-LINE FROM DETAIL-02 AFTER 1 LINE
+             ADD 1 TO WS-LINE-CTR
+             MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+             MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+             GO TO G2000-EXIT.
+
+d1310 9
+a1318 5
+           ELSE
+             MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+             MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+             WRITE RPT02A-LINE FROM SUBHEAD-02-3 AFTER 1 LINE
+             ADD 1 TO WS-LINE-CTR.
+d1330 8
+a1337 4
+               MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+               MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+               WRITE RPT02A-LINE FROM SUBHEAD-02-3 AFTER 1 LINE
+               ADD 1 TO WS-LINE-CTR.
+a1339 1
+           ADD 1 TO WS-LINE-CTR.
+a1353 3
+           IF WS-LINE-CTR > 55 OR WS-LINE-CTR = 0
+             PERFORM H2000-REPORT02-HDG-RTN THRU H2000-EXIT.
+
+a1356 9
+      * IF BEGINNING OF NEW PAGE, PRINT ALL INFORMATION
+           IF WS-LINE-CTR = 8
+             WRITE RPT02B-LINE FROM DETAIL-02 AFTER 1 LINE
+             ADD 1 TO WS-LINE-CTR
+             MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+             MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+             MOVE RPT02-LINE-INFO    TO WS-PREV-LINE-INFO
+             GO TO G2100-EXIT.
+
+d1372 8
+a1379 4
+               MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+               MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+               WRITE RPT02B-LINE FROM SUBHEAD-02-3 AFTER 1 LINE
+               ADD 1 TO WS-LINE-CTR.
+d1391 8
+a1398 4
+               MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM
+               MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+               WRITE RPT02B-LINE FROM SUBHEAD-02-3 AFTER 1 LINE
+               ADD 1 TO WS-LINE-CTR.
+a1400 1
+           ADD 1 TO WS-LINE-CTR.
+a1414 3
+           IF WS-LINE-CTR > 55 OR WS-LINE-CTR = 0
+             PERFORM H3000-REPORT03-HDG-RTN THRU H3000-EXIT.
+
+d1417 1
+a1417 2
+           IF WS-LINE-CTR NOT EQUAL 8
+             IF RPT03-OLD-PART-NUM EQUAL WS-PREV-OLD-PART-NUM
+a1423 2
+             ELSE
+               MOVE RPT03-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM
+d1425 1
+a1425 1
+             MOVE RPT03-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM.
+a1427 1
+           ADD 1 TO WS-LINE-CTR.
+a1740 3
+           IF WS-LINE-CTR > 55 OR WS-LINE-CTR = 0
+             PERFORM H5000-REPORT05-HDG-RTN THRU H5000-EXIT.
+
+a1751 2
+           ADD 1 TO WS-LINE-CTR.
+
+a1764 3
+           IF WS-LINE-CTR > 55 OR WS-LINE-CTR = 0
+             PERFORM H5000-REPORT05-HDG-RTN THRU H5000-EXIT.
+
+a1775 2
+           ADD 1 TO WS-LINE-CTR.
+
+d1788 1
+a1788 1
+             WRITE RPT01-LINE FROM EMPTY-NOTE AFTER 15 LINES
+d1792 1
+a1792 1
+                 WRITE RPT02A-LINE FROM EMPTY-NOTE AFTER 15 LINES
+d1794 1
+a1794 1
+                 WRITE RPT02B-LINE FROM EMPTY-NOTE AFTER 15 LINES
+d1797 1
+a1797 1
+               WRITE RPT03-LINE FROM EMPTY-NOTE AFTER 15 LINES
+d1800 1
+a1800 1
+               WRITE RPT04A-LINE FROM EMPTY-NOTE AFTER 15 LINES
+d1804 1
+a1804 1
+               WRITE RPT05A-LINE FROM EMPTY-NOTE AFTER 15 LINES
+d1807 1
+a1807 1
+                 WRITE RPT05B-LINE FROM EMPTY-NOTE AFTER 15 LINES.
+d1821 1
+a1821 1
+             WRITE RPT01-LINE FROM EOR-NOTE AFTER 15 LINES
+d1825 1
+a1825 1
+                 WRITE RPT02A-LINE FROM EOR-NOTE AFTER 15 LINES
+d1827 1
+a1827 1
+                 WRITE RPT02B-LINE FROM EOR-NOTE AFTER 15 LINES
+d1830 1
+a1830 1
+               WRITE RPT03-LINE FROM EOR-NOTE AFTER 15 LINES
+d1833 2
+a1834 2
+               WRITE RPT04A-LINE FROM EOR-NOTE AFTER 15 LINES
+               WRITE RPT04B-LINE FROM EOR-NOTE AFTER 15 LINES
+d1838 1
+a1838 1
+               WRITE RPT05A-LINE FROM EOR-NOTE AFTER 15 LINES
+d1841 1
+a1841 1
+                 WRITE RPT05B-LINE FROM EOR-NOTE AFTER 15 LINES.
+a1854 3
+           ADD 1            TO WS-PAGE-CTR.
+           MOVE WS-PAGE-CTR TO HDG-PAGE.
+
+a1867 2
+           MOVE 7 TO WS-LINE-CTR.
+
+a1876 3
+           ADD 1 TO WS-PAGE-CTR.
+           MOVE WS-PAGE-CTR TO HDG-PAGE.
+
+a1897 2
+           MOVE 8 TO WS-LINE-CTR.
+
+d1910 3
+a1912 2
+           ADD 1 TO WS-PAGE-CTR.
+           MOVE WS-PAGE-CTR TO HDG-PAGE.
+d1914 1
+a1914 2
+           WRITE RPT03-LINE FROM HEADING1
+                 AFTER PAGE.
+d1924 1
+a1928 2
+           MOVE 8 TO WS-LINE-CTR.
+
+a1939 2
+           ADD 1 TO WS-PAGE-CTR.
+           MOVE WS-PAGE-CTR TO HDG-PAGE.
+a1971 3
+
+           ADD 1 TO WS-PAGE-CTR.
+           MOVE WS-PAGE-CTR       TO HDG-PAGE.
+a1991 2
+           MOVE 7 TO WS-LINE-CTR.
+
+@
+
+
+1.2
+log
+@ oracle 9i migration
+@
+text
+@d1 2
+a2 2
+      *$SET TRACE ASMLIST COPYLIST PARAS REF 
+       IDENTIFICATION DIVISION. 
+d4 1
+a4 1
+       AUTHOR.       PENNY GENOVESE. 
+d6 1
+a6 1
+      ***************************************************************** 
+d8 3
+a10 3
+      *APPL NAME:     OEM PARTS UPDATE 
+      *PROGRAM NAME:  MPTZ007 - OEM PARTS UPDATE REPORTING 
+      *LANGUAGE:      COBOL - Oracle 
+d12 1
+a12 1
+      *DESCRIPTION: THIS PROGRAM PRODUCES THE OEM BATCH UPDATE REPORTS. 
+d14 2
+a15 2
+      *  INPUT:    CONTROL INFORMATION (PROGRAM PARM FILE) 
+      *            Oracle OEM TABLE  
+d17 1
+a17 1
+      *  I/O:      Oracle REPORT TABLE 
+d19 1
+a19 1
+      *  OUTPUT:   MPTZ007-01  TRANSACTION ERROR REPORT  
+d21 2
+a22 2
+      *            MPTZ007-03  PRICE UPDATE VARIANCE (CEG) REPORT  
+      *            MPTZ007-04  OEM BATCH UPDATE CONTROL REPORTS 
+d25 2
+a26 2
+      * SIGNIFICANT PROCESSING NARRATIVE: 
+      *            PROGRAM FETCHES ALL ROWS ASSOCIATED WITH EACH REPORT 
+d28 2
+a29 2
+      *            WERE ENTERED VIA THE OEM PARTS UPDATE PROGRAMS.)  
+      *            AFTER ALL REPORTS ARE WRITTEN, THE ASSOCIATED Oracle 
+d33 2
+a34 2
+      *            ILBOABNO - ABEND ROUTINE 
+           CALL "dberrmsg" USING SQLCA ERROR-MESSAGE ERROR-LENGTH.
+d36 2
+a37 2
+      * CONTROL CARD: 
+      *  (SAME CONTROL CARD THAT'S USED IN THE UPDATE PROGRAMS) 
+d40 1
+a40 1
+      *       1       2            3              4         5  
+d42 1
+a42 1
+      *  NAGSTYP=XXXXXXXX  
+d47 1
+a47 1
+      *       2 - ALPHA; REGION OF THE OEM 
+d53 5
+a57 5
+      *       4 - ALPHA; REPLACEMENT INDICATOR (FOR PRICE UPDATE PGM);  
+      *           (N = NEW RUN, PRICES WILL BE UPDATED - CURRENT MOVED  
+      *           TO PREVIOUS THEN TRANSACTION PRICE MOVED TO CURRENT;  
+      *           Y = REPLACEMENT RUN, TRANSACTION PRICE MOVED DIRECTLY 
+      *           OVER CURRENT PRICE; USED FOR CORRECTING MISPRICING.)  
+d59 2
+a60 2
+      *       5 - ALPHA; TYPE OF RUN (OEM = OEM, SUP = SUPPLIMENTAL) 
+      *           (USED BY REPORT PROGRAM MPTZ007)  
+d63 3
+a65 3
+      *           OR "DOMESTIC"; ANY OTHER RUNS, "N/A")  
+      *           (PRINTED IN HEADING - JUST TO DISTINGUISH BETWEEN THE 
+      *            IMPORT AND DOMESTIC RUN REPORTS) 
+d70 8
+d84 1
+a84 1
+      *           DESC: 1. CORRECTED INITIALIZATION OF UPDATE BALANCE 
+d96 1
+a96 1
+      *                 
+d116 1
+a116 1
+      * 01/13/2000  BY:   KIM DINH 
+d124 1
+a124 1
+      *                 REPLACED WITH WIP.  
+d130 1
+a130 1
+      * 03/28/97  BY:   Al Faelschle 
+d133 1
+a133 1
+      * 11/15/96  BY:   Al Faelschle 
+d137 1
+a137 1
+      *           DESC: REMOVE ALL REFERENCES TO THE INTERCHANGE DB. 
+d140 2
+a141 2
+      *           DESC: CHANGED TO CHECK 'NAGSTYP' FOR 'N/A'. IF SO, DO 
+      *                 NOT PRINT, ELSE MOVE VALUE IN CNTL-NAGS-TYP TO  
+d144 2
+a145 2
+      * 05/10/95  BY:   PENNY GENOVESE 
+      *           DESC: ELIMINATED ICHG ZERO-PRICE REPORT. ADDED LOGIC  
+d148 2
+a149 2
+      * 05/10/95  BY:   PENNY GENOVESE 
+      *           DESC: ADDED LST_UPDT_DT TO ZERO-PRICE REPORTS 
+d151 1
+a151 1
+      * 02/28/95  BY:   PENNY GENOVESE 
+d154 3
+a156 3
+      * 01/27/95  BY:   PENNY GENOVESE 
+      *           DESC: ADDED PRINT OF INCR VS. DECR PRICE CHANGE LINES 
+      ***************************************************************** 
+d158 1
+a158 1
+       ENVIRONMENT DIVISION. 
+d162 8
+a169 6
+  
+       INPUT-OUTPUT SECTION. 
+       FILE-CONTROL.  
+  
+  
+           SELECT CONTROL-PARMS ASSIGN TO EXTERNAL PARMSIN 
+d171 1
+a171 2
+           SELECT REPORT-01     ASSIGN TO EXTERNAL
+                   LINE ADVANCING RPT01.
+d186 1
+a186 1
+  
+d188 4
+a191 4
+  
+       DATA DIVISION. 
+       FILE SECTION.  
+  
+d193 10
+a202 10
+           RECORDING MODE IS F  
+           RECORD CONTAINS 80 CHARACTERS  
+           BLOCK CONTAINS 0 RECORDS  
+           LABEL RECORDS ARE STANDARD. 
+       01  CNTL-PARM-REC           PIC X(80).  
+  
+       FD  REPORT-01  
+           RECORDING MODE IS F  
+           RECORD CONTAINS 133 CHARACTERS 
+           BLOCK CONTAINS 0 RECORDS  
+d205 5
+a209 5
+  
+       FD  REPORT-02A 
+           RECORDING MODE IS F  
+           RECORD CONTAINS 133 CHARACTERS 
+           BLOCK CONTAINS 0 RECORDS  
+d212 5
+a216 5
+  
+       FD  REPORT-02B 
+           RECORDING MODE IS F  
+           RECORD CONTAINS 133 CHARACTERS 
+           BLOCK CONTAINS 0 RECORDS  
+d219 5
+a223 5
+  
+       FD  REPORT-03  
+           RECORDING MODE IS F  
+           RECORD CONTAINS 133 CHARACTERS 
+           BLOCK CONTAINS 0 RECORDS  
+d226 5
+a230 5
+  
+       FD  REPORT-04A 
+           RECORDING MODE IS F  
+           RECORD CONTAINS 133 CHARACTERS 
+           BLOCK CONTAINS 0 RECORDS  
+d233 5
+a237 5
+  
+       FD  REPORT-04B 
+           RECORDING MODE IS F  
+           RECORD CONTAINS 133 CHARACTERS 
+           BLOCK CONTAINS 0 RECORDS  
+d240 5
+a244 5
+  
+       FD  REPORT-05A 
+           RECORDING MODE IS F  
+           RECORD CONTAINS 133 CHARACTERS 
+           BLOCK CONTAINS 0 RECORDS  
+d247 5
+a251 5
+  
+       FD  REPORT-05B 
+           RECORDING MODE IS F  
+           RECORD CONTAINS 133 CHARACTERS 
+           BLOCK CONTAINS 0 RECORDS  
+d254 1
+a254 1
+  
+d256 2
+a257 2
+  
+       WORKING-STORAGE SECTION. 
+d259 1
+a259 1
+       01  RCS-FILE            PIC X(60) VALUE 
+d261 7
+a267 7
+       01  RCS-REV             PIC X(60) VALUE 
+      -"$Revision: 1.1 $".
+       01  RCS-DATE            PIC X(60) VALUE 
+      -"$Date: 2002/03/12 18:56:02 $".
+       01  RCS-AUTH            PIC X(60) VALUE 
+      -"$Author: gw8440 $".
+       01  RCS-STATE           PIC X(60) VALUE 
+d269 3
+a271 3
+       01  RCS-LOCKER          PIC X(60) VALUE 
+      -"$Locker: lm5200 $".
+  
+d274 1
+a274 1
+  
+d277 1
+a277 1
+  
+a279 2
+  
+       77  DELETE-REPORT-NUMBER       PIC X(8)   VALUE "MPTZ007%".  
+d281 4
+a284 2
+       01  WS-SEL-OEM-NUM             PIC X(03). 
+       01  WS-SEL-REGN-CD             PIC X(02). 
+d302 1
+a302 1
+       01  WS-HOLD-FIELDS. 
+d306 3
+a308 3
+  
+       01  TEMP-FIELDS. 
+      * DATE ACCEPTED FROM SYSTEM 
+d310 4
+a313 4
+               05  WS-CD-YEAR         PIC X(02). 
+               05  WS-CD-MONTH        PIC X(02). 
+               05  WS-CD-DAY          PIC X(02). 
+      * TIME ACCEPTED FROM SYSTEM 
+d315 4
+a318 4
+               05  WS-CT-HOUR         PIC X(02). 
+               05  WS-CT-MINUTE       PIC X(02). 
+               05  WS-CT-SECOND       PIC X(02). 
+               05  WS-CT-HUNDREDTH    PIC X(02). 
+d320 2
+a321 2
+           03  WS-FORMAT-DT. 
+               05  WS-FD-MONTH        PIC X(02). 
+d323 1
+a323 1
+               05  WS-FD-DAY          PIC X(02). 
+d325 1
+a325 1
+               05  WS-FD-YEAR         PIC X(02). 
+d327 2
+a328 2
+           03  WS-FORMAT-TM. 
+               05  WS-FT-HOUR         PIC X(02). 
+d330 1
+a330 1
+               05  WS-FT-MINUTE       PIC X(02). 
+d332 1
+a332 1
+               05  WS-FT-SECOND       PIC X(02). 
+d334 5
+a338 5
+           03  WS-TEMP-EFF-DT.  
+               05  WS-TEMP-EFF-YEAR   PIC X(04). 
+               05  WS-TEMP-EFF-MONTH  PIC X(02). 
+               05  WS-TEMP-EFF-DAY    PIC X(02). 
+      * OEM LAST UPDATE DATE FROM Oracle TABLE (FOR REFORMATTING)  
+d340 5
+a344 5
+               05  WS-LST-UPD-MONTH   PIC X(02). 
+               05  FILLER             PIC X(01). 
+               05  WS-LST-UPD-DAY     PIC X(02). 
+               05  FILLER             PIC X(01). 
+               05  WS-LST-UPD-YEAR    PIC X(04). 
+d346 4
+a349 4
+           03  WS-TEMP-UPD-DT.  
+               05  WS-TEMP-UPD-YEAR   PIC X(04). 
+               05  WS-TEMP-UPD-MONTH  PIC X(02). 
+               05  WS-TEMP-UPD-DAY    PIC X(02). 
+d352 2
+a353 2
+               05  WS-ZERO-PART-CTR     PIC 9(9)  COMP-3  VALUE 0. 
+               05  WS-ZERO-LINE-CTR     PIC 9(9)  COMP-3  VALUE 0. 
+d355 40
+a394 40
+           03  WS-CONTROL-TRANSACTION-AMTS. 
+               05  WS-TRANS-READ-AMT    PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-PROC-AMT          PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-NOT-PROC-AMT      PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-PRIOR-SUPE-AMT    PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-ALREADY-SUPE-AMT  PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-PART-NOT-DB-AMT   PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-TRANS-READ-TOT    PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-PROC-TOT          PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-NOT-PROC-TOT      PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-PRIOR-SUPE-TOT    PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-ALREADY-SUPE-TOT  PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-PART-NOT-DB-TOT   PIC 9(7)  COMP-3  VALUE 0. 
+           03  WS-CONTROL-DATABASE-AMTS.  
+               05  WS-TEMP-AMT          PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-READ-AMT          PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-INSRT-AMT         PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-UPDT-AMT          PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-DLET-AMT          PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-TOTAL-AMT         PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-DBASE-READ-AMT    PIC 9(8)  COMP-3  VALUE 0. 
+               05  WS-DBASE-INSRT-AMT   PIC 9(8)  COMP-3  VALUE 0. 
+               05  WS-DBASE-UPDT-AMT    PIC 9(8)  COMP-3  VALUE 0. 
+               05  WS-DBASE-DLET-AMT    PIC 9(8)  COMP-3  VALUE 0. 
+               05  WS-DBASE-TOTAL-AMT   PIC 9(9)  COMP-3  VALUE 0. 
+               05  WS-READ-TOT          PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-INSRT-TOT         PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-UPDT-TOT          PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-DLET-TOT          PIC 9(7)  COMP-3  VALUE 0. 
+               05  WS-DBASE-READ-TOT    PIC 9(8)  COMP-3  VALUE 0. 
+               05  WS-DBASE-INSRT-TOT   PIC 9(8)  COMP-3  VALUE 0. 
+               05  WS-DBASE-UPDT-TOT    PIC 9(8)  COMP-3  VALUE 0. 
+               05  WS-DBASE-DLET-TOT    PIC 9(8)  COMP-3  VALUE 0. 
+               05  WS-DBASE-ACTIV-TOT   PIC 9(9)  COMP-3  VALUE 0. 
+      * COUNTERS FOR PAGE CONTROL 
+           03  WS-LINE-CTR              PIC 9(2)  VALUE 0. 
+           03  WS-PAGE-CTR              PIC 9(4)  VALUE 0. 
+           03  WS-RPT-ROW-CTR           PIC 9(8)  VALUE 0. 
+  
+       01  PROGRAM-SWITCHES. 
+d406 2
+a407 2
+       01  WS-RUN-DT. 
+           05  WS-RFD-MONTH            PIC X(02). 
+d409 1
+a409 1
+           05  WS-RFD-DAY              PIC X(02). 
+d414 1
+a414 1
+           05  WS-RFT-HOUR             PIC X(02). 
+d416 1
+a416 1
+           05  WS-RFT-MINUTE           PIC X(02). 
+d418 1
+a418 1
+           05  WS-RFT-SECOND           PIC X(02). 
+d421 3
+a423 3
+           05  WS-RPT04-CEG-PRT-CTR    PIC 9(07).  
+           05  WS-RPT04-CEG-LN-CTR     PIC 9(07).  
+           05  WS-RPT04-WIP-PRT-CTR    PIC 9(07). 
+d426 1
+a426 1
+  
+d428 4
+a431 4
+           COPY mptb003.cpy. 
+           COPY mptb004.cpy. 
+           COPY mptb005.cpy. 
+ 
+d439 1
+a439 1
+           EXEC SQL INCLUDE acq_media_detail.cpy      END-EXEC.  
+d449 4
+a452 4
+       01  W-UPDINFO-TBL-KEY.  
+ 	   05  W-EFF-DT                     PIC X(10).  
+ 	   05  W-REPL-IND                   PIC X. 
+      *    05  W-NAGS-TYP                    PIC X(10).  
+d454 3
+a456 3
+ 	
+ 	   EXEC SQL END   DECLARE SECTION END-EXEC.
+ 	 
+d458 1
+a458 1
+      ***************************************************************** 
+d460 7
+a466 7
+      *LINKAGE SECTION. 
+      *    and Connect to Oracle RDBMS 
+      ***************************************************************** 
+ 
+       PROCEDURE DIVISION. 
+           CALL "mfconnect" USING  PGMNAME. 
+  
+d472 1
+a472 1
+       MAIN-CONTROL.  
+d474 2
+a475 2
+           MOVE "MPTZ007" TO WS-PGMNAME.  
+  
+d478 1
+a478 1
+           OPEN INPUT  CONTROL-PARMS 
+d480 2
+a481 2
+                       REPORT-02A 
+                       REPORT-02B 
+d483 3
+a485 3
+                       REPORT-04A 
+                       REPORT-04B 
+                       REPORT-05A 
+d487 3
+a489 3
+  
+           PERFORM A0000-PROCESS-PARMS   THRU A0000-EXIT.  
+  
+d491 5
+a495 5
+  
+           PERFORM R9900-DELETE-REPORT   THRU R9900-EXIT.  
+  
+           CLOSE CONTROL-PARMS  
+                 REPORT-01 
+d498 1
+a498 1
+                 REPORT-03 
+d502 1
+a502 1
+                 REPORT-05B. 
+d508 5
+a512 5
+  
+           GOBACK. 
+  
+       MAIN-EXIT. EXIT. 
+  
+d521 2
+a522 2
+  
+           READ CONTROL-PARMS INTO WS-CNTL-PARM-REC 
+d525 3
+a527 3
+               MOVE V-MISSING-CNTL-PARM TO WS-ABEND-CODE 
+               PERFORM Y2000-ABEND-RTN THRU Y2000-EXIT.  
+  
+d529 2
+a530 2
+           MOVE CNTL-EFF-MONTH    TO WS-TEMP-EFF-MONTH.  
+           MOVE CNTL-EFF-DAY      TO WS-TEMP-EFF-DAY. 
+d533 2
+a534 2
+           IF WS-TEMP-EFF-DT NOT NUMERIC OR WS-TEMP-EFF-DT <= ZEROES 
+             DISPLAY WS-ERR-MSG-CP3  
+d537 3
+a539 3
+             PERFORM Y2000-ABEND-RTN THRU Y2000-EXIT. 
+  
+           MOVE CNTL-OEM-NUM      TO WS-SEL-OEM-NUM 
+d541 2
+a542 2
+           MOVE WS-SEL-REGN-CD    TO WS-REGN-LIT-NM 
+                                     WS-PART-SUPPLIER-COUNTRY-ABBR 
+d546 1
+a546 1
+           PERFORM R1000-READ-OEM THRU R1000-EXIT.  
+d548 1
+a548 1
+             DISPLAY WS-ERR-MSG-CP2  
+d556 1
+a556 1
+           MOVE WS-CD-YEAR   TO WS-FD-YEAR. 
+d558 1
+a558 1
+  
+d560 3
+a562 3
+           MOVE WS-CT-HOUR   TO WS-FT-HOUR. 
+           MOVE WS-CT-MINUTE TO WS-FT-MINUTE.  
+           MOVE WS-CT-SECOND TO WS-FT-SECOND.  
+d564 2
+a565 2
+  
+           MOVE CNTL-EFF-DT  TO HDG-EFF-DT. 
+d570 5
+a574 5
+           MOVE WS-PGMNAME TO HDG-PGMNAME, EOR-PGMNAME.  
+  
+           IF CNTL-NAGS-TYP = "N/A     "  
+             NEXT SENTENCE 
+           ELSE  
+d581 3
+a583 3
+ 
+      *  BUILD THE RUN DATE WITH TIME STAMP 
+  
+d591 1
+a591 1
+ 
+d593 2
+a594 1
+  
+d598 1
+a598 1
+      *   * 2. PRODUCE REPORTS #02 - MULTIPLE SUPERSESSION          *  
+d607 2
+a608 2
+           MOVE "B0000-PRODUCE-REPORTS" TO WS-PARAGRAPH. 
+  
+d610 5
+a614 4
+              MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR 
+              PERFORM B3000-PRODUCE-REPORT03 THRU B3000-EXIT  
+              MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR 
+              PERFORM B4000-PRODUCE-REPORT04 THRU B4000-EXIT  
+d616 1
+a616 1
+               
+d618 6
+a623 6
+           PERFORM B1000-PRODUCE-REPORT01 THRU B1000-EXIT. 
+  
+           IF OEM-TAPE-RUN 
+             MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR  
+             PERFORM B2000-PRODUCE-REPORT02 THRU B2000-EXIT.  
+  
+d625 2
+a626 2
+           PERFORM B3000-PRODUCE-REPORT03 THRU B3000-EXIT. 
+  
+d628 6
+a633 6
+           PERFORM B4000-PRODUCE-REPORT04 THRU B4000-EXIT. 
+  
+           IF OEM-TAPE-RUN 
+             MOVE ZERO TO WS-LINE-CTR, WS-PAGE-CTR  
+             PERFORM B5000-PRODUCE-REPORT05 THRU B5000-EXIT.  
+  
+d635 1
+a635 1
+  
+d643 1
+a643 1
+      *        PRODUCE END-OF-REPORT PAGE.                          * 
+d645 1
+a645 1
+       B1000-PRODUCE-REPORT01.  
+d647 2
+a648 2
+  
+           MOVE "MPTZ007-01" TO WS-REPORT-NUMBER. 
+d650 8
+a657 2
+  
+           IF RPT-ROW-NOT-FOUND 
+d659 2
+a660 8
+             PERFORM G9998-EMPTY-RPT-RTN     THRU G9998-EXIT
+           ELSE  
+             PERFORM B1100-CONTINUE-REPORT01 THRU B1100-EXIT
+                     UNTIL END-OF-RPT-ROWS. 
+  
+           PERFORM H1000-REPORT01-HDG-RTN THRU H1000-EXIT.
+           PERFORM G9999-END-OF-RPT-RTN   THRU G9999-EXIT.
+  
+d662 1
+a662 1
+  
+d671 3
+a673 3
+       B1100-CONTINUE-REPORT01. 
+           MOVE "B1100-CONTINUE-REPORT01" TO WS-PARAGRAPH. 
+  
+d675 1
+a675 1
+  
+d677 1
+a677 1
+  
+d679 1
+a679 1
+  
+d689 1
+a689 1
+       B2000-PRODUCE-REPORT02.  
+d691 4
+a694 4
+  
+           MOVE "MPTZ007-02" TO WS-REPORT-NUMBER.  
+  
+      * PRODUCE CEG REPORT 
+d696 1
+a696 1
+           MOVE SPACES       TO WS-PREV-OLD-PART-NUM. 
+d700 1
+a700 1
+           IF RPT-ROW-NOT-FOUND 
+d702 5
+a706 5
+             PERFORM G9998-EMPTY-RPT-RTN     THRU G9998-EXIT 
+           ELSE  
+             PERFORM B2100-CONTINUE-REPORT02 THRU B2100-EXIT  
+                     UNTIL END-OF-RPT-ROWS. 
+           PERFORM H2000-REPORT02-HDG-RTN THRU H2000-EXIT. 
+d708 2
+a709 2
+  
+      * PRODUCE WIP REPORT 
+d711 1
+a711 1
+           MOVE SPACES       TO WS-PREV-OLD-PART-NUM. 
+d717 1
+a717 1
+           IF RPT-ROW-NOT-FOUND 
+d719 7
+a725 7
+             PERFORM G9998-EMPTY-RPT-RTN     THRU G9998-EXIT 
+           ELSE  
+             PERFORM B2100-CONTINUE-REPORT02 THRU B2100-EXIT  
+                     UNTIL END-OF-RPT-ROWS. 
+           PERFORM H2000-REPORT02-HDG-RTN THRU H2000-EXIT. 
+           PERFORM G9999-END-OF-RPT-RTN   THRU G9999-EXIT. 
+  
+d727 1
+a727 1
+  
+d736 10
+a745 10
+       B2100-CONTINUE-REPORT02. 
+           MOVE "B2100-CONTINUE-REPORT02" TO WS-PARAGRAPH. 
+  
+           IF HDG-RPTLETR EQUAL "A"  
+             PERFORM G2000-REPORT02-DTLA-RTN THRU G2000-EXIT  
+           ELSE  
+             PERFORM G2100-REPORT02-DTLB-RTN THRU G2100-EXIT. 
+  
+           PERFORM R9250-FETCH-RPT02-05-ROW THRU R9250-EXIT.  
+  
+d747 1
+a747 1
+  
+d757 1
+a757 1
+       B3000-PRODUCE-REPORT03.  
+d759 2
+a760 2
+  
+           MOVE "MPTZ007-03"   TO WS-REPORT-NUMBER.  
+d763 2
+a764 2
+  
+           IF RPT-ROW-NOT-FOUND 
+d766 8
+a773 8
+             PERFORM G9998-EMPTY-RPT-RTN     THRU G9998-EXIT 
+           ELSE  
+             PERFORM B3100-CONTINUE-REPORT03 THRU B3100-EXIT  
+                     UNTIL END-OF-RPT-ROWS. 
+  
+           PERFORM H3000-REPORT03-HDG-RTN THRU H3000-EXIT. 
+           PERFORM G9999-END-OF-RPT-RTN   THRU G9999-EXIT. 
+  
+d775 1
+a775 1
+  
+d784 7
+a790 7
+       B3100-CONTINUE-REPORT03. 
+           MOVE "B3100-CONTINUE-REPORT03" TO WS-PARAGRAPH. 
+  
+           PERFORM G3000-REPORT03-DTL-RTN   THRU G3000-EXIT. 
+  
+           PERFORM R9050-FETCH-RPT01-03-ROW THRU R9050-EXIT.  
+  
+d792 1
+a792 1
+  
+d824 1
+a824 1
+       B4000-PRODUCE-REPORT04.  
+a825 2
+ 
+           MOVE "MPTZ007-04"   TO WS-REPORT-NUMBER.  
+d827 4
+a830 2
+           PERFORM H4000-REPORT04-HDG-RTN THRU H4000-EXIT. 
+  
+d834 3
+a836 3
+ 
+      * REPORT A - TRANSACTION INFO  
+  
+d838 4
+a841 4
+           WRITE RPT04A-LINE FROM SUBHEAD-04-1B AFTER 1 LINE. 
+           WRITE RPT04A-LINE FROM SUBHEAD-04-2  AFTER 1 LINE.  
+  
+      * REPORT A - REVERSE SUPERSESSION TRANS INFO  
+d846 1
+a846 1
+           MOVE WS-TRANS-READ-AMT   TO   REVERSE-SUPER-READ-CNT. 
+d848 3
+a850 3
+           MOVE WS-NOT-PROC-AMT     TO   REVERSE-SUPER-BYPASSED-CNT. 
+  
+      * REPORT A - ASSEMBLY-TO-COMPONENT TRANS INFO 
+d857 2
+a858 2
+ 
+      * REPORT A - COMPONENT-TO-ASSEMBLY TRANS INFO 
+d862 1
+a862 1
+           MOVE WS-TRANS-READ-AMT   TO COMPNT-TO-ASSY-READ-CNT. 
+d865 1
+a865 1
+  
+d870 1
+a870 1
+           MOVE WS-TRANS-READ-AMT   TO SUPER-READ-CNT. 
+d873 2
+a874 2
+  
+      * REPORT A - DISCONTINUE TRANS INFO 
+d878 1
+a878 1
+           MOVE WS-TRANS-READ-AMT   TO DISC-READ-CNT. 
+d886 1
+a886 1
+           MOVE WS-TRANS-READ-AMT   TO PRICE-READ-CNT. 
+d889 4
+a892 4
+ 
+           IF CONTROL-ROWS-NOT-FOUND 
+             PERFORM G9998-EMPTY-RPT-RTN THRU G9998-EXIT 
+             DISPLAY WS-ERR-MSG-CP8  
+d895 4
+a898 4
+             PERFORM Y2000-ABEND-RTN THRU Y2000-EXIT. 
+  
+           PERFORM G4050-REPORT04-TOTLNA-RTN THRU G4050-EXIT. 
+  
+d900 6
+a905 6
+  
+           WRITE RPT04A-LINE FROM SUBHEAD-04-3 AFTER 5 LINES. 
+           WRITE RPT04A-LINE FROM SUBHEAD-04-4 AFTER 1 LINE.  
+           WRITE RPT04A-LINE FROM SUBHEAD-04-5 AFTER 1 LINE.  
+  
+      * REPORT A - PARTS DATABASE INFO 
+d908 1
+a908 1
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT. 
+d910 2
+a911 2
+  
+      * REPORT A - SUPERSESSION DATABASE INFO  
+d913 1
+a913 1
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT. 
+d915 1
+a915 1
+  
+d918 1
+a918 1
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT. 
+d922 1
+a922 1
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT. 
+d924 2
+a925 2
+  
+      * REPORT A - ALTPARTS DATABASE INFO 
+d927 1
+a927 1
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT. 
+d929 1
+a929 1
+  
+d932 1
+a932 1
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT. 
+d934 1
+a934 1
+  
+d937 1
+a937 1
+           PERFORM R9150-READ-RPT04-DB-ACTVY-ROWS THRU R9150-EXIT. 
+d939 3
+a941 3
+  
+           PERFORM G4150-REPORT04-TOTLNB-RTN THRU G4150-EXIT. 
+  
+d943 9
+a951 9
+  
+           WRITE RPT04B-LINE FROM SUBHEAD-04-6 AFTER 3 LINES. 
+           WRITE RPT04B-LINE FROM SUBHEAD-04-7 AFTER 1 LINE.  
+           WRITE RPT04B-LINE FROM SUBHEAD-04-8 AFTER 1 LINE.  
+  
+           MOVE SUPER-UPDT-TYPE TO RPT04-UPDT-TYPE. 
+           WRITE RPT04B-LINE FROM SUBHEAD-04-9 AFTER 1 LINE.  
+  
+      * REPORT B - ASSEMBLY-TO-COMPONENT UPDATE ACTIVITY 
+d957 1
+a957 1
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-ASSY-TO-COMPNT-QX-CNT. 
+d961 1
+a961 1
+  
+d967 2
+a968 2
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-COMPNT-TO-ASSY-QX-CNT.  
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-COMPNT-TO-ASSY-PART-CNT. 
+d970 3
+a972 3
+           MOVE  WS-RPT04-PRT-DB-CTR  TO COMPNT-TO-ASSY-PART-CNT. 
+ 
+      * REPORT B - SUPERSEDED NEWLY UPDATE ACTIVITY 
+d976 1
+a976 1
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-NEW-SUPER-PART-CNT. 
+d978 1
+a978 1
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-NEW-SUPER-PART-CNT.  
+d981 2
+a982 2
+ 
+      * REPORT B - SUPERSEDED PRIOR (SAME) UPDATE ACTIVITY 
+d991 1
+a991 1
+  
+d1001 1
+a1001 1
+ 
+d1006 2
+a1007 2
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-REVERSE-SUPER-PART-CNT.  
+           MOVE  WS-RPT04-CEG-LN-CTR  TO PR-REVERSE-SUPER-QX-CNT.  
+d1009 1
+a1009 1
+           MOVE  WS-RPT04-WIP-LN-CTR  TO WP-REVERSE-SUPER-QX-CNT. 
+d1012 3
+a1014 3
+           MOVE DISC-UPDT-TYPE TO RPT04-UPDT-TYPE.  
+           WRITE RPT04B-LINE FROM SUBHEAD-04-9 AFTER 2 LINES. 
+  
+d1024 2
+a1025 2
+ 
+      * REPORT B - DISCONTINUED VIA DATE UPDATE ACTIVITY 
+d1034 2
+a1035 2
+  
+      * REPORT B - DISCONTINUED PRIOR UPDATE ACTIVITY 
+d1045 4
+a1048 4
+           MOVE PRICE-UPDT-TYPE TO RPT04-UPDT-TYPE. 
+           WRITE RPT04B-LINE FROM SUBHEAD-04-9 AFTER 2 LINES. 
+  
+      * REPORT B - PRICE UPDT NOT SUPPLIED - UPDATE ACTIVITY  
+d1067 2
+a1068 2
+  
+      * REPORT B - ZERO PRICED - NEWLY - UPDATE ACTIVITY 
+d1077 2
+a1078 2
+ 
+      * REPORT B - PRICE UPDATED SAME - UPDATE ACTIVITY  
+d1088 1
+a1088 1
+      * REPORT B - PRICE UPDATED INCREASED - UPDATE ACTIVITY  
+d1092 1
+a1092 1
+           MOVE  WS-RPT04-CEG-PRT-CTR TO PR-INCR-PRICE-PART-CNT.  
+d1094 1
+a1094 1
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-INCR-PRICE-PART-CNT. 
+d1097 2
+a1098 2
+ 
+      * REPORT B - PRICE UPDATED DECREASED - UPDATE ACTIVITY  
+d1104 1
+a1104 1
+           MOVE  WS-RPT04-WIP-PRT-CTR TO WP-DECR-PRICE-PART-CNT. 
+d1108 1
+a1108 1
+      * REPORT B - PRICE 25% VAR. INCREASED - UPDATE ACTIVITY 
+d1118 1
+a1118 1
+      * REPORT B - PRICE 25% VAR. DECREASED - UPDATE ACTIVITY 
+d1127 1
+a1127 1
+ 
+d1129 1
+a1129 1
+  
+d1131 1
+a1131 1
+             MOVE REPL-UPDT-TYPE TO RPT04-UPDT-TYPE 
+d1133 3
+a1135 3
+      * REPORT B - REPLACEMENT SAME  
+             MOVE "RC1"                 TO WS-SEL-SORT-DATA  
+             PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT 
+d1138 1
+a1138 1
+             MOVE  WS-RPT04-CEG-LN-CTR  TO PR-REPL-SAME-PRICE-QX-CNT 
+d1143 3
+a1145 3
+      * REPORT B - REPLACEMENT INCREASED  
+             MOVE "RC2"                 TO WS-SEL-SORT-DATA  
+             PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT 
+d1148 1
+a1148 1
+             MOVE  WS-RPT04-CEG-LN-CTR  TO PR-REPL-INCR-PRICE-QX-CNT  
+d1153 3
+a1155 3
+      * REPORT B - REPLACEMENT DECREASED  
+             MOVE "RC3"                 TO WS-SEL-SORT-DATA  
+             PERFORM R9100-READ-RPT04-ACTVY-ROW THRU R9100-EXIT 
+d1162 2
+a1163 2
+ 
+           MOVE SPACES TO RPT04B-LINE. 
+d1165 2
+a1166 2
+  
+      * REPORT B - AVERAGE CEG PERCENT INFO 
+a1175 1
+  
+d1177 2
+a1178 1
+      * REPORT B - AVERAGE WIP PERCENT INFO 
+d1185 1
+a1185 1
+           MOVE  RPT04-WIP-AVG-PCT  TO WP-PRICE-CHANGE-PCT.  
+d1188 1
+a1188 1
+ 
+d1194 2
+a1195 2
+ 
+           MOVE  RPT04-ALL-AVG-PCT   TO PRICE-CHANGE-PCT. 
+d1198 4
+a1201 4
+  
+  
+      * END OF BOTH REPORTS (A & B)  
+           PERFORM H4000-REPORT04-HDG-RTN THRU H4000-EXIT. 
+d1203 1
+a1203 1
+ 
+d1207 2
+a1208 2
+              PERFORM R0300-INSERT-TO-UPDINFO THRU R0300-EXIT. 
+  
+d1210 1
+a1210 1
+  
+d1222 1
+a1222 1
+       B5000-PRODUCE-REPORT05.  
+d1224 2
+a1225 2
+  
+           MOVE "MPTZ007-05" TO WS-REPORT-NUMBER.  
+d1227 1
+a1227 1
+           MOVE SPACES       TO WS-PREV-OLD-PART-NUM. 
+d1231 1
+a1231 1
+           IF RPT-ROW-NOT-FOUND 
+d1233 8
+a1240 8
+             PERFORM G9998-EMPTY-RPT-RTN    THRU G9998-EXIT 
+           ELSE  
+             PERFORM B5100-CONTINUE-REPORT05 THRU B5100-EXIT  
+                     UNTIL END-OF-RPT-ROWS. 
+           PERFORM H5000-REPORT05-HDG-RTN THRU H5000-EXIT. 
+           PERFORM G9999-END-OF-RPT-RTN   THRU G9999-EXIT. 
+  
+           MOVE SPACES       TO WS-PREV-OLD-PART-NUM. 
+d1246 1
+a1246 1
+           IF RPT-ROW-NOT-FOUND 
+d1248 7
+a1254 7
+             PERFORM G9998-EMPTY-RPT-RTN     THRU G9998-EXIT 
+           ELSE  
+             PERFORM B5100-CONTINUE-REPORT05 THRU B5100-EXIT  
+                     UNTIL END-OF-RPT-ROWS. 
+           PERFORM H5000-REPORT05-HDG-RTN THRU H5000-EXIT. 
+           PERFORM G9999-END-OF-RPT-RTN   THRU G9999-EXIT. 
+  
+d1256 1
+a1256 1
+  
+d1262 12
+a1273 12
+       B5100-CONTINUE-REPORT05. 
+           MOVE "B5100-CONTINUE-REPORT05" TO WS-PARAGRAPH. 
+  
+           MOVE SORT-DATA TO REPORT-SORT-CRITERIA.  
+           IF SRT5-LN-OF-BUS EQUAL "CEG " 
+             PERFORM G5000-REPORT05-DTLA-RTN THRU G5000-EXIT  
+           ELSE  
+             IF SRT5-LN-OF-BUS EQUAL "WIP " 
+               PERFORM G5100-REPORT05-DTLB-RTN THRU G5100-EXIT. 
+  
+           PERFORM R9250-FETCH-RPT02-05-ROW THRU R9250-EXIT.  
+  
+d1275 1
+a1275 1
+  
+d1284 1
+a1284 1
+       G1000-REPORT01-DTL-RTN.  
+d1286 1
+a1286 1
+  
+d1288 4
+a1291 4
+             PERFORM H1000-REPORT01-HDG-RTN THRU H1000-EXIT.  
+  
+           MOVE REPORT-DATA TO DETAIL-01. 
+           WRITE RPT01-LINE FROM DETAIL-01 AFTER 1 LINE. 
+d1293 1
+a1293 1
+  
+d1295 1
+a1295 1
+  
+d1304 3
+a1306 3
+       G2000-REPORT02-DTLA-RTN. 
+           MOVE "G2000-REPORT02-DTLA-RTN" TO WS-PARAGRAPH. 
+  
+d1308 6
+a1313 6
+             PERFORM H2000-REPORT02-HDG-RTN THRU H2000-EXIT.  
+  
+           MOVE SORT-DATA   TO REPORT-SORT-CRITERIA. 
+           MOVE REPORT-DATA TO DETAIL-02.  
+  
+      * IF BEGINNING OF NEW PAGE, PRINT ALL INFORMATION  
+d1315 9
+a1323 9
+             WRITE RPT02A-LINE FROM DETAIL-02 AFTER 1 LINE 
+             ADD 1 TO WS-LINE-CTR 
+             MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM  
+             MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM  
+             GO TO G2000-EXIT.  
+  
+           IF RPT02-SUPE-IND EQUAL "A" 
+             IF RPT02-OLD-PART-NUM EQUAL WS-PREV-OLD-PART-NUM 
+               MOVE SPACES                TO RPT02-OLD-PART-NUM 
+d1325 2
+a1326 2
+               IF RPT02-NEW-PART-NUM EQUAL WS-PREV-NEW-PART-NUM 
+                 MOVE SPACES              TO RPT02-NEW-PART-NUM 
+d1330 4
+a1333 4
+           ELSE  
+             MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM  
+             MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM  
+             WRITE RPT02A-LINE FROM SUBHEAD-02-3 AFTER 1 LINE 
+d1335 4
+a1338 4
+  
+           IF RPT02-SUPE-IND EQUAL "C" 
+             IF RPT02-NEW-PART-NUM EQUAL WS-PREV-NEW-PART-NUM 
+               MOVE SPACES             TO RPT02-NEW-PART-NUM 
+d1340 3
+a1342 3
+               IF RPT02-OLD-PART-NUM EQUAL WS-PREV-OLD-PART-NUM 
+                 MOVE SPACES             TO RPT02-OLD-PART-NUM  
+                 MOVE SPACES             TO RPT02-OLD-PART-DESC 
+d1348 3
+a1350 3
+               WRITE RPT02A-LINE FROM SUBHEAD-02-3 AFTER 1 LINE 
+               ADD 1 TO WS-LINE-CTR. 
+  
+d1353 1
+a1353 1
+  
+d1355 1
+a1355 1
+  
+d1364 3
+a1366 3
+       G2100-REPORT02-DTLB-RTN. 
+           MOVE "G2100-REPORT02-DTLB-RTN" TO WS-PARAGRAPH. 
+  
+d1368 6
+a1373 6
+             PERFORM H2000-REPORT02-HDG-RTN THRU H2000-EXIT.  
+  
+           MOVE SORT-DATA   TO REPORT-SORT-CRITERIA. 
+           MOVE REPORT-DATA TO DETAIL-02.  
+  
+      * IF BEGINNING OF NEW PAGE, PRINT ALL INFORMATION  
+d1375 4
+a1378 4
+             WRITE RPT02B-LINE FROM DETAIL-02 AFTER 1 LINE 
+             ADD 1 TO WS-LINE-CTR 
+             MOVE RPT02-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM  
+             MOVE RPT02-NEW-PART-NUM TO WS-PREV-NEW-PART-NUM  
+d1380 3
+a1382 3
+             GO TO G2100-EXIT.  
+  
+           IF RPT02-LINE-INFO EQUAL WS-PREV-LINE-INFO 
+d1384 6
+a1389 6
+           ELSE  
+             MOVE RPT02-LINE-INFO TO WS-PREV-LINE-INFO.  
+  
+           IF RPT02-SUPE-IND EQUAL "A" 
+             IF RPT02-OLD-PART-NUM EQUAL WS-PREV-OLD-PART-NUM 
+               MOVE SPACES                TO RPT02-OLD-PART-NUM 
+d1391 2
+a1392 2
+               IF RPT02-NEW-PART-NUM EQUAL WS-PREV-NEW-PART-NUM 
+                 MOVE SPACES              TO RPT02-NEW-PART-NUM 
+d1399 6
+a1404 6
+               WRITE RPT02B-LINE FROM SUBHEAD-02-3 AFTER 1 LINE 
+               ADD 1 TO WS-LINE-CTR. 
+  
+           IF RPT02-SUPE-IND EQUAL "C" 
+             IF RPT02-NEW-PART-NUM EQUAL WS-PREV-NEW-PART-NUM 
+               MOVE SPACES                  TO RPT02-NEW-PART-NUM 
+d1406 3
+a1408 3
+               IF RPT02-OLD-PART-NUM EQUAL WS-PREV-OLD-PART-NUM 
+                 MOVE SPACES                TO RPT02-OLD-PART-NUM  
+                 MOVE SPACES                TO RPT02-OLD-PART-DESC 
+d1414 3
+a1416 3
+               WRITE RPT02B-LINE FROM SUBHEAD-02-3 AFTER 1 LINE 
+               ADD 1 TO WS-LINE-CTR. 
+  
+d1419 1
+a1419 1
+  
+d1421 1
+a1421 1
+  
+d1430 1
+a1430 1
+       G3000-REPORT03-DTL-RTN.  
+d1432 1
+a1432 1
+  
+d1434 4
+a1437 4
+             PERFORM H3000-REPORT03-HDG-RTN THRU H3000-EXIT.  
+  
+           MOVE REPORT-DATA TO DETAIL-03. 
+  
+d1439 1
+a1439 1
+             IF RPT03-OLD-PART-NUM EQUAL WS-PREV-OLD-PART-NUM 
+d1441 3
+a1443 3
+               MOVE SPACES  TO RPT03-OLD-PART-DESC  
+               MOVE SPACES  TO RPT03-CURR-PRICE-AMT-X 
+               MOVE SPACES  TO RPT03-PREV-PRICE-AMT-X 
+d1448 4
+a1451 4
+           ELSE  
+             MOVE RPT03-OLD-PART-NUM TO WS-PREV-OLD-PART-NUM. 
+  
+           WRITE RPT03-LINE FROM DETAIL-03 AFTER 1 LINE. 
+d1453 1
+a1453 1
+  
+d1455 1
+a1455 1
+  
+d1464 3
+a1466 3
+       G4000-REPORT04-DTLA-RTN. 
+           MOVE "G4000-REPORT04-DTLA-RTN" TO WS-PARAGRAPH. 
+  
+d1468 1
+a1468 1
+             MOVE "Y" TO WS-CONTROL-REPORT-SW  
+d1473 4
+a1476 4
+             MOVE RPT04-PROC-AMT          TO WS-PROC-AMT 
+             ADD  WS-PROC-AMT             TO WS-PROC-TOT 
+             MOVE RPT04-NOT-PROC-AMT      TO WS-NOT-PROC-AMT  
+             ADD  WS-NOT-PROC-AMT         TO WS-NOT-PROC-TOT  
+d1481 6
+a1486 6
+             MOVE RPT04-PART-NOT-DB-AMT   TO WS-PART-NOT-DB-AMT 
+             ADD  WS-PART-NOT-DB-AMT      TO WS-PART-NOT-DB-TOT 
+             GO TO G4000-EXIT.  
+  
+      * RPT ROW NOT FOUND  
+  
+d1491 1
+a1491 1
+  
+d1493 13
+a1505 13
+             MOVE REPORT-ATRANS-DESC TO RPT04-TRANS-DESC 
+           ELSE  
+             IF SRT4-TRANS-TYPE EQUAL "C" 
+               MOVE REPORT-CTRANS-DESC TO RPT04-TRANS-DESC 
+           ELSE  
+             IF SRT4-TRANS-TYPE EQUAL "N" 
+               MOVE REPORT-NTRANS-DESC TO RPT04-TRANS-DESC 
+           ELSE  
+             IF SRT4-TRANS-TYPE EQUAL "D" 
+               MOVE REPORT-DTRANS-DESC TO RPT04-TRANS-DESC 
+           ELSE  
+             IF SRT4-TRANS-TYPE EQUAL "P" 
+               MOVE REPORT-PTRANS-DESC TO RPT04-TRANS-DESC 
+d1507 5
+a1511 5
+               IF SRT4-TRANS-TYPE EQUAL "R" 
+                 MOVE REPORT-RTRANS-DESC TO RPT04-TRANS-DESC. 
+  
+           WRITE RPT04A-LINE FROM DETAIL-04A AFTER 1 LINE. 
+  
+d1513 1
+a1513 1
+  
+d1519 6
+a1524 6
+       G4050-REPORT04-TOTLNA-RTN. 
+           MOVE "G4050-REPORT04-TOTLNA-RTN" TO WS-PARAGRAPH.  
+  
+           WRITE RPT04A-LINE FROM SUBHEAD-04-2 AFTER 1 LINE.  
+           MOVE REPORT-TOTAL-DESC   TO RPT04-TRANS-DESC. 
+           MOVE WS-TRANS-READ-TOT   TO RPT04-TOTAL-READ. 
+d1526 2
+a1527 2
+           MOVE WS-NOT-PROC-TOT     TO RPT04-NOT-PROC-AMT. 
+           MOVE WS-PRIOR-SUPE-TOT   TO RPT04-PRIOR-SUPE-AMT.  
+d1529 3
+a1531 3
+           MOVE WS-PART-NOT-DB-TOT  TO RPT04-PART-NOT-DB-AMT. 
+           WRITE RPT04A-LINE FROM DETAIL-04A AFTER 1 LINE. 
+  
+d1533 1
+a1533 1
+  
+d1539 4
+a1542 4
+       G4100-REPORT04-DTLB-RTN. 
+           MOVE "G4100-REPORT04-DTLB-RTN" TO WS-PARAGRAPH. 
+  
+           MOVE WS-READ-AMT           TO RPT04-READ-AMT. 
+d1544 4
+a1547 4
+           MOVE WS-UPDT-AMT           TO RPT04-UPDT-AMT. 
+           MOVE WS-DLET-AMT           TO RPT04-DLET-AMT. 
+           ADD WS-READ-AMT, WS-INSRT-AMT, WS-UPDT-AMT, WS-DLET-AMT 
+                  GIVING WS-TOTAL-AMT. 
+d1549 1
+a1549 1
+           WRITE RPT04A-LINE FROM DETAIL-04B AFTER 1 LINE. 
+d1551 1
+a1551 1
+           ADD WS-INSRT-AMT           TO WS-DBASE-INSRT-TOT.  
+d1554 1
+a1554 1
+ 
+d1562 6
+a1567 6
+       G4150-REPORT04-TOTLNB-RTN. 
+           MOVE "G4150-REPORT04-TOTLNB-RTN" TO WS-PARAGRAPH.  
+  
+           WRITE RPT04A-LINE FROM SUBHEAD-04-5 AFTER 1 LINE.  
+           MOVE "TOTAL                   " TO RPT04-DATABASE. 
+           MOVE WS-DBASE-READ-TOT          TO RPT04-READ-AMT. 
+d1569 5
+a1573 5
+           MOVE WS-DBASE-UPDT-TOT          TO RPT04-UPDT-AMT. 
+           MOVE WS-DBASE-DLET-TOT          TO RPT04-DLET-AMT. 
+           ADD WS-DBASE-READ-TOT, WS-DBASE-INSRT-TOT, 
+               WS-DBASE-UPDT-TOT, WS-DBASE-DLET-TOT 
+               GIVING WS-DBASE-TOTAL-AMT. 
+d1575 2
+a1576 2
+           WRITE RPT04A-LINE FROM DETAIL-04B AFTER 1 LINE. 
+  
+d1578 1
+a1578 1
+  
+d1591 1
+a1591 1
+       G4200-REPORT04-DTLC-RTN. 
+d1599 1
+a1599 1
+ 
+d1605 2
+a1606 2
+             MOVE RPT04-WIP-PRT-CTR TO  WS-RPT04-WIP-PRT-CTR 
+             MOVE RPT04-WIP-LN-CTR  TO  WS-RPT04-WIP-LN-CTR  
+d1608 4
+a1611 4
+             GO TO G4200-EXIT.  
+  
+      * ROW WAS NOT FOUND; SETUP CORRESPONDING LINE WITH ZEROES 
+  
+d1617 1
+a1617 1
+           IF SRT4-TRANS-TYPE = "S"  
+d1619 1
+a1619 1
+               MOVE SUPER-ACTVY-1 TO RPT04-UPDT-ACTVY 
+d1622 1
+a1622 1
+                 MOVE SUPER-ACTVY-2 TO RPT04-UPDT-ACTVY  
+d1624 1
+a1624 1
+                 IF SRT4-REC-TYPE-CTR = 3 
+d1626 2
+a1627 2
+                 ELSE 
+                   IF SRT4-REC-TYPE-CTR = 4 
+d1629 4
+a1632 4
+                   ELSE 
+                     IF SRT4-REC-TYPE-CTR = 5  
+                       MOVE SUPER-ACTVY-5 TO RPT04-UPDT-ACTVY 
+                     ELSE  
+d1635 3
+a1637 3
+  
+      * "D"ISCONTINUE 
+           IF SRT4-TRANS-TYPE = "D"  
+d1644 1
+a1644 1
+                 IF SRT4-REC-TYPE-CTR = 3 
+d1646 3
+a1648 3
+  
+      * "P"RICE  
+           IF SRT4-TRANS-TYPE = "P"  
+d1650 1
+a1650 1
+               MOVE PRICE-ACTVY-1 TO RPT04-UPDT-ACTVY 
+d1653 1
+a1653 1
+                 MOVE PRICE-ACTVY-2 TO RPT04-UPDT-ACTVY  
+d1655 1
+a1655 1
+                 IF SRT4-REC-TYPE-CTR = 3 
+d1657 2
+a1658 2
+                 ELSE 
+                   IF SRT4-REC-TYPE-CTR = 4 
+d1660 4
+a1663 4
+                   ELSE 
+                     IF SRT4-REC-TYPE-CTR = 5  
+                       MOVE PRICE-ACTVY-5 TO RPT04-UPDT-ACTVY 
+                     ELSE  
+d1665 1
+a1665 1
+                         MOVE PRICE-ACTVY-6 TO RPT04-UPDT-ACTVY 
+d1668 1
+a1668 1
+                           MOVE PRICE-ACTVY-7 TO RPT04-UPDT-ACTVY  
+d1670 5
+a1674 5
+                           IF SRT4-REC-TYPE-CTR = 8 
+                             MOVE PRICE-ACTVY-8 TO RPT04-UPDT-ACTVY. 
+  
+      * "R"EPLACEMENT 
+           IF SRT4-TRANS-TYPE = "R"  
+d1681 1
+a1681 1
+                 IF SRT4-REC-TYPE-CTR = 3 
+d1683 3
+a1685 3
+  
+           WRITE RPT04B-LINE FROM DETAIL-04C AFTER 1 LINE. 
+  
+d1687 1
+a1687 1
+  
+d1694 3
+a1696 3
+       G4300-REPORT04-DTLD-RTN. 
+           MOVE "G4300-REPORT04-DTLD-RTN" TO WS-PARAGRAPH. 
+  
+d1700 4
+a1703 4
+             GO TO G4300-EXIT.  
+  
+      * REPORT ROW NOT FOUND 
+           MOVE ZEROES TO RPT04-CEG-AVG-PCT 
+d1705 3
+a1707 3
+                          RPT04-CEG-AVG-PCTD.  
+           WRITE RPT04B-LINE FROM DETAIL-04D AFTER 1 LINE. 
+  
+d1709 1
+a1709 1
+  
+d1716 3
+a1718 3
+       G4400-REPORT04-DTLE-RTN. 
+           MOVE "G4400-REPORT04-DTLE-RTN" TO WS-PARAGRAPH. 
+  
+d1722 4
+a1725 4
+             GO TO G4400-EXIT.  
+  
+      * REPORT ROW NOT FOUND 
+           MOVE ZEROES TO RPT04-WIP-AVG-PCT 
+d1727 4
+a1730 4
+                          RPT04-WIP-AVG-PCTD.  
+ 
+           WRITE RPT04B-LINE FROM DETAIL-04E AFTER 1 LINE. 
+  
+d1732 1
+a1732 1
+  
+d1739 3
+a1741 3
+       G4500-REPORT04-DTLF-RTN. 
+           MOVE "G4500-REPORT04-DTLF-RTN" TO WS-PARAGRAPH. 
+  
+d1745 4
+a1748 4
+             GO TO G4500-EXIT.  
+  
+      * REPORT ROW NOT FOUND 
+           MOVE ZEROES TO RPT04-ALL-AVG-PCT 
+d1750 3
+a1752 3
+                          RPT04-ALL-AVG-PCTD.  
+           WRITE RPT04B-LINE FROM DETAIL-04F AFTER 1 LINE. 
+  
+d1754 1
+a1754 1
+  
+d1763 3
+a1765 3
+       G5000-REPORT05-DTLA-RTN. 
+           MOVE "G5000-REPORT05-DTLA-RTN" TO WS-PARAGRAPH. 
+  
+d1767 4
+a1770 4
+             PERFORM H5000-REPORT05-HDG-RTN THRU H5000-EXIT.  
+  
+           MOVE REPORT-DATA  TO DETAIL-05A.  
+  
+d1773 7
+a1779 7
+             MOVE SPACES  TO RPT05A-DISC-DT 
+             MOVE SPACES  TO RPT05A-WIPLN-IND  
+           ELSE  
+             MOVE RPT05A-PART-NUM TO WS-PREV-OLD-PART-NUM. 
+  
+           WRITE RPT05A-LINE FROM DETAIL-05A AFTER 1 LINE. 
+  
+d1781 1
+a1781 1
+  
+d1783 1
+a1783 1
+  
+d1792 3
+a1794 3
+       G5100-REPORT05-DTLB-RTN. 
+           MOVE "G5100-REPORT05-DTLB-RTN" TO WS-PARAGRAPH. 
+  
+d1796 4
+a1799 4
+             PERFORM H5000-REPORT05-HDG-RTN THRU H5000-EXIT.  
+  
+           MOVE REPORT-DATA  TO DETAIL-05B.  
+  
+d1802 7
+a1808 7
+             MOVE SPACES  TO RPT05B-DISC-DT 
+             MOVE SPACES  TO RPT05B-CEGLN-IND  
+           ELSE  
+             MOVE RPT05B-PART-NUM TO WS-PREV-OLD-PART-NUM. 
+  
+           WRITE RPT05B-LINE FROM DETAIL-05B AFTER 1 LINE. 
+  
+d1810 1
+a1810 1
+  
+d1812 1
+a1812 1
+  
+d1821 4
+a1824 4
+  
+           IF WS-REPORT-NUMBER EQUAL "MPTZ007-01"  
+             WRITE RPT01-LINE FROM EMPTY-NOTE AFTER 15 LINES  
+           ELSE  
+d1827 1
+a1827 1
+                 WRITE RPT02A-LINE FROM EMPTY-NOTE AFTER 15 LINES  
+d1829 2
+a1830 2
+                 WRITE RPT02B-LINE FROM EMPTY-NOTE AFTER 15 LINES  
+           ELSE  
+d1833 1
+a1833 1
+           ELSE  
+d1835 3
+a1837 3
+               WRITE RPT04A-LINE FROM EMPTY-NOTE AFTER 15 LINES 
+           ELSE  
+      * REPORT-NUMBER EQUALS MPTZ007-05 
+d1839 1
+a1839 1
+               WRITE RPT05A-LINE FROM EMPTY-NOTE AFTER 15 LINES 
+d1842 2
+a1843 2
+                 WRITE RPT05B-LINE FROM EMPTY-NOTE AFTER 15 LINES. 
+  
+d1845 1
+a1845 1
+  
+d1850 3
+a1852 3
+       G9999-END-OF-RPT-RTN. 
+           MOVE "G9999-END-OF-RPT-RTN" TO WS-PARAGRAPH.  
+  
+d1854 4
+a1857 4
+  
+           IF WS-REPORT-NUMBER EQUAL "MPTZ007-01"  
+             WRITE RPT01-LINE FROM EOR-NOTE AFTER 15 LINES 
+           ELSE  
+d1860 1
+a1860 1
+                 WRITE RPT02A-LINE FROM EOR-NOTE AFTER 15 LINES 
+d1862 2
+a1863 2
+                 WRITE RPT02B-LINE FROM EOR-NOTE AFTER 15 LINES 
+           ELSE  
+d1865 2
+a1866 2
+               WRITE RPT03-LINE FROM EOR-NOTE AFTER 15 LINES  
+           ELSE  
+d1868 4
+a1871 4
+               WRITE RPT04A-LINE FROM EOR-NOTE AFTER 15 LINES 
+               WRITE RPT04B-LINE FROM EOR-NOTE AFTER 15 LINES 
+           ELSE  
+      * REPORT-NUMBER EQUALS MPTZ007-05 
+d1873 1
+a1873 1
+               WRITE RPT05A-LINE FROM EOR-NOTE AFTER 15 LINES 
+d1877 1
+a1877 1
+  
+d1879 1
+a1879 1
+  
+d1884 1
+a1884 1
+       H1000-REPORT01-HDG-RTN.  
+d1886 4
+a1889 4
+  
+           MOVE WS-REPORT-NUMBER   TO HDG-RPTNUM.  
+           MOVE SPACES             TO HDG-RPTLETR. 
+  
+d1891 5
+a1895 5
+           MOVE WS-PAGE-CTR TO HDG-PAGE.  
+  
+           WRITE RPT01-LINE FROM HEADING1 
+                 AFTER PAGE.  
+  
+d1897 1
+a1897 1
+           IF SUPPLIMENTAL-RUN  
+d1899 5
+a1903 5
+           ELSE  
+             MOVE REPORT-TITLE-01     TO HDG-TITLE. 
+           WRITE RPT01-LINE FROM HEADING2     AFTER 1 LINE.  
+           WRITE RPT01-LINE FROM HEADING3     AFTER 2 LINES. 
+           WRITE RPT01-LINE FROM SUBHEAD-01-1 AFTER 3 LINES.  
+d1905 3
+a1907 3
+  
+           MOVE 7 TO WS-LINE-CTR. 
+  
+d1909 1
+a1909 1
+  
+d1914 1
+a1914 1
+       H2000-REPORT02-HDG-RTN.  
+d1916 1
+a1916 1
+  
+d1918 7
+a1924 7
+           MOVE WS-PAGE-CTR TO HDG-PAGE.  
+  
+           MOVE WS-REPORT-NUMBER   TO HDG-RPTNUM.  
+  
+           IF HDG-RPTLETR = "A" 
+             MOVE REPORT-TITLE-02A  TO HDG-TITLE 
+             MOVE REPORT-SEQ-02A    TO HDG-SEQ 
+d1927 1
+a1927 1
+             WRITE RPT02A-LINE FROM HEADING3     AFTER 2 LINES 
+d1929 5
+a1933 5
+             WRITE RPT02A-LINE FROM SUBHEAD-02-2 AFTER 1 LINE 
+             WRITE RPT02A-LINE FROM SUBHEAD-02-3 AFTER 1 LINE 
+           ELSE  
+             MOVE REPORT-TITLE-02B  TO HDG-TITLE 
+             MOVE REPORT-SEQ-02B    TO HDG-SEQ 
+d1936 1
+a1936 1
+             WRITE RPT02B-LINE FROM HEADING3     AFTER 2 LINES 
+d1938 1
+a1938 1
+             WRITE RPT02B-LINE FROM SUBHEAD-02-2 AFTER 1 LINE 
+d1940 3
+a1942 3
+  
+           MOVE 8 TO WS-LINE-CTR. 
+  
+d1944 1
+a1944 1
+  
+d1949 1
+a1949 1
+       H3000-REPORT03-HDG-RTN.  
+d1951 4
+a1954 4
+  
+           MOVE WS-REPORT-NUMBER  TO HDG-RPTNUM.  
+           MOVE SPACES         TO HDG-RPTLETR. 
+  
+d1956 5
+a1960 5
+           MOVE WS-PAGE-CTR TO HDG-PAGE.  
+  
+           WRITE RPT03-LINE FROM HEADING1 
+                 AFTER PAGE.  
+  
+d1962 1
+a1962 1
+           IF SUPPLIMENTAL-RUN  
+d1964 2
+a1965 2
+           ELSE  
+             MOVE REPORT-TITLE-03  TO HDG-TITLE. 
+d1967 3
+a1969 3
+           WRITE RPT03-LINE FROM HEADING2     AFTER 1 LINE.  
+           WRITE RPT03-LINE FROM HEADING3     AFTER 2 LINES. 
+           WRITE RPT03-LINE FROM SUBHEAD-03-1 AFTER 3 LINES.  
+d1972 3
+a1974 3
+  
+           MOVE 8 TO WS-LINE-CTR. 
+  
+d1976 1
+a1976 1
+  
+d1981 1
+a1981 1
+       H4000-REPORT04-HDG-RTN.  
+d1983 1
+a1983 1
+  
+d1985 1
+a1985 1
+           MOVE "A"                   TO HDG-RPTLETR. 
+d1987 1
+a1987 1
+           MOVE WS-PAGE-CTR TO HDG-PAGE.  
+d1989 3
+a1991 3
+                 AFTER PAGE.  
+  
+           MOVE "B"                   TO HDG-RPTLETR. 
+d1993 2
+a1994 2
+                 AFTER PAGE.  
+  
+d1996 2
+a1997 2
+           IF SUPPLIMENTAL-RUN  
+             MOVE REPORT-TITLE-04SA   TO HDG-TITLE  
+d1999 1
+a1999 1
+             MOVE REPORT-TITLE-04SB   TO HDG-TITLE  
+d2001 2
+a2002 2
+           ELSE  
+             MOVE REPORT-TITLE-04A    TO HDG-TITLE  
+d2004 6
+a2009 6
+             MOVE REPORT-TITLE-04B    TO HDG-TITLE  
+             WRITE RPT04B-LINE FROM HEADING2 AFTER 1 LINE. 
+  
+           WRITE RPT04A-LINE FROM HEADING3 AFTER 2 LINE. 
+           WRITE RPT04B-LINE FROM HEADING3 AFTER 2 LINE. 
+  
+d2011 1
+a2011 1
+  
+d2016 1
+a2016 1
+       H5000-REPORT05-HDG-RTN.  
+d2018 3
+a2020 3
+  
+           MOVE WS-REPORT-NUMBER  TO HDG-RPTNUM.  
+  
+d2022 1
+a2022 1
+           MOVE WS-PAGE-CTR       TO HDG-PAGE. 
+d2024 3
+a2026 3
+  
+           IF HDG-RPTLETR EQUAL "A"  
+             MOVE REPORT-TITLE-05A    TO HDG-TITLE  
+d2033 1
+a2033 1
+           ELSE  
+d2041 4
+a2044 4
+               WRITE RPT05B-LINE FROM SUBHEAD-05B-3 AFTER 1 LINE.  
+  
+           MOVE 7 TO WS-LINE-CTR. 
+  
+d2046 1
+a2046 1
+  
+d2087 1
+a2087 1
+           IF SQLCODE EQUAL SUCCESSFUL 
+d2089 5
+a2093 5
+           ELSE  
+            IF SQLCODE EQUAL NOT-FOUND 
+              MOVE "N" TO WS-OEM-SW  
+            ELSE 
+              DISPLAY WS-DB-ERR-MSG  
+d2095 1
+a2095 1
+  
+d2097 1
+a2097 1
+  
+d2105 1
+a2105 1
+           MOVE "R9000-READ-RPT01-03-REPORT" TO WS-PARAGRAPH. 
+d2133 6
+a2138 6
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT. 
+  
+           MOVE "N"    TO WS-REPORT-SW. 
+           MOVE ZEROES TO WS-RPT-ROW-CTR. 
+           PERFORM R9050-FETCH-RPT01-03-ROW THRU R9050-EXIT.  
+  
+d2140 1
+a2140 1
+  
+d2148 3
+a2150 3
+           MOVE "ACQ_BATCH_REPORTS         " TO WS-TBLNAME.  
+           MOVE "FETCH     "                 TO WS-FUNCTION. 
+  
+d2158 1
+a2158 1
+           IF SQLCODE EQUAL SUCCESSFUL 
+d2160 1
+a2160 1
+             ADD 1    TO WS-RPT-ROW-CTR 
+d2163 2
+a2164 2
+          
+             
+d2166 1
+a2166 1
+           ELSE  
+d2168 2
+a2169 2
+               IF WS-RPT-ROW-CTR > 0 
+                 MOVE "E" TO WS-REPORT-SW 
+d2172 1
+a2172 1
+                 MOVE "N" TO WS-REPORT-SW 
+d2175 1
+a2175 1
+               DISPLAY WS-DB-ERR-MSG 
+d2177 3
+a2179 3
+               PERFORM Y1000-SQL-ERROR THRU Y1000-EXIT.  
+               
+  
+d2181 2
+a2182 2
+           MOVE "R9050-CLOSE.             " TO WS-PARAGRAPH. 
+           MOVE  WS-PARAGRAPH               TO WS-PARNAME. 
+d2184 2
+a2185 2
+           MOVE "CLOSE  "                   TO WS-FUNCTION. 
+  
+d2199 1
+a2199 1
+              DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER 
+d2201 1
+a2201 1
+  
+d2203 1
+a2203 1
+  
+d2209 1
+a2209 1
+           MOVE "R9100-READ-RPT04-ACTVY-ROW" TO WS-PARAGRAPH. 
+d2211 3
+a2213 3
+           MOVE "ACQ_BATCH_REPORTS         " TO WS-TBLNAME.  
+           MOVE "SELECT    "                 TO WS-FUNCTION. 
+  
+d2233 1
+a2233 1
+           IF SQLCODE EQUAL SUCCESSFUL 
+d2236 1
+a2236 1
+           ELSE  
+d2239 1
+a2239 1
+           ELSE  
+d2242 2
+a2243 2
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT. 
+  
+d2245 1
+a2245 1
+  
+d2254 1
+a2254 1
+       R9150-READ-RPT04-DB-ACTVY-ROWS. 
+d2259 1
+a2259 1
+  
+d2283 3
+a2285 3
+             DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER 
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT. 
+  
+d2290 1
+a2290 1
+           MOVE ZEROES TO WS-READ-AMT. 
+d2292 8
+a2299 8
+           MOVE ZEROES TO WS-UPDT-AMT. 
+           MOVE ZEROES TO WS-DLET-AMT. 
+           MOVE ZEROES TO WS-RPT-ROW-CTR. 
+           PERFORM R9155-FETCH-RPT04-DB-ACTVY-ROW THRU R9155-EXIT  
+                   UNTIL RPT-ROW-NOT-FOUND OR END-OF-RPT-ROWS. 
+  
+           MOVE "CLOSE  " TO WS-FUNCTION. 
+  
+d2310 1
+a2310 1
+  
+d2313 3
+a2315 3
+             DISPLAY "RPT NUMBER: ", WS-REPORT-NUMBER 
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT. 
+  
+d2317 1
+a2317 1
+  
+d2324 1
+a2324 1
+       R9155-FETCH-RPT04-DB-ACTVY-ROW. 
+d2326 1
+a2326 1
+           MOVE  WS-PARAGRAPH                    TO WS-PARNAME.  
+d2328 2
+a2329 2
+           MOVE "FETCH     "                     TO WS-FUNCTION. 
+  
+d2336 3
+a2338 3
+  
+           IF SQLCODE EQUAL SUCCESSFUL 
+             ADD 1 TO WS-RPT-ROW-CTR 
+d2343 1
+a2343 1
+             ADD WS-TEMP-AMT       TO WS-INSRT-AMT  
+d2350 1
+a2350 1
+           ELSE  
+d2352 2
+a2353 2
+               IF WS-RPT-ROW-CTR > 0 
+                 MOVE "E" TO WS-REPORT-SW 
+d2355 1
+a2355 1
+                 MOVE "N" TO WS-REPORT-SW 
+d2357 1
+a2357 1
+               DISPLAY WS-DB-ERR-MSG 
+d2361 1
+a2361 1
+                 
+d2363 1
+a2363 1
+  
+d2375 1
+a2375 1
+  
+d2400 6
+a2405 6
+             PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT. 
+  
+           MOVE "N"    TO WS-REPORT-SW. 
+           MOVE ZEROES TO WS-RPT-ROW-CTR. 
+           PERFORM R9250-FETCH-RPT02-05-ROW THRU R9250-EXIT.  
+  
+d2407 1
+a2407 1
+  
+d2410 1
+a2410 1
+      *     1. FETCH ACQ_BATCH_REPORTS DB REPORT ROW                * 
+d2418 1
+a2418 1
+  
+d2426 1
+a2426 1
+           IF SQLCODE EQUAL SUCCESSFUL 
+d2428 1
+a2428 1
+             ADD 1    TO WS-RPT-ROW-CTR 
+d2432 1
+a2432 1
+           ELSE  
+d2434 2
+a2435 2
+               IF WS-RPT-ROW-CTR > 0 
+                 MOVE "E" TO WS-REPORT-SW 
+d2438 1
+a2438 1
+                 MOVE "N" TO WS-REPORT-SW 
+d2441 1
+a2441 1
+               DISPLAY WS-DB-ERR-MSG 
+d2443 3
+a2445 3
+               PERFORM Y1000-SQL-ERROR THRU Y1000-EXIT.  
+               
+  
+d2448 4
+a2451 4
+           MOVE  WS-PARAGRAPH               TO WS-PARNAME.  
+  
+           MOVE "CLOSE  " TO WS-FUNCTION. 
+  
+d2464 4
+a2467 4
+              PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT. 
+  
+       R9250-EXIT. EXIT. 
+ 
+d2475 2
+a2476 2
+           MOVE  WS-PARAGRAPH                    TO WS-PARNAME. 
+           MOVE "ACQ_UPDATE_BALANCE            " TO WS-TBLNAME.  
+d2625 2
+a2626 2
+           IF SQLCODE EQUAL SUCCESSFUL 
+            NEXT SENTENCE  
+d2634 2
+a2635 2
+            PERFORM Y1500-SQL-PROCEDURE-ERROR THRU Y1500-EXIT. 
+  
+d2638 1
+a2638 1
+ 
+d2640 1
+a2640 1
+       
+d2676 1
+a2676 1
+           DISPLAY "SUPPLIER-COUNTRY =" 
+d2691 2
+a2692 2
+           MOVE "ACQ_MEDIA_DETAIL              " TO WS-TBLNAME.  
+           MOVE "UPDATE    "                     TO WS-FUNCTION. 
+d2713 1
+a2713 1
+           IF SQLCODE EQUAL SUCCESSFUL 
+d2715 1
+a2715 1
+           ELSE  
+d2725 2
+a2726 2
+ 
+       R0400-EXIT. EXIT. 
+d2761 1
+a2761 1
+      * if not successful, abend 
+d2763 1
+a2763 1
+                 DISPLAY "OKAY REFTBAL ROW NOT FOUND" 
+d2785 1
+a2785 1
+  
+d2801 2
+a2802 2
+           IF SQLCODE EQUAL SUCCESSFUL 
+             GO TO R9900-EXIT 
+d2808 1
+a2808 1
+ 
+d2810 1
+a2810 1
+  
+d2812 1
+a2812 1
+      * Y1000-SQL-ERROR:                                            *   
+d2816 7
+a2822 7
+       Y1000-SQL-ERROR.                                                 
+                                                                        
+           IF SQLCODE < 0                                               
+               COMPUTE WS-ABEND-CODE = SQLCODE * -1                     
+           ELSE                                                         
+               MOVE SQLCODE TO WS-ABEND-CODE.                           
+                                                                        
+d2824 17
+a2840 17
+           IF RETURN-CODE = 0                                           
+               DISPLAY ERROR-TEXT (1)                                   
+               DISPLAY ERROR-TEXT (2)                                   
+               DISPLAY ERROR-TEXT (3)                                   
+               DISPLAY ERROR-TEXT (4)                                   
+               DISPLAY ERROR-TEXT (5)                                   
+               DISPLAY ERROR-TEXT (6)                                   
+               DISPLAY ERROR-TEXT (7)                                   
+               DISPLAY ERROR-TEXT (8)                                   
+           ELSE                                                         
+               DISPLAY "ERROR OCCURRED DURING MESSAGE RTN"              
+               DISPLAY "RETURN CODE = " SQLCODE.                        
+                                                                        
+           PERFORM Y2000-ABEND-RTN THRU Y2000-EXIT.                         
+                                                                        
+       Y1000-EXIT.  EXIT.                                                
+ 
+d2846 7
+a2852 7
+       Y1500-SQL-PROCEDURE-ERROR. 
+  
+           IF SQLCODE < 0  
+               COMPUTE WS-ABEND-CODE = SQLCODE * -1 
+           ELSE  
+               MOVE SQLCODE TO WS-ABEND-CODE.  
+  
+d2855 3
+a2857 3
+  
+           PERFORM Y2000-ABEND-RTN THRU Y2000-EXIT. 
+  
+d2859 1
+a2859 1
+  
+d2864 2
+a2865 2
+       Y2000-ABEND-RTN. 
+  
+d2867 3
+a2869 3
+               ROLLBACK 
+           END-EXEC.  
+  
+d2871 1
+a2871 1
+  
+d2873 1
+a2873 1
+       
+@
+
+
+1.1
+log
+@ race initial checkin
+@
+text
+@d70 5
+d253 1
+a253 1
+      -"$Revision: 1.5 $".
+d255 1
+a255 1
+      -"$Date: 2000/04/07 22:05:08 $".
+d257 1
+a257 1
+      -"$Author: kd7852 $".
+d261 1
+a261 1
+      -"$Locker:  $".
+d281 1
+a281 1
+          05 WS-NAGS-TYPE                   PIC X(10).
+@

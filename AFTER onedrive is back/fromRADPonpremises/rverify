@@ -1,0 +1,50 @@
+#! /bin/ksh
+#$Id: rverify,v 1.4 2014/09/17 22:34:12 pg2697 Exp $ 
+##################################################################################
+# rverify - (formerly rverify)
+#
+# GW - modified 3/06/07 to accept all file type/extensions
+# PG - 2014/09/15 - Oracle 11G Migration
+##################################################################################
+
+##################################################################################
+# check if parm values passed in
+##################################################################################
+  if [ $# != "2" ]
+    then
+      echo  Usage: rverify file_name subsys/component "\007"
+      exit -1
+  fi
+
+##################################################################################
+# verify legal filename extension
+##################################################################################
+  FNAME_EXT=$1
+  EXTENSION=$(echo $FNAME_EXT | awk -F. '{print $2}')
+  SUBSYS=$(echo $2 | awk -F/ '{print $1}')
+  COMPONENT=$(echo $2 | awk -F/ '{print $2}')
+
+##################################################################################
+# verify subsys/component names
+##################################################################################
+  case $SUBSYS in
+        altp|ceg|misc|oto|parts|qrp|share|ext|oem) ;;
+    *) echo "$SUBSYS: INVALID SUB-SYSTEM - subsystem_name is NOT altp|ceg|misc|oto|parts|qrp|share|ext|oem" ; exit -1;; 
+  esac
+  
+  case $COMPONENT in
+        bin|src|inc|lib|prm) echo " " > /dev/null;;
+    *) echo "$COMPONENT: INVALID DIRECTORY COMPONENT - component_name is NOT bin|src|inc|lib|prm"; exit -1;; 
+  esac
+
+  if [ "$EXTENSION" != "" ] 
+    then 
+      case $EXTENSION in
+           cbl|c|pc|ksh|mk|awk|exp|pl|ctl|prm|cpy) echo " " > /dev/null;;
+        *) echo "$EXTENSION: INVALID FILE EXTENSION - extension_name is NOT cbl|c|pc|ksh|mk|awk|exp|pl|ctl|prm|cpy"; exit -1;; 
+      esac
+  fi
+
+##################################################################################
+# end of script
+##################################################################################

@@ -1,0 +1,136 @@
+    Start  xexm630   Thu Jul 23 08:10:16 AM PDT 2026
+1>> /mdev/race/ext/log/xexm630_20260723081016.log
+
+##################################################################################
+#  PROCNAME:   mh_extract.pl                                                     #
+#  JOB DESCRIPTION:   MANHEIM UM/Ceg Data Extract                                #
+##################################################################################
+Start STEP010 Declare Prototypes & Initialize Variables  Thu Jul 23 08:10:16 AM PDT 2026
+       race is: /mdev/race/ext
+       obj_tmpdir is: RACE_EXT_TMP_DIR
+       basedir is: /mdev/race/ext
+       tmpdir is: /mdev/race/ext/tmp
+       rptdir is: /mdev/race/ext/rpt
+       datdir is: /mdev/race/ext/dat
+       bindir is: /mdev/race/ext/bin
+       logdir is: /mdev/race/ext/log
+       prmdir is: /mdev/race/ext/prm
+       jobname is: xexm630
+       remote_filename: manheim_20260723.zip
+       zip_file: /mdev/race/ext/dat/xexm630_manheim.zip
+
+Start STEP020 Get Mailing List  Thu Jul 23 08:10:16 AM PDT 2026
+       subr init_message: good open mailing list    Thu Jul 23 08:10:16 AM PDT 2026
+       subr init_message: mail to: rafael.deitos@mitchell.com
+
+Start STEP030 Get DB & FTP Login Info  Thu Jul 23 08:10:16 AM PDT 2026
+       subr init: good open database info    Thu Jul 23 08:10:16 AM PDT 2026
+       subr init: good open ftp info    Thu Jul 23 08:10:16 AM PDT 2026
+       subr init: ftp info=site,user,password,path-> sftp-corp.mitchell.com, cegextracts, dryW0ca, test
+
+Start STEP040 Get Restart STEP  Thu Jul 23 08:10:16 AM PDT 2026
+       No Restart STEP
+
+Start STEP050R Delete Previous Files  Thu Jul 23 08:10:16 AM PDT 2026
+       files to delete
+-rwx------. 1 pb0690@corp.int domain users@corp.int   2239343 Jul 22 17:02 /mdev/race/ext/dat/xexm630_manheim_chrome_xref.dat
+-rwx------. 1 pb0690@corp.int domain users@corp.int 782861921 Jul 22 17:02 /mdev/race/ext/dat/xexm630_manheim_master.dat
+-rwx------. 1 pb0690@corp.int domain users@corp.int  15940419 Jul 22 17:02 /mdev/race/ext/dat/xexm630_manheim_note.dat
+-rwx------. 1 pb0690@corp.int domain users@corp.int  24658291 Jul 22 17:02 /mdev/race/ext/dat/xexm630_manheim_note_xref.dat
+-rwx------. 1 pb0690@corp.int domain users@corp.int     11242 Jul 22 17:02 /mdev/race/ext/dat/xexm630_manheim_prtc_body.dat
+-rwx------. 1 pb0690@corp.int domain users@corp.int     97591 Jul 22 17:02 /mdev/race/ext/dat/xexm630_manheim_ref_detail.dat
+-rwx------. 1 pb0690@corp.int domain users@corp.int     42449 Jul 22 17:02 /mdev/race/ext/dat/xexm630_manheim_ref_overlap.dat
+-rwx------. 1 pb0690@corp.int domain users@corp.int    178225 Jul 22 17:02 /mdev/race/ext/dat/xexm630_manheim_service.dat
+-rwx------. 1 pb0690@corp.int domain users@corp.int   1486219 Jul 22 17:02 /mdev/race/ext/dat/xexm630_manheim_ymm.dat
+       Deleted Previous Files: /mdev/race/ext/dat/xexm630_*manheim*.dat Thu Jul 23 08:10:16 AM PDT 2026
+
+Start STEP060R ORA Extract Files    Thu Jul 23 08:10:16 AM PDT 2026
+       subr extract files:     Thu Jul 23 08:10:16 AM PDT 2026
+       subr extract files: good database connect    Thu Jul 23 08:10:17 AM PDT 2026
+       subr extract_files: get the function's dbms_output buffer
+          Start function: SF_MANHEIM_EXTRACT 07/23/2026 08:10:17
+          Process Thread Job Submission 07/23/2026 08:10:19
+          End Job Submission 07/23/2026 08:10:19
+          Start Population of Manheim EXT Tales 07/23/2026 08:10:19
+          Load manheim_ref_overlap table 07/23/2026 08:10:19
+          Load manheim_ref_detail table 07/23/2026 08:10:48
+          Load manheim_clearcoat table 07/23/2026 08:10:49
+          Load manheim_note table 07/23/2026 08:10:49
+          Load manheim_note_xref table 07/23/2026 08:35:11
+          Start Output of Data Files 07/23/2026 08:35:16
+          Create manheim_service.txt 07/23/2026 08:35:16
+          Create manheim_ymm.txt 07/23/2026 08:35:16
+          Create manheim_master.txt 07/23/2026 08:35:28
+          Create manheim_ref_overlap.txt 07/23/2026 08:36:28
+          Create manheim_ref_detail.txt 07/23/2026 08:36:28
+          Create manheim_prtc_body.txt 07/23/2026 08:36:28
+          Create manheim_note_xref.txt 07/23/2026 08:36:28
+          Create manheim_note.txt 07/23/2026 08:36:37
+          Create manheim_chrome_xref.txt 07/23/2026 08:36:40
+          End Output of Data Files 07/23/2026 08:36:41
+       subr extract_files completed  Thu Jul 23 08:36:41 AM PDT 2026
+       extracted tmp files
+-rwx------. 1 oracle oinstall   2239343 Jul 23 08:36 /mdev/race/ext/tmp/manheim_chrome_xref.txt
+-rwx------. 1 oracle oinstall 782861921 Jul 23 08:36 /mdev/race/ext/tmp/manheim_master.txt
+-rwx------. 1 oracle oinstall  15940419 Jul 23 08:36 /mdev/race/ext/tmp/manheim_note.txt
+-rwx------. 1 oracle oinstall  24658291 Jul 23 08:36 /mdev/race/ext/tmp/manheim_note_xref.txt
+-rwx------. 1 oracle oinstall     11242 Jul 23 08:36 /mdev/race/ext/tmp/manheim_prtc_body.txt
+-rwx------. 1 oracle oinstall     97591 Jul 23 08:36 /mdev/race/ext/tmp/manheim_ref_detail.txt
+-rwx------. 1 oracle oinstall     42449 Jul 23 08:36 /mdev/race/ext/tmp/manheim_ref_overlap.txt
+-rwx------. 1 oracle oinstall    178225 Jul 23 08:35 /mdev/race/ext/tmp/manheim_service.txt
+-rwx------. 1 oracle oinstall   1486219 Jul 23 08:35 /mdev/race/ext/tmp/manheim_ymm.txt
+End  STEP060R ORA Extract Files  Thu Jul 23 08:36:41 AM PDT 2026
+
+Start STEP070R Zip Extracted Files  Thu Jul 23 08:36:41 AM PDT 2026
+       changed dir to /mdev/race/ext/tmp
+       Created /mdev/race/ext/dat/xexm630_manheim.zip
+End  STEP070R Zip Extracted Data Files Thu Jul 23 08:37:38 AM PDT 2026
+
+Start STEP075R Copy Extract Manheim Files    Thu Jul 23 08:37:38 AM PDT 2026
+       copied extracted dat files
+-rwx------. 1 rj132422@corp.int domain users@corp.int   2239343 Jul 23 08:37 /mdev/race/ext/dat/xexm630_manheim_chrome_xref.dat
+-rwx------. 1 rj132422@corp.int domain users@corp.int 782861921 Jul 23 08:37 /mdev/race/ext/dat/xexm630_manheim_master.dat
+-rwx------. 1 rj132422@corp.int domain users@corp.int  15940419 Jul 23 08:37 /mdev/race/ext/dat/xexm630_manheim_note.dat
+-rwx------. 1 rj132422@corp.int domain users@corp.int  24658291 Jul 23 08:37 /mdev/race/ext/dat/xexm630_manheim_note_xref.dat
+-rwx------. 1 rj132422@corp.int domain users@corp.int     11242 Jul 23 08:37 /mdev/race/ext/dat/xexm630_manheim_prtc_body.dat
+-rwx------. 1 rj132422@corp.int domain users@corp.int     97591 Jul 23 08:37 /mdev/race/ext/dat/xexm630_manheim_ref_detail.dat
+-rwx------. 1 rj132422@corp.int domain users@corp.int     42449 Jul 23 08:37 /mdev/race/ext/dat/xexm630_manheim_ref_overlap.dat
+-rwx------. 1 rj132422@corp.int domain users@corp.int    178225 Jul 23 08:37 /mdev/race/ext/dat/xexm630_manheim_service.dat
+-rwx------. 1 rj132422@corp.int domain users@corp.int   1486219 Jul 23 08:37 /mdev/race/ext/dat/xexm630_manheim_ymm.dat
+End  STEP075R Rename/copy Extract Manheim Files  Thu Jul 23 08:37:42 AM PDT 2026
+
+Start STEP080R  FTP Zip File to FTP Server Thu Jul 23 08:37:42 AM PDT 2026
+       subr sftp_connect: good connect, cd directory and set binary mode    Thu Jul 23 08:37:42 AM PDT 2026
+       Good SFTP of /mdev/race/ext/dat/xexm630_manheim.zip to sftp-corp.mitchell.com test manheim_20260723.zip
+
+Start STEP085R  Save 3 Versions of the Zip File Thu Jul 23 08:38:44 AM PDT 2026
+       moved /mdev/race/ext/dat/xexm630_manheim.zip to /mdev/race/ext/dat/xexm630_manheim.zip.g03
+
+Start STEP090R Email Notification Zip File Ready Thu Jul 23 08:38:44 AM PDT 2026
+       subr send message: Latest Manheim data (manheim_20260723.zip) is available on Mitchell's ftp site.     Thu Jul 23 08:38:44 AM PDT 2026
+
+Start STEP999R    Thu Jul 23 08:38:44 AM PDT 2026
+       Deleted tmp Files: /mdev/race/ext/tmp/manheim*.txt Thu Jul 23 08:38:45 AM PDT 2026
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=xexm630_
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Jul 23 08:38:45 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Wed Jul 22 2026 16:04:11 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/ext/log/xexm630_20251230055443.log (due to retention)
+oldest file removed: /mdev/race/ext/log/xexm630_20251229103553.log (due to retention)
+\n End rpt_log_retention.ksh
+    End    xexm630   Thu Jul 23 08:38:45 AM PDT 2026

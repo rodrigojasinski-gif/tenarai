@@ -1,0 +1,71 @@
+#!/bin/ksh 
+#
+# Vairables set in ths script are:
+#	ACT_LV
+#	RACE  
+#	STAGE 
+#	PATH
+#	ORACLE_SID 
+#	NLS_LANG
+
+
+# Disables printing unaligned word message
+uac p noprint
+
+trap "" 2
+
+VSYS=prod
+echo
+
+echo " Setting ACTIVITY LEVEL to $ACT_LVL"
+
+
+  export ACT_LVL=$VSYS
+
+  echo " "
+
+SUBOK=''
+while [[ -z $SUBOK ]]  
+do
+    echo " "
+    echo "Select one of race subsystems:"
+    echo "1) ceg "
+    echo "2) parts "
+    echo "3) altp "
+    echo "4) oto "
+    echo "5) share "
+    echo "6) ext "
+    echo ""
+    read SUBSID?"Type subsystem id (1, 2, 3, 4, 5)? "
+
+    case $SUBSID in
+	1|ceg) SUBSYS=ceg;SUBOK='OK';;
+	2|parts) SUBSYS=parts;SUBOK='OK';;
+	3|altp) SUBSYS=altp;SUBOK='OK';;
+	4|oto) SUBSYS=oto;SUBOK='OK';;
+	5|share) SUBSYS=share;SUBOK='OK';; 
+	6|ext) SUBSYS=ext;SUBOK='OK';; 
+	*)  
+        echo "\n \07 Typed invalid $SUBSID subsystem id try again ! \07 \n"
+        ;; 
+   esac
+done
+
+  export RACE=/$ACT_LVL/race/$( echo $SUBSYS | awk '{print tolower($0)}')
+  export APPSYS=$SUBSYS
+  echo " "
+
+    newsid radp
+    #NLS_LANG Required for 8i export to work from ksh
+    export NLS_LANG=american_america.WE8ISO8859P1
+
+echo " "
+
+  echo "============================================================"
+  echo " System \$ACT_LVL variable is set to $ACT_LVL"
+  echo " System \$RACE   variable is set to $RACE"	
+  echo " System \$STAGE   variable is set to $STAGE"
+  echo " Oracle \$ORACLE_SID instance is set to $ORACLE_SID"
+  echo "============================================================"
+
+trap 2

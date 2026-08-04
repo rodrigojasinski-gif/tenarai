@@ -1,0 +1,31 @@
+#! /bin/ksh
+#$Id: rrevlog,v 1.2 2007/03/18 22:20:04 gw8440 Exp gw8440 $
+## modify to access prod server alias racercs gw 03/28/07
+# rj132422 - linux migration: RCS repo now lives on the prod host (the AIX alias racercs is gone)
+
+ if [ $# = "0" ]
+    then
+      echo  Usage: rrevlog filename subsystem_name/component_name "\007" >&2
+      echo " Example: rrevlog xfcz001.cbl ceg/src"
+      exit -2
+  fi
+
+  rverify $1 $2                                    # verify argument-name strings
+  if [ $? != 0 ]
+    then
+    exit -1
+  fi
+
+##export RCSDIR=race:/prod/race
+# rj132422 - no host prefix when we are already on prod, so rev_log.ksh runs rlog locally
+if [ "$ACT_LVL" = "prod" ]
+then
+   export RCSDIR=/prod/race
+else
+   export RCSDIR=pawapp7017l.production.int:/prod/race
+fi
+
+
+echo ================== RCS log ===========================
+rev_log.ksh  $1 $2
+#echo ======================================================

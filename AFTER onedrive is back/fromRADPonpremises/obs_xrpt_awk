@@ -1,0 +1,66 @@
+BEGIN{
+  P=1
+  WRK=FILENAME
+
+  gsub("/"," ",WRK)
+  split(WRK,TMP)
+
+  i=1
+  while( TMP[i+1] > " ")
+    i=i+1
+  FNAME=TMP[i]
+
+  print
+  print FNAME
+}
+
+{
+
+  if( substr($0,3,1) != "*" )
+  {
+    if( $2 == "EXEC" )
+    {
+       STEP = substr($1, 3) "        "
+    }
+    if( $2 == "DD" && substr($1,3,1) != " " )
+    {
+       DD = substr($1, 3) "        "
+    }
+    if( ( inx = match($0, "SYSOUT=") ) && validDD( substr($1,3) ) )
+    {
+      LINE = substr($0, inx)
+      sub(","," ",LINE)
+      sub(")"," ",LINE)
+      split(LINE,PRTID)
+      if( PRTID[2] > "" )
+      {
+        printf("  %8.8s  %8.8s  %8.8s ===> %sP%s\n", STEP,DD,PRTID[2],FNAME,P)
+        P=P+1
+      }
+    }
+  }
+}
+
+END{
+
+  print
+
+}
+
+#========================================#
+# validate the DD                        #
+#========================================#
+function validDD(j1)
+{
+  if(j1 == "STEPLIB")  return(0)
+  if(j1 == "STEP01")   return(0)
+  if(j1 == "SYSDBOUT") return(0)
+  if(j1 == "SYSOUT")   return(0)
+  if(j1 == "SYSUDUMP") return(0)
+  if(j1 == "SYSPRINT") return(0)
+  if(j1 == "SYSOUA")   return(0)
+  if(j1 == "SYSABOUT") return(0)
+  if(j1 == "SYSTSPRT") return(0)
+
+  return(1)
+}

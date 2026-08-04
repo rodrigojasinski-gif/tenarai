@@ -1,0 +1,33 @@
+#!/bin/ksh
+# "$Id: race_parts.ksh,v 1.1 1997/08/08 20:50:26 raceadm Exp $"
+#==========================================================================#
+# race_parts.ksh                                                          #
+#                                                                          #
+#   DESCRIPTION                                                            #
+#     The purpose of this script is to set the RACE and PATH              #
+#     environment variables for the Editorial System 'parts' subsystem.    #
+#                                                                          #
+#==========================================================================#
+
+# set environment
+
+# set RACE environment
+  export RACE=/prod/race/parts
+
+# echo "                   set NOVELL environment"
+  export NOVELL=prod/
+
+# echo "                   set LOGDIR environment"
+  export LOGDIR=$RACE/log
+
+# echo "                   set COSREPORT environment"
+  export COSREPORT=race
+
+# set PATH environment
+  export PATH=/prod/race/parts/bin:/prod/race/share/bin:$PATH
+
+  #export MFConnect="TRACE=ON"
+
+#==========================================================================#
+#  END                                                                     #
+#==========================================================================#

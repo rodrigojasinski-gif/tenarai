@@ -1,0 +1,96 @@
+#! /bin/ksh
+#$Id: rcheck_out,v 1.5 2021/07/03 01:45:23 pg2697 Exp $
+###############################################################################
+# SCRIPT NAME: rcheck_out
+# SCRIPT DESC: Script used to check out objects from prod RCS directory to
+#              development working directory.
+#
+# gw 03/28/07 - modify to access prod server alias racercs
+# pg 09/15/2014 - Oracle 11G Migration
+# rj132422 - linux: prod repo host is pawapp7017l; co runs on prod (see check_out.ksh)
+###############################################################################
+
+#########################################################################################
+# throws error if this is run in PROD
+#########################################################################################
+  if [ $ACT_LVL = "mdev" ]
+    then
+      echo "You are running on MDEV server. OK to proceed with check_out."
+    else
+      echo "ERROR! This may only be run on MDEV server. ABENDING."
+      exit -1
+  fi
+
+#########################################################################################
+# get and verify Description arg
+#########################################################################################
+  if [[ $# = "0" || $# > "7" ]]
+    then
+      echo  Usage: rcheck_out [-l] [-r revision_number] [-v version_label] \
+            file_name subsystem_name/component_name "\007"
+      echo " Example: rcheck_out -l mfcr010.ksh ceg/bin"
+      exit -1
+  fi
+
+# rj132422 - linux prod repo host (was racercs)
+export RCSDIR=pawapp7017l.production.int:/prod/race
+export STGDIR=/stage/race
+
+  LARG=""                                        # -l is Lock flag
+  RARG=""                                        # -r is Revision number flag
+  VARG=""                                        # -v is Version label flag
+
+  while getopts "lr:v:" ARG                      # rj132422 - dropped leading - for linux ksh93
+    do
+      if [ $ARG = "l" ]                          # set -l value
+        then
+          LARG="-l"
+      else
+      if [ $ARG = "r" ]                          # set -r value
+        then
+          RARG="-r "$OPTARG
+      else
+      if [ $ARG = "v" ]                          # set -v value
+        then
+          VARG="-v "$OPTARG
+      else
+          echo Unknown parameter "\007" >&2
+          exit -2                                # invalid parameter - exit
+      fi
+      fi
+      fi
+  done
+
+  shift 'OPTIND - 1'                             # set $1 to next-to-last argument
+
+  rverify $1 $2                                 # verify argument-name strings
+  if [ $? != 0 ]
+    then
+    exit -1
+  fi
+
+  #########################################################################################
+  # check_out object
+  #########################################################################################
+  check_out.ksh $LARG $RARG $VARG $1 $2  > $1.tmp       # check it out, O/P to stdout
+  if [ $? = 0 ]                                         # test return code of check_out...
+   then
+     CHECKOUT_OK=0
+   else
+     CHECKOUT_OK=-1
+  fi
+
+  #########################################################################################
+  # display File Summary information
+  #########################################################################################
+
+  if [ $CHECKOUT_OK = 0 ]
+   then
+     mv $1.tmp $1
+     chmod +x $1
+     rstatus $1 $2
+   else
+     rm -f $1.tmp
+   fi
+
+# end of script

@@ -1,0 +1,17 @@
+##########################################################
+# strip_cbl                                              #
+#                                                        #
+#     Removes sequence numbers 1 thru 6 and 73 thru 80.  #
+#     Drops last line i.e. ^Z                            #
+#                                                        #
+##########################################################
+
+	awk '{print substr($0,1,72)}' $1 |                 \
+	sed "s/....../      /" |                           \
+	head -$(wc -l $1 | awk '{ print $1 }' ) > \
+	$1.new
+
+	mv $1 $1.old
+
+	mv $1.new $1
+

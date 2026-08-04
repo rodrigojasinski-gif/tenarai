@@ -1,0 +1,126 @@
+#!/usr/local/bin/expect --
+# transfers a single file using ftp from iaest
+
+# requires 3 arguments: source filename; destination path/filename; source directory
+
+set STEP STEP010
+#Check for parameter errors
+
+log_user 0          ;#turn off standard out / will use expect commands to send standard out
+
+#check for correct number of arguments
+if {$argc != 3} {
+   send_error "incorrect number of arguments\n"
+   send_error "usage:  $argv0 sourcefile destinationfile source_dir\n"
+   exit 1 }
+
+#convert arguments to variables
+set source_file [lindex $argv 0]
+set dest_file [lindex $argv 1]
+set source_dir [lindex $argv 2]
+
+set timeout 60            ;# set timeout to 60 seconds
+
+set STEP STEP020
+#Start ftp session
+
+send_user "Establishing ftp connection to iaest\n"
+spawn ftp -i 192.168.1.2      ;#start ftp connection to iaest
+
+expect {
+   timeout {send_error "timed out\n"; exit 1}
+   "connection refused" {send_error "connection refused"; exit 1}
+   "unknown host" {send_error "unknown host"; exit 1}
+   "Name"
+}
+
+send "mitchell\r"
+expect {
+   timeout {send_error "timed out evaluating login name\n"; exit 1}
+   "Password:"
+}
+
+send "3U2584E6A55\r"
+  expect {
+   timeout {send_error "timed out evaluating password\n"; exit 1}
+    -re "\n230 (\[^\r]*)\r\n.*\r\nftp> " {}
+    -re "\n.*\r\n(.*)\r\nftp> " {
+       send_error "login failed\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+send "binary\r"       ;#set to binary mode
+  expect {
+   timeout {send_error "\ntimed out evaluating binary\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\nftp> " {
+       send_user "\nftp command: binary\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\nftp> " {
+       send_error "\nfailed: binary\n"
+       send_error "reason: $expect_out(1,string)\n" 
+       exit 1 }
+  }
+
+send "cd /cdprod02/ftp_data/iaest/$source_dir\r"      ;#change directory on source
+  expect {
+   timeout {send_error "\ntimed out evaluating cd\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\nftp> " {
+       send_user "\nftp command: cd $source_dir\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\nftp> " {
+       send_error "\nfailed: cd $source_dir\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+set STEP STEP030
+#transfer file from iaest
+
+set timeout 1800        ;#reset timeout value to 30 minutes
+send "get $source_file $dest_file\r"     ;#move file from iaest to unix
+  expect {
+   timeout {send_error "\ntimed out performing get\n"; exit 1}
+    -re "\n226 (\[^\r]*\r\n.*)\r\nftp> " {
+       send_user "\nftp command: get $source_file $dest_file\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n226 (Transfer complete.)\r\nftp> " {
+       send_user "\nftp command: get $source_file $dest_file\n"
+       send_user "ftp response: $expect_out(1,string)\n0 bytes received.\n" }
+    -re "\n... \[^\r]*\r\n(\[^\r]*)\r\nftp> " {
+       send_error "\nfailed: get $source_file $dest_file\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+set timeout 60    ;#reset timeout value to 10 seconds
+
+#report byte count of source file.
+send "dir $source_file\r"
+  expect {
+    timeout {send_error "\ntimed out performing dir on source\n"; exit 1}
+    -re " *(\[0-9]* ... .. ..:.. $dest_file)\r\n" {
+        send_user "\n$expect_out(1,string)  \(Information returned by \"dir\" on iaest side.\)\n" }
+    -re " *(\[0-9]* ... ..  .... $dest_file)\r\n" {
+        send_user "\n$expect_out(1,string)  \(Information returned by \"dir\" on iaest side.\)\n" }
+    -re "..-..-..  ..:.... *(\[0-9]* $dest_file)\r\n" {
+        send_user "\n$expect_out(1,string)  \(Information returned by \"dir\" on iaest side.\)\n" }
+    -re "\n... (\[^\r]*)\r\nftp> " {
+       send_error "\nfailed: dir $source_file\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+set STEP STEP040
+#Close ftp connection and end script
+
+send "quit\r"     ;#close ftp connection
+  expect {
+   timeout {send_error "\ntimed out performing quit\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\n" {
+       send_user "\nftp command: quit\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\n" {
+       send_error "\nfailed: quit\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }

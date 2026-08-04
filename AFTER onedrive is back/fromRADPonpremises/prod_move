@@ -1,0 +1,194 @@
+#! /bin/ksh  
+#$Id: prod_move,v 1.11 2021/07/03 01:25:28 pg2697 Exp $ 
+################################################################################
+# prod_move file_name subsys/component                                         #
+# e.g. prod_move mptz021.cbl oem/src                                           # 
+#      prod_move zmfc730.prm ceg/prm                                           #
+#                                                                              #
+# NOTE:                                                                        #
+#   Currently using 'rcp' and 'rsh' in place of proposed 'nfs' support.        #
+#                                                                              #
+# CHANGE:                                                                      #
+#   mam 97/08/29  Check for sub-program.                                       #
+#   mam 97/09/09  Added -f to 'co'.                                            #
+#   gw  07/06/07  Added Delete of .idy files in cwd                            #
+#                 Added Verification Cobol Source is Unlocked                  #
+#                 Correction: Prior to Move of New Cobol Executable to Bin     #
+#                 Move Previous Cobol Executable to Rollback                   #
+#   pag 14/09/01  Renamed script to prod_move. Removed compiles. Added         #
+#                 move of executables.                                         #
+#   pag 14/11/03  Added rm from rollback prior to copy of prev file to         #
+#                 rollback. Encountered permissions issue otherwise.           #
+#   pag 21/06/25  Changed rsh/rcp to ssh/scp.                                  #
+################################################################################
+  trap 'exit -1' err
+
+##set -xv                                    #for testing
+
+#########################################################################################
+# throws error if this is run in PROD
+#########################################################################################
+  if [ $ACT_LVL = "prod" ]
+  then 
+     echo "You are running on PROD server. OK to proceed with prod move."
+  else
+     echo "ERROR! This may only be run on PROD server. ABENDING."
+     exit -1 
+  fi
+
+  if [[ $# = "0" || $# > "4" ]]
+  then
+      echo  usage: prod_move file_name subsys/component 
+      exit -1
+  fi
+             
+  
+  STAG_HOST=radd
+  PROD_DIR=/prod/race
+  STAG_DIR=/stage/race
+  SUBSYS=$( echo $2 | awk -F/ '{ print $1 }' )
+  OBJECT_DIR=$( echo $2 | awk -F/ '{ print $NF }' )
+  FILENAME_EXT=$( echo $1 | awk -F/ '{ print $NF }' )
+  RCSNAME=$PROD_DIR/$SUBSYS/$OBJECT_DIR/RCS/$FILENAME_EXT,v  
+  EXTENSION=$(echo $FILENAME_EXT | awk -F. '{ print $NF}')
+  OBJECT_BASENAME=$( echo $1 | awk -F. '{ print $1 }' )
+   
+##########################################################      # for verification/testing
+#echo "STAG_HOST: $STAG_HOST"             ##eg. radd
+#echo "PROD_DIR: $PROD_DIR"               ##eg. /prod/race 
+#echo "STAG_DIR: $STAG_DIR"               ##eg. /stage/race
+#echo "SUBSYS: $SUBSYS"                   ##eg. oem
+#echo "OBJECT_DIR: $OBJECT_DIR"           ##eg. src
+#echo "FILENAME_EXT: $FILENAME_EXT"       ##eg. mptz021.cbl                                        
+#echo "RCSNAME: $RCSNAME"                 ##eg. /prod/race/oem/src/RCS/mptz021.cbl,v
+#echo "EXTENSION: $EXTENSION"             ##eg. cbl
+#echo "OBJECT_BASENAME: $OBJECT_BASENAME" ##eg. mptz021
+##########################################################      # for verification/testing
+
+
+  rverify $FILENAME_EXT $SUBSYS/$OBJECT_DIR                     # verify argument-name strings
+  if [ $? != 0 ]
+    then
+    exit -1
+  fi
+
+
+##############################################################################
+# Check for file in ..../subsys/object_dir/RCS directory
+##############################################################################
+  if [[ -z $( ls $RCSNAME 2>/dev/null ) ]]
+    then     
+      echo "File does not exist in RCS: " $RCSNAME 
+      exit -1
+  fi
+
+##############################################################################
+# Determine if file is unlocked into RCS directory
+##############################################################################
+  if [[ ! -z $( rlog $RCSNAME | grep "locked by" 2>/dev/null ) ]]
+    then     
+      echo "File is currently locked in RCS: " $RCSNAME 
+      echo "Developer must checkin code."
+      exit -1
+  fi
+
+##############################################################################
+# Determine if file was COPIED into STAGE directory
+##############################################################################
+  if [[ -z $( ssh $STAG_HOST ls -l $STAG_DIR/$SUBSYS/$OBJECT_DIR/$FILENAME_EXT 2>/dev/null ) ]]
+  then     
+    echo "File is not staged: " $FILENAME_EXT 
+    echo "Developer must checkin code."
+    exit -1
+  fi
+
+#########################################################################################
+# If c program, check parm file for compile information.
+# Added head -1 because without it, grep was finding more than one occurrence of filename_ext
+# due to test pgms. (e.g. search for atoe.c resulted in atoe.c and ttt_atoe.c) 
+#########################################################################################
+  export C_PGM_FOUND=`grep $FILENAME_EXT /$ACT_LVL/race/share/prm/rcheck_in_compile_info.prm |head -1 |awk '{print $1}' 2>/dev/null`
+  if [ ! -z $C_PGM_FOUND ]
+  then
+    export PGM_TYPE=`grep $FILENAME_EXT //$ACT_LVL/race/share/prm/rcheck_in_compile_info.prm |head -1 |awk '{print $2}'`  
+    export EXEC_NAME=`grep $FILENAME_EXT //$ACT_LVL/race/share/prm/rcheck_in_compile_info.prm |head -1 |awk '{print $3}'`
+    export EXEC_LOC=`grep $FILENAME_EXT //$ACT_LVL/race/share/prm/rcheck_in_compile_info.prm |head -1 |awk '{print $4}'`
+    export COMPILE_TYPE=`grep $FILENAME_EXT //$ACT_LVL/race/share/prm/rcheck_in_compile_info.prm |head -1 |awk '{print $5}'`
+		export LINK_OBJECT=`grep $FILENAME_EXT //$ACT_LVL/race/share/prm/rcheck_in_compile_info.prm |head -1|awk '{print $6}'`
+	fi	
+	
+	
+##########################################################      # for verification/testing
+#echo "C_PGM_FOUND : $C_PGM_FOUND"
+#echo "PGM_TYPE    : $PGM_TYPE"
+#echo "LINK_OBJECT : $LINK_OBJECT"
+#echo "EXEC_NAME   : $EXEC_NAME"
+#echo "EXEC_LOC    : $EXEC_LOC"
+#echo "COMPILE_TYPE: $COMPILE_TYPE"
+##########################################################      # for verification/testing	
+
+##############################################################################
+# Copy everything except source from RCS directory to assoc'd PROD directory
+# This includes the following filetypes: 
+# - cpy
+# - ksh (with and without .ksh extension)
+# - mk
+# - awk
+# - exp
+# - pl
+# - prm
+# - ctl
+# If filetype involves src code, move the executable from STAGE to PROD bin/lib 
+#  
+#Note - couldn't get mv to work. Got permission denied error.
+##############################################################################
+
+####COBOL - move executable of basename to bin dir 
+    if [ $EXTENSION = "cbl" ]   
+    then 
+      EXEC_LOC=bin 
+      echo "\nSource program $FILENAME_EXT entered. Executable to be moved into production execution directory: " $PROD_DIR/$SUBSYS/$EXEC_LOC/$OBJECT_BASENAME               
+      if [ -s ${PROD_DIR}/${SUBSYS}/${EXEC_LOC}/${OBJECT_BASENAME} ] 
+      then
+           rm -f $PROD_DIR/$SUBSYS/$EXEC_LOC/rollback/$OBJECT_BASENAME      
+           cp -p $PROD_DIR/$SUBSYS/$EXEC_LOC/$OBJECT_BASENAME $PROD_DIR/$SUBSYS/$EXEC_LOC/rollback/$OBJECT_BASENAME
+					 rm -f $PROD_DIR/$SUBSYS/$EXEC_LOC/$OBJECT_BASENAME
+           chmod ug+wr $PROD_DIR/$SUBSYS/$EXEC_LOC/rollback/$OBJECT_BASENAME					 
+      fi 
+      scp $STAG_HOST:$STAG_DIR/$SUBSYS/$EXEC_LOC/$OBJECT_BASENAME $PROD_DIR/$SUBSYS/$EXEC_LOC/$OBJECT_BASENAME 
+      chmod ug+wr $PROD_DIR/$SUBSYS/$EXEC_LOC/$OBJECT_BASENAME						
+####C and PC programs
+    elif [ $EXTENSION = "c" ] ||  [ $EXTENSION = "pc" ]
+    then 
+      echo "\nSource program $FILENAME_EXT entered. Executable to be moved into production execution directory: " $PROD_DIR/$SUBSYS/$EXEC_LOC/$EXEC_NAME               
+      if [ -s ${PROD_DIR}/${SUBSYS}/${EXEC_LOC}/${EXEC_NAME} ] 
+      then
+         rm -f $PROD_DIR/$SUBSYS/$EXEC_LOC/rollback/$EXEC_NAME
+         cp -p $PROD_DIR/$SUBSYS/$EXEC_LOC/$EXEC_NAME $PROD_DIR/$SUBSYS/$EXEC_LOC/rollback/$EXEC_NAME
+	       rm -f $PROD_DIR/$SUBSYS/$EXEC_LOC/$EXEC_NAME
+	       chmod ug+wr $PROD_DIR/$SUBSYS/$EXEC_LOC/rollback/$EXEC_NAME 
+      fi 
+      scp $STAG_HOST:$STAG_DIR/$SUBSYS/$EXEC_LOC/$EXEC_NAME $PROD_DIR/$SUBSYS/$EXEC_LOC/$EXEC_NAME
+			chmod ug+wr $PROD_DIR/$SUBSYS/$EXEC_LOC/$EXEC_NAME 
+####cpy, ksh, mk, awk, exp, pl, prm, ctl -> move object as specified in execution of prod_move 
+    else 
+      echo "\nRequested object to be moved into production execution directory: " $PROD_DIR/$SUBSYS/$OBJECT_DIR/$FILENAME_EXT   
+      if [ -s ${PROD_DIR}/${SUBSYS}/${OBJECT_DIR}/${FILENAME_EXT} ] 
+      then 
+        rm -f $PROD_DIR/$SUBSYS/$OBJECT_DIR/rollback/$FILENAME_EXT
+        cp -p $PROD_DIR/$SUBSYS/$OBJECT_DIR/$FILENAME_EXT $PROD_DIR/$SUBSYS/$OBJECT_DIR/rollback/$FILENAME_EXT
+	      rm -f $PROD_DIR/$SUBSYS/$OBJECT_DIR/$FILENAME_EXT
+	      chmod ug+wr $PROD_DIR/$SUBSYS/$OBJECT_DIR/rollback/$FILENAME_EXT
+      fi   
+      co -f $RCSNAME $PROD_DIR/$SUBSYS/$OBJECT_DIR/$FILENAME_EXT
+      chmod ug+wr $PROD_DIR/$SUBSYS/$OBJECT_DIR/$FILENAME_EXT 
+    fi
+
+  rstatus $FILENAME_EXT $SUBSYS/$OBJECT_DIR
+
+  echo "prod_move completed."
+  echo "***************************************************************************************************"
+
+#########################################################################################
+# end of script
+#########################################################################################

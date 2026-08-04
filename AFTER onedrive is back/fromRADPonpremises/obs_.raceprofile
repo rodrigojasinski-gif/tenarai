@@ -1,0 +1,49 @@
+# Disables printing unaligned word message
+uac p noprint
+
+export TERM=vt100
+stty -crterase                                                                  
+stty -tabs                                                                      
+stty crt                                                                        
+stty erase '^h'                                                                 
+stty werase '^?'                                                                
+stty new                                                                        
+
+if [ ! "$DT" ]; then
+	stty dec
+	tset -I -Q
+fi
+
+set -o emacs       
+alias __A="^P"		
+alias __B="^N"		
+alias __C="^F"		
+alias __D="^B"		
+tset -I -Q
+
+. /$ACT_LVL/race/share/bin/.racesubsys              
+
+
+PATH=$PATH:/usr/bin/X11:/usr/lib/cobol/bin:/usr/local/spfux/decbin:.\
+:/$ACT_LVL/race/share/bin:/$ACT_LVL/race/bin:$RACE/bin\
+:$STAGE/share/bin:$STAGE/$APPSYS/bin
+
+export PATH								
+SYSNAME=$(hostname -s)
+PS1='$SYSNAME($ORACLE_SID):$PWD> '                             
+
+export SPFPATH=/usr/local/spfux
+alias  spf='TERM=vt220;spfux'
+export ENV=/prod/race/share/bin/.racekshrc
+alias toolbox='TERM=xterm; tbox; TERM=vt100'
+
+umask 002                                     
+set -o ignoreeof                              
+export CMD_ENV=bsd                            
+#export MFConnect="TRACE=ON"                   
+export MANPATH=/usr/share/man:/$ACT_LVL/race/share/doc/man 
+
+if [[ -a ~/.userprofile ]]
+then
+	. ~/.userprofile
+fi

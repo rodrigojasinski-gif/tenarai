@@ -1,0 +1,108 @@
+#!/bin/ksh
+
+###########################################################################
+#
+# $Workfile:   raceprofile.ksh  $
+#     $Date:   Aug 24 2004 14:11:50  $
+#   $Author:   jw97143  $
+# $Revision:   1.2  $
+#
+# NOTE: This script is versioned in PVCS.  -------------------------------------------------------
+#
+#       PVCS location:
+#             Editorial Systems (O:\VM-Common\Editorial Systems\Projects\UNIX\RACE\share\bin
+#       Network workfile location:
+#             \\Corp1nt\pvcsdata\VM-Common\Editorial Systems\Workfiles\UNIX\RACE\share\bin
+#
+# NOTE: This script is versioned in PVCS.  -------------------------------------------------------
+#
+###########################################################################
+
+# Disables printing unaligned word message
+uac p noprint
+
+export TERM=vt100
+stty -crterase
+stty -tabs
+stty crt
+stty erase '^h'
+stty werase '^?'
+stty new
+
+if [ ! "$DT" ]; then
+    stty dec
+    tset -I -Q
+fi
+
+set -o emacs
+alias __A="^P"
+alias __B="^N"
+alias __C="^F"
+alias __D="^B"
+tset -I -Q
+
+export STAGE=/stage/race
+export FTP_SITE=ftp.mitchell.com
+export FTP_SERVER=prod3nt
+export FTP_BUSINESS_PATH=/ftp1/Business_Partners
+
+export NOVELL=$ACT_LVL/
+
+export RCSHOST=race
+export RCSDIR=/prod/race
+
+if [ $ACT_LVL = "prod" ]
+then
+   PRODHOST=$(hostname -s)
+   TESTHOST="TESTHOSTgoesHERE"
+else
+   PRODHOST="PRODHOSTgoesHERE"
+   TESTHOST=$(hostname -s)
+fi
+
+. /$ACT_LVL/race/share/bin/racesubsys.ksh
+
+PATH=$PATH:/usr/bin/X11:/usr/lib/cobol/bin:/usr/local/spfux/decbin:.\
+:/$ACT_LVL/race/share/bin:/$ACT_LVL/race/bin:$RACE/bin\
+:$STAGE/share/bin:$STAGE/$APPSYS/bin
+
+export PATH
+SYSNAME=$(hostname -s)
+PS1='$SYSNAME($ORACLE_SID):$PWD> '
+
+export SPFPATH=/usr/local/spfux
+alias  spf='TERM=vt220;spfux'
+
+export ENV=/$ACT_LVL/race/share/bin/racekshrc.ksh
+
+alias toolbox='TERM=xterm; tbox; TERM=vt100'
+
+umask 002
+set -o ignoreeof
+export CMD_ENV=bsd
+#export MFConnect="TRACE=ON"
+export MANPATH=/usr/share/man:/$ACT_LVL/race/share/doc/man
+
+if [[ -a ~/.userprofile ]]
+then
+    . ~/.userprofile
+fi
+
+###########################################################################
+#
+# $Log:   O:/VM-Common/Editorial Systems/Archives/RACE/Enviroment/raceprofile.ksh-arc  $
+#
+#   Rev 1.2   Aug 24 2004 14:11:50   jw97143
+#Add note in header regarding the file being versioned in PVCS and the location(s).
+#
+#   Rev 1.1   Jul 06 2004 14:52:18   jw97143
+#Add new environment variables
+#FTP_SITE
+#FTP_SERVER
+#FTP_BUSINESS_PATH
+#Check $ACT_LVL to determine PRODHOST/TESTHOST
+#
+#   Rev 1.0   Jul 06 2004 14:01:04   jw97143
+#Initial check-in.
+#
+###########################################################################

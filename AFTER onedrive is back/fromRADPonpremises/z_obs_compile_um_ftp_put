@@ -1,0 +1,139 @@
+##############################################################################
+# compile_um_ftp_put                                                         #
+#                                                                            #
+#   This script compiles ONLY the um_ftp_put C program.                      #
+#   A log file is produced named: compile_um_ftp_put_pgm_{date}.log          #
+#                                                                            #
+#   COMMAND LINE:  compile_um_ftp_put                                        #
+#                                                                            #
+##############################################################################
+
+##############################################################################
+# remove log file if it already exists. Define new one.
+##############################################################################
+  echo ----------------------------------------- 
+  echo -- remove previous log file 
+  rm -f compile_um_ftp_put_pgm*.log
+
+  export LOGFILE=compile_um_ftp_put_pgm_$(date +'%C%y%m%d%H%M%S').log
+  touch $LOGFILE
+
+##############################################################################
+# check environment you are running in
+##############################################################################
+trap 'exit -2' err >> $LOGFILE
+
+if [ $ACT_LVL = "prod" -o $ACT_LVL = "mdev" ]
+then
+   if [ $ACT_LVL = "prod" ]
+   then
+      VSID=radp
+      umask 002         # set permissions
+   else
+      VSID=radd
+   fi
+else
+   echo "\n ERROR: environment variable ACT_LVL must be prod or mdev"
+   echo "\n ACT_LVL is set to --> $ACT_LVL"
+   echo "\n Check script /etc/profile and verify value."
+   return -2
+fi
+
+echo "\n ACTIVITY LEVEL is $ACT_LVL"
+echo "\n ACTIVITY LEVEL is $ACT_LVL" >> $LOGFILE
+
+##############################################################################
+# remove files assoc to um_ftp_put from work directory
+##############################################################################
+  echo -- Remove files associated to um_ftp_put from your execution directory 
+  echo "\n-- Remove files associated to um_ftp_put from your execution directory" >> $LOGFILE
+  rm -f um_ftp_put* >> $LOGFILE
+  rm -f um_ftp_put >> $LOGFILE
+
+
+##############################################################################
+# checkout program um_ftp_put.c
+##############################################################################
+  echo -- checkout program um_ftp_put.c
+  echo "\n-- checkout program um_ftp_put.c" >> $LOGFILE
+  if [ $ACT_LVL = "mdev" ]
+  then 
+    rcheck_out um_ftp_put.c share/src   >> $LOGFILE
+  else
+    co -u -f /prod/race/share/src/RCS/um_ftp_put.c,v >> $LOGFILE
+  fi
+  
+##############################################################################
+# execute make file to compile program.
+# It compiles into whatever directory you are in (home or share/bin).
+# An ".so" and a ".o" executable is created. (Only the .so is needed.)
+##############################################################################
+  echo -- execute make file to compile program.  
+  echo "\n-- execute make file to compile program." >> $LOGFILE
+  make -f /$ACT_LVL/race/share/bin/um_ftp_put.mk >> $LOGFILE
+
+##############################################################################
+# backup prev copy of files to rollback dir
+##############################################################################
+  echo -- backup prev source and executable to rollback directories 
+  echo "\n backup prev source and executable to rollback directories." >> $LOGFILE
+  if [[ -a /$ACT_LVL/race/share/src/um_ftp_put.c ]]          # if object exists                       
+  then
+    mv /$ACT_LVL/race/share/src/um_ftp_put.c /$ACT_LVL/race/share/src/rollback
+  fi
+  if [[ -a /$ACT_LVL/race/share/lib/um_ftp_put.so ]]         # if object exists                       
+  then
+    mv /$ACT_LVL/race/share/lib/um_ftp_put.so /$ACT_LVL/race/share/lib/rollback
+  fi
+
+##############################################################################
+# Move .so executable from your execution lib to /$ACT_LVL/race/share/lib
+##############################################################################
+  echo -- move .so executable to share/lib  
+  echo "\n move .so executable to share/lib." >> $LOGFILE
+
+  mv um_ftp_put.so /$ACT_LVL/race/share/lib
+
+##############################################################################
+# Move .c source code from your execution lib to /$ACT_LVL/race/share/src
+##############################################################################
+  echo -- move .c source code to share/src  
+  echo "\n move .c source code to share/src." >> $LOGFILE
+  mv um_ftp_put.c /$ACT_LVL/race/share/src
+
+#############################################################################
+# List all files created during compile.
+##############################################################################
+  echo -- Listing files created by this execution. 
+  echo "\n List of files created by this execution should be:" >> $LOGFILE
+  echo " compile_um_ftp_put_{date}.log" >> $LOGFILE
+  echo " um_ftp_put.c       (program)" >> $LOGFILE
+  echo " um_ftp_put.so      (executable)" >> $LOGFILE
+  echo " um_ftp_put.o       (not used)" >> $LOGFILE
+  echo " um_ftp_put.so.imp  (not used)" >> $LOGFILE
+  echo " um_ftp_put.so.exp  (not used)" >> $LOGFILE
+
+  echo "\n List of files found:" >> $LOGFILE 
+  ls -l *um_ftp_put* >> $LOGFILE
+  ls -l *um_ftp_put* 
+  ls -l /$ACT_LVL/race/share/lib/um_ftp* >> $LOGFILE
+  ls -l /$ACT_LVL/race/share/lib/um_ftp*
+  ls -l /$ACT_LVL/race/share/src/um_ftp* >> $LOGFILE
+  ls -l /$ACT_LVL/race/share/src/um_ftp* 
+
+###############################################################################
+# Remove prev and move current compile log to /$ACT_LVL/race/share/src/lst
+##############################################################################
+  echo -- move compile log to share/src/lst  
+  echo "\n move compile log to share/src/lst." >> $LOGFILE
+  if [[ -a /$ACT_LVL/race/share/src/lst/compile_um_ftp_put_pgm*.log ]]          # if object exists                       
+  then
+    rm -f /$ACT_LVL/race/share/src/lst/compile_um_ftp_put_pgm*.log 
+  fi
+
+  mv $LOGFILE /$ACT_LVL/race/share/src/lst
+
+  ls -l /$ACT_LVL/race/share/src/lst/compile_um_ftp* >> $LOGFILE
+  ls -l /$ACT_LVL/race/share/src/lst/compile_um_ftp* 
+
+  echo -- END OF SCRIPT compile_um_ftp_put

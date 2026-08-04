@@ -1,0 +1,14 @@
+
+     {
+       if( !/PAGE/ )
+       {
+         if( /MEMBER NAME/ )
+         {
+           MN=APATH tolower($3)
+         }
+         else
+         {
+           print substr($0,2,80) > MN
+         }
+       }
+     }

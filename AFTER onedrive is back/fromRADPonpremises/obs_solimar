@@ -1,0 +1,35 @@
+#!/bin/csh
+#######################################################################
+#  Script name: solimar                                               #
+#  Author: Stephen Kemp                                               #
+#  Date:   12/17/96                                                   #
+#######################################################################
+if ( $#argv != 0 ) then
+	touch /usr/tmp/$$.solimar
+    foreach i ( $argv[1-] )
+        set u = `finger -s $LOGNAME | tail -1 | cut -f 1 -d" "`		# login name
+        set n = `finger -s $LOGNAME | tail -1 | cut -f 5 -d" "`		# surname
+		stty cols 132
+
+					     # at beginning, 2 banners (ensures reasonable separation in 2-sided lists)
+        (/prod/race/share/bin/scale132; banner "$u" "$n" ;\
+           cat /prod/race/share/bin/solimar.txt; banner "$i"; /prod/race/share/bin/scale132)\
+			 >> /usr/tmp/$$.solimar
+        echo "" >> /usr/tmp/$$.solimar   # Formfeed
+        (/prod/race/share/bin/scale132; banner "$u" "$n" ;\
+           cat /prod/race/share/bin/solimar.txt; banner "$i"; /prod/race/share/bin/scale132)\
+             >> /usr/tmp/$$.solimar
+
+					     # print the file....
+        cat $i >> /usr/tmp/$$.solimar      # file name
+        echo "" >> /usr/tmp/$$.solimar   # Formfeed
+    end
+    lpr -h -P4890dv2u /usr/tmp/$$.solimar  # is also known as lp23
+# 	cat /usr/tmp/$$.solimar
+ 	/bin/rm /usr/tmp/$$.solimar
+    exit(0)
+else
+    echo "Usage: solimar file1 ... filen"
+    echo "  Print file(s) at solimar (lp23)"
+    exit (1)
+endif

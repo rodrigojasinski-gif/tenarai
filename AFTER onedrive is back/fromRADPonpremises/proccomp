@@ -1,0 +1,13 @@
+if [[ -z $1 ]]; then
+   echo -------------------------------------------------------------------- 
+   echo - Error ==> FileName missing 
+   echo --------------------------------------------------------------------
+   echo - Function: Compiles and Creates .o file for Oracle pro c programs 
+   echo - Usage:    proccomp FileName  
+   echo - Example:  proccomp mfconnect
+   echo -------------------------------------------------------------------- 
+else
+   #set -xv
+   /usr/bin/rm $1 $1.c $1.o
+   make -f /$ACT_LVL/race/share/bin/proc.mk $1 
+fi

@@ -1,0 +1,139 @@
+#!/usr/local/bin/expect --
+# transfers multiple files using ftp from Unix to iaest
+
+# requires 3 arguments: source filename mask; source directory; destination directory
+# fourth argument for timeout value (in seconds) is optional - default value is 1800.
+
+set STEP STEP010
+#Check for parameter errors
+
+log_user 0          ;#turn off standard I/O / will use send_user/send_error commands to send standard I/O
+
+#check for correct number of arguments
+if {$argc < 3} {
+   send_error "incorrect number of arguments\n"
+   send_error "usage:  $argv0 \(source_mask | all\) source_directory destination_directory \[timeout value\]\n"
+   exit 1 }
+
+switch -- [lindex $argv 0] \
+  all     { set mask \*
+} default { set mask [lindex $argv 0]\*
+}
+
+set source_dir [lindex $argv 1]
+set dest_dir [lindex $argv 2]
+
+#check to see if source directory exists and is a directory
+if {[file exists $source_dir] == 0} {
+    send_error "failed: argument 2 \($source_dir\) does not exist\n"
+    exit 1
+} elseif {[file isdirectory $source_dir] == 0} { 
+          send_error "failed: argument 2 \($source_dir\) is not a directory\n"
+          exit 1 }
+
+#set timeout value for transfer command
+set tmeout [lindex $argv 3]
+if {$tmeout == ""} {
+   set tmeout 1800 }
+
+set timeout 60            ;# set timeout to 60 seconds
+
+set STEP STEP020
+#Start ftp session
+
+send_user "Establishing ftp connection to iaest\n"
+spawn ftp -i 192.168.1.2      ;#start ftp connection to iaest
+
+expect {
+   timeout {send_error "\ntimed out\n"; exit 1}
+   "connection refused" {send_error "\nfailed:  connection refused\n"; exit 1}
+   "unknown host" {send_error "\nfailed:  unknown host\n"; exit 1}
+   "Name" }
+
+send "mitchell\r"
+expect {
+   timeout {send_error "\ntimed out evaluating login name\n"; exit 1}
+   "Password:" }
+
+send "3U2584E6A55\r"
+  expect {
+   timeout {send_error "\ntimed out evaluating password\n"; exit 1}
+    -re "\n230 (\[^\r]*)\r\n.*\r\nftp> " {}
+    -re "\n.*\r\n(.*)\r\nftp> " {
+       send_error "\nlogin failed\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+send "binary\r"       ;#set to binary mode
+  expect {
+   timeout {send_error "\ntimed out evaluating binary\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\nftp> " {
+       send_user "\nftp command: binary\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\nftp> " {
+       send_error "\nfailed: binary\n"
+       send_error "reason: $expect_out(1,string)\n" 
+       exit 1 }
+  }
+
+send "lcd $source_dir\r"      ;#change directory on source
+  expect {
+   timeout {send_error "\ntimed out evaluating source cd\n"; exit 1}
+    -re "\nLocal (\[^\r]*)\r\nftp> " {
+       send_user "\nftp command: lcd $source_dir\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n/(.*)\r\nftp> " {
+       send_error "\nfailed: lcd $source_dir\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+send "cd /cdprod02/ftp_data/iaest/$dest_dir\r"      ;#change directory on destination
+  expect {
+   timeout {send_error "\ntimed out evaluating destination cd\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\nftp> " {
+       send_user "\nftp command: cd $dest_dir\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\nftp> " {
+       send_error "\nfailed: cd $dest_dir\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+set STEP STEP030
+#transfer multiple files from Unix to iaest
+
+set timeout $tmeout        ;#reset timeout value
+
+send_user "\nftp command: mput $mask\n\n"
+send "mput $mask\r" 
+
+log_user 1        ;#reset standard I/O control to normal
+
+  expect {
+   timeout {send_error "\ntimed out performing mput\n"; exit 1}
+    -re "\nlocal: \[^\n]*\n200.*\n(150.*\n226 .*)\r\nftp> " {}
+    -re "\n(550 .*denied.)\r\n" {
+       send_error "\nfailed: mput $mask\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+log_user 0        ;#give standard I/O control to "send_user / send_error"
+set timeout 60    ;#reset timeout value to 60 seconds
+
+set STEP STEP040
+#Close ftp connection and end script
+
+send "quit\r"     ;#close ftp connection
+  expect {
+   timeout {send_error "\ntimed out performing quit\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\n" {
+       send_user "\nftp command: quit\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\n" {
+       send_error "\nfailed: quit\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }

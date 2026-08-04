@@ -56,7 +56,7 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   # Make sure the file exists to transfer to the Network... send email when it is sent
   #**********************************************************************************************
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_transfer_log.tmp
-# rj132422 - entrega paralela do zip pro Novell/prod3nt (Editorial) desligada na migracao (fileput.exp indisponivel)
+# rj132422 - oem_research file not necessary anymore
 if false; then
   if [ -e ${SOURCE_FILE} ]
   then
@@ -139,7 +139,7 @@ fi
   PRICE_UX=${RACE}/tmp/${JOBNAME}/partprices*.csv
   PRICE_NT=${JOBNAME}_raw_tesla_price.dat
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_${STEPNAME}_transfer_log.tmp
-  # rj132422 - handoff dir do mptr300 no Mitchell ftp-ssh (era ${NOVELL}oem no prod3nt)
+  # rj132422 - new folder to deliver files
   NT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming
 
   if [ -e ${PRICE_UX} ]
@@ -147,14 +147,14 @@ fi
     ########################################################################################
     # Copy the price file to the Mitchell FTP handoff dir (mptr300 reads via GETMIT)
     ########################################################################################
-    # rj132422 - scp renomeando p/ o nome que o mptr300 espera (era fileput.exp p/ prod3nt)
+    # rj132422 - scp renaming as fileput.does
     scp ${PRICE_UX} ${FTP_SITE}:${NT_DIR}/${PRICE_NT}
 
     ########################################################################################
     # Verify the copy is good
     ########################################################################################
     GOODBYTECOUNT="$(wc -c ${PRICE_UX} | awk '{print $1}')"
-    # rj132422 - contagem de bytes no destino via ssh (era 'Information returned by' do fileput.exp)
+    # rj132422 - was via ssh ('Information returned by' from fileput.exp)
     FTPBYTECOUNT="$(ssh -nq ${FTP_SITE} "wc -c ${NT_DIR}/${PRICE_NT}" | awk '{print $1}')"
     if [ "${GOODBYTECOUNT}" = "${FTPBYTECOUNT}" ]
     then
@@ -184,7 +184,7 @@ fi
   SUPER_UX=${RACE}/tmp/${JOBNAME}/supersession*.csv
   SUPER_NT=${JOBNAME}_raw_tesla_super.dat
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_${STEPNAME}_transfer_log.tmp
-  # rj132422 - handoff dir do mptr300 no Mitchell ftp-ssh (era ${NOVELL}oem no prod3nt)
+  # rj132422 - was ${NOVELL}oem on prod3nt)
   NT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming
 
   if [ -e ${SUPER_UX} ]
@@ -192,14 +192,14 @@ fi
     ########################################################################################
     # Copy the supersession file to the Mitchell FTP handoff dir (mptr300 reads via GETMIT)
     ########################################################################################
-    # rj132422 - scp renomeando p/ o nome que o mptr300 espera (era fileput.exp p/ prod3nt)
+    # rj132422 - scp renaming as fileput.does
     scp ${SUPER_UX} ${FTP_SITE}:${NT_DIR}/${SUPER_NT}
 
     ########################################################################################
     # Verify the copy is good
     ########################################################################################
     GOODBYTECOUNT="$(wc -c ${SUPER_UX} | awk '{print $1}')"
-    # rj132422 - contagem de bytes no destino via ssh (era 'Information returned by' do fileput.exp)
+    # rj132422 - was via ssh ('Information returned by' from fileput.exp)
     FTPBYTECOUNT="$(ssh -nq ${FTP_SITE} "wc -c ${NT_DIR}/${SUPER_NT}" | awk '{print $1}')"
     if [ "${GOODBYTECOUNT}" = "${FTPBYTECOUNT}" ]
     then
@@ -244,14 +244,14 @@ fi
     ########################################################################################
     # Copy the catalog file to the Network      
     ########################################################################################
-    # rj132422 - scp renomeando p/ o nome que o mptr300 espera (era fileput.exp p/ prod3nt)
+    # rj132422 - scp renaming as fileput.does
     scp ${CATLG_UX} ${FTP_SITE}:${NT_DIR}/${CATLG_NT}
 
     ########################################################################################
     # Verify the copy is good
     ########################################################################################
     GOODBYTECOUNT="$(wc -c ${CATLG_UX} | awk '{print $1}')"
-    # rj132422 - contagem de bytes no destino via ssh (era 'Information returned by' do fileput.exp)
+    # rj132422 - was via ssh ('Information returned by' from fileput.exp)
     FTPBYTECOUNT="$(ssh -nq ${FTP_SITE} "wc -c ${NT_DIR}/${CATLG_NT}" | awk '{print $1}')"
     if [ "${GOODBYTECOUNT}" = "${FTPBYTECOUNT}" ]
     then

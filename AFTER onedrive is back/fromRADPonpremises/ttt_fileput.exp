@@ -1,0 +1,148 @@
+#!/usr/bin/expect --
+#$Id: ttt_fileput.exp,v 1.2 2014/09/17 23:57:22 pg2697 Exp $
+#########################################################################################################
+#
+# Test version of fileput.exp - used to test checkin/checkout/prodmove
+#
+# 123       <=====change this so that checkin recognizes a change
+#######################################################################################################
+
+
+set STEP STEP010
+#Check for parameter errors
+
+log_user 0          ;#turn off standard out / will use expect commands to send standard out
+
+#check for correct number of arguments
+if {$argc < 3} {
+   send_error "\nincorrect number of arguments\n"
+   send_error "\nusage:  $argv0 sourcefile destinationfile dest_dir \[ ascii \]\n"
+   exit 1 }
+
+#convert arguments to variables
+set source_file [lindex $argv 0]
+set dest_file [lindex $argv 1]
+set dest_dir [lindex $argv 2]
+set xfer_mode binary        ;# default to binary transfer mode
+if { $argc > 3 } {
+   set xfer_mode ascii }
+   
+# get env variable FTP_SERVER set in shared global script raceftp.ksh 
+if { [catch {set FTP_SERVER $env(FTP_SERVER)} !=0] } {
+      send_error "\nENV VARIABLE FTP_SERVER NOT FOUND\n"; exit 1}
+send_user "\nftp server: $FTP_SERVER\n"
+  
+#check for existance of source file
+if {[file exists $source_file] == 0}  {
+   send_user "$source_file does not exist\n"
+   exit 1 }
+
+set timeout 60            ;# set timeout to 20 seconds
+
+set STEP STEP020
+#Start ftp session
+
+send_user "\nEstablishing ftp connection to $FTP_SERVER\n"
+#spawn ftp -i prod3nt.mitchell.com;  #start ftp connection to prod3nt.mitchell.com.
+spawn ftp -i $FTP_SERVER;  #start ftp connection to $FTP_SERVER.
+expect {
+   timeout {send_error "\ntimed out\n"; exit 1}
+   "Connection refused" {send_error "\nConnection Refused\n"; exit 1}
+   "Unknown host" {send_error "\nUnknown Host Could Not Connect\n"; exit 1}
+   "Name"
+}
+
+send "mitchell/ftpxfer\r"
+expect {
+   timeout {send_error "timed out evaluating login name\n"; exit 1}
+   "Password:"
+}
+
+send "production\r"
+  expect {
+   timeout {send_error "timed out evaluating password\n"; exit 1}
+####################################################################################
+# 09/13/2006 JLW IBM Migration
+#   -re "\n230 (\[^\r]*)\r\n.*\r\nftp> " {}
+####################################################################################
+    -re "\n230 (\[^\r]*)\r\n.*ftp> " {}
+    -re "\n.*\r\n(.*)\r\nftp> " {
+       send_error "login failed\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+send "$xfer_mode\r"       ;#set to $xfer_mode mode
+  expect {
+   timeout {send_error "\ntimed out evaluating $xfer_mode\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\nftp> " {
+       send_user "\nftp command: $xfer_mode\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\nftp> " {
+       send_error "\nfailed: $xfer_mode\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+send "cd /cdprod02/ftp_data/$dest_dir\r"      ;#change directory on target
+  expect {
+   timeout {send_error "\ntimed out evaluating cd\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\nftp> " {
+       send_user "\nftp command: cd /cdprod02/ftp_data/$dest_dir\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\nftp> " {
+       send_error "\nfailed: cd /cdprod02/ftp_data/$dest_dir\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+set STEP STEP030
+#transfer file from unix to nt
+
+set timeout 1800        ;#reset timeout value to 30 minutes
+send "put $source_file $dest_file\r"     ;#move file from unix to nt
+  expect {
+   timeout {send_error "\ntimed out performing put\n"; exit 1}
+    -re "\n226 (\[^\r]*\r\n.*)\r\nftp> " {
+       send_user "\nftp command: put $source_file $dest_file\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n150 \[^\r]*\r\nnetout: (write returned 0).*\r\n226 .*\r\nftp> " {
+       send_user "\nftp command: put $source_file $dest_file\n"
+       send_user "ftp response: $expect_out(1,string) byte file\n" }
+    -re "\n... \[^\r]*\r\n(\[^\r]*)\r\nftp> " {
+       send_error "\nfailed: put $source_file $dest_file\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+set timeout 60    ;#reset timeout value to 10 seconds
+
+#Added this line because byte count returned by dir command
+#would occasionally be 0.  Suspect NT not unlocking file soon enough.
+sleep 10
+
+#report byte count of destination file.
+send "dir $dest_file\r"
+  expect {
+    timeout {send_error "\ntimed out performing dir on target\n"; exit 1}
+    -re "..-..-..  ..:.... *(\[0-9]* $dest_file)\r\n" {
+        send_user "\n$expect_out(1,string)  \(Information returned by \"dir\" on NT side.\)\n" }
+    -re "\n... (\[^\r]*)\r\nftp> " {
+       send_error "\nfailed: dir $dest_file\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+set STEP STEP040
+#Close ftp connection and end script
+
+send "quit\r"     ;#close ftp connection
+  expect {
+   timeout {send_error "\ntimed out performing quit\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\n" {
+       send_user "\nftp command: quit\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\n" {
+       send_error "\nfailed: quit\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }

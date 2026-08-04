@@ -1,0 +1,30 @@
+#!/bin/ksh
+echo "RCS $Id: ttt_script_no_ext,v 1.6 2014/09/18 00:07:17 pg2697 Exp $"
+###############################################################################
+# Script used for testing checkin/checkout/prodmove
+# 1234  <==== change to allow checkin
+###############################################################################
+
+set -v
+trap 'abndalrt.ksh $?' err
+echo "\nTest1 - Line 1."
+echo "\nTest1 - Line 2."
+echo "\n"
+
+echo "\nTest 2 - Line 1. \nTest 2 - Line 2."
+echo "\n"
+
+echo "\nTest3 - Line 1." > errmsg.txt
+echo "\nTest3 - Line 2." >> errmsg.txt
+cat errmsg.txt
+rm -f errmsg.txt
+
+
+
+
+
+
+
+ 
+
+

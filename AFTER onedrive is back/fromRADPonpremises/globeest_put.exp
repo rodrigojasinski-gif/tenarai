@@ -1,0 +1,149 @@
+#!/usr/bin/expect --
+# sends a single file using ftp from Unix to globeestftp.
+
+# requires 3 arguments: source path/filename; destination filename; destination directory
+
+#########################################################################################################
+#
+# 03/01/2007 RS AIX Migration required the following modifications:
+#                1) "Connection refused" and "Unknown host" start with UPPER case
+#                2) IBM required modification of line FROM: -re "\n230 (\[^\r]*)\r\n.*\r\nftp> " {}
+#                                                       TO: -re "\n230 (\[^\r]*)\r\n.*ftp> " {}
+#
+#########################################################################################################
+
+
+set STEP STEP010
+#Check for parameter errors
+
+log_user 0          ;#turn off standard out / will use expect commands to send standard out
+
+#check for correct number of arguments
+if {$argc != 3} {
+   send_error "incorrect number of arguments\n"
+   send_error "usage:  $argv0 sourcefile destinationfile dest_dir\n"
+   exit 1 }
+
+#convert arguments to variables
+set source_file [lindex $argv 0]
+set dest_file [lindex $argv 1]
+set dest_dir [lindex $argv 2]
+
+#check for existance of source file
+if {[file exists $source_file] == 0}  {
+   send_user "$source_file does not exist\n"
+   exit 1 }
+
+set timeout 60            ;# set timeout to 20 seconds
+
+set STEP STEP020
+#Start ftp session
+
+send_user "Establishing ftp connection to globeestftp\n"
+spawn ftp -i globeestftp      ;#start ftp connection to globeestftp.
+
+expect {
+   timeout {send_error "timed out\n"; exit 1}
+   "Connection refused" {send_error "Connection refused"; exit 1}
+   "Unknown host" {send_error "Unknown host"; exit 1}
+   "Name"
+}
+
+send "globeest\r"
+expect {
+   timeout {send_error "timed out evaluating login name\n"; exit 1}
+   "Password:"
+}
+
+send "ge20011\r"
+  expect {
+   timeout {send_error "timed out evaluating password\n"; exit 1}
+####################################################################################
+# 03/01/2007 RS IBM Migration
+#   -re "\n230 (\[^\r]*)\r\n.*\r\nftp> " {}
+####################################################################################
+    -re "\n230 (\[^\r]*)\r\n.*ftp> " {}
+    -re "\n.*\r\n(.*)\r\nftp> " {
+       send_error "login failed\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+send "binary\r"       ;#set to binary mode
+  expect {
+   timeout {send_error "\ntimed out evaluating binary\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\nftp> " {
+       send_user "\nftp command: binary\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\nftp> " {
+       send_error "\nfailed: binary\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+send "cd /$dest_dir\r"      ;#change directory on target
+  expect {
+   timeout {send_error "\ntimed out evaluating cd\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\nftp> " {
+       send_user "\nftp command: cd $dest_dir\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\nftp> " {
+       send_error "\nfailed: cd $dest_dir\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+set STEP STEP030
+#transfer file from unix to globeestftp
+
+set timeout 1800        ;#reset timeout value to 30 minutes
+send "put $source_file $dest_file\r"     ;#move file from unix to globeestftp
+  expect {
+   timeout {send_error "\ntimed out performing put\n"; exit 1}
+    -re "\n226 (\[^\r]*\r\n.*)\r\nftp> " {
+       send_user "\nftp command: put $source_file $dest_file\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n150 \[^\r]*\r\nnetout: (write returned 0).*\r\n226 .*\r\nftp> " {
+       send_user "\nftp command: put $source_file $dest_file\n"
+       send_user "ftp response: $expect_out(1,string) byte file\n" }
+    -re "\n... \[^\r]*\r\n(\[^\r]*)\r\nftp> " {
+       send_error "\nfailed: put $source_file $dest_file\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+set timeout 60    ;#reset timeout value to 10 seconds
+
+#Added this line because byte count returned by dir command
+#would occasionally be 0.  Suspect NT not unlocking file soon enough.
+sleep 10
+
+#report byte count of destination file.
+send "dir $dest_file\r"
+  expect {
+    timeout {send_error "\ntimed out performing dir on target\n"; exit 1}
+    -re " *(\[0-9]* ... .. ..:.. $dest_file)\r\n" {
+        send_user "\n$expect_out(1,string)  \(Information returned by \"dir\" on globeestftp side.\)\n" }
+    -re " *(\[0-9]* ... ..  .... $dest_file)\r\n" {
+        send_user "\n$expect_out(1,string)  \(Information returned by \"dir\" on globeestftp side.\)\n" }
+    -re "..-..-..  ..:.... *(\[0-9]* $dest_file)\r\n" {
+        send_user "\n$expect_out(1,string)  \(Information returned by \"dir\" on globeestftp side.\)\n" }
+    -re "\n... (\[^\r]*)\r\nftp> " {
+       send_error "\nfailed: dir $dest_file\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }
+
+set STEP STEP040
+#Close ftp connection and end script
+
+send "quit\r"     ;#close ftp connection
+  expect {
+   timeout {send_error "\ntimed out performing quit\n"; exit 1}
+    -re "\n2.. (\[^\r]*)\r\n" {
+       send_user "\nftp command: quit\n"
+       send_user "ftp response: $expect_out(1,string)\n" }
+    -re "\n... (.*)\r\n" {
+       send_error "\nfailed: quit\n"
+       send_error "reason: $expect_out(1,string)\n"
+       exit 1 }
+  }

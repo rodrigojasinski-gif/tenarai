@@ -44,7 +44,7 @@
              
   
   STAG_HOST=dawapp7017l.staging.int              # rj132422 - dev/stage host FQDN (was radd)
-  STAG_USER=svc-apd-race-dev@staging.int         # rj132422 - conta no dev p/ ssh -l / scp (chave autorizada)
+  STAG_USER=svc-apd-race-dev@staging.int         # rj132422 - dev account ssh -l
   PROD_DIR=/prod/race
   STAG_DIR=/stage/race
   SUBSYS=$( echo $2 | awk -F/ '{ print $1 }' )

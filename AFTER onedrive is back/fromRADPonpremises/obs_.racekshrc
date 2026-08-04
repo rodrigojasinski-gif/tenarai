@@ -1,0 +1,200 @@
+# written by Stephen Kemp 9/97
+#modified by Khider Allos 1/2000
+#
+########## race logicals and aliases #########
+export abin=/$ACT_LVL/race/altp/bin
+export adat=/$ACT_LVL/race/altp/dat
+export adoc=/$ACT_LVL/race/altp/doc
+export alog=/$ACT_LVL/race/altp/log
+export aprm=/$ACT_LVL/race/altp/prm
+export arpt=/$ACT_LVL/race/altp/rpt
+export asrc=/$ACT_LVL/race/altp/src
+export atmp=/$ACT_LVL/race/altp/tmp
+#
+export cbin=/$ACT_LVL/race/ceg/bin
+export cdat=/$ACT_LVL/race/ceg/dat
+export cdoc=/$ACT_LVL/race/ceg/doc
+export clog=/$ACT_LVL/race/ceg/log
+export cprm=/$ACT_LVL/race/ceg/prm
+export crpt=/$ACT_LVL/race/ceg/rpt
+export csrc=/$ACT_LVL/race/ceg/src
+export ctmp=/$ACT_LVL/race/ceg/tmp
+#
+export ebin=/$ACT_LVL/race/ext/bin
+export edat=/$ACT_LVL/race/ext/dat
+export edoc=/$ACT_LVL/race/ext/doc
+export elog=/$ACT_LVL/race/ext/log
+export eprm=/$ACT_LVL/race/ext/prm
+export erpt=/$ACT_LVL/race/ext/rpt
+export esrc=/$ACT_LVL/race/ext/src
+export etmp=/$ACT_LVL/race/ext/tmp
+#
+export mbin=/$ACT_LVL/race/misc/bin
+export mdat=/$ACT_LVL/race/misc/dat
+export mdoc=/$ACT_LVL/race/misc/doc
+export mlog=/$ACT_LVL/race/misc/log
+export mprm=/$ACT_LVL/race/misc/prm
+export mrpt=/$ACT_LVL/race/misc/rpt
+export msrc=/$ACT_LVL/race/misc/src
+export mtmp=/$ACT_LVL/race/misc/tmp
+#
+export obin=/$ACT_LVL/race/oto/bin
+export odat=/$ACT_LVL/race/oto/dat
+export odoc=/$ACT_LVL/race/oto/doc
+export olog=/$ACT_LVL/race/oto/log
+export oprm=/$ACT_LVL/race/oto/prm
+export orpt=/$ACT_LVL/race/oto/rpt
+export osrc=/$ACT_LVL/race/oto/src
+export otmp=/$ACT_LVL/race/oto/tmp
+#
+export pbin=/$ACT_LVL/race/parts/bin
+export pdat=/$ACT_LVL/race/parts/dat
+export pdoc=/$ACT_LVL/race/parts/doc
+export plog=/$ACT_LVL/race/parts/log
+export pprm=/$ACT_LVL/race/parts/prm
+export prpt=/$ACT_LVL/race/parts/rpt
+export psrc=/$ACT_LVL/race/parts/src
+export ptmp=/$ACT_LVL/race/parts/tmp
+#
+export sbin=/$ACT_LVL/race/share/bin
+export sdat=/$ACT_LVL/race/share/dat
+export sdoc=/$ACT_LVL/race/share/doc
+export sinc=/$ACT_LVL/race/share/inc
+export slib=/$ACT_LVL/race/share/lib
+export slog=/$ACT_LVL/race/share/log
+export sprm=/$ACT_LVL/race/share/prm
+export srpt=/$ACT_LVL/race/share/rpt
+export ssrc=/$ACT_LVL/race/share/src
+export stmp=/$ACT_LVL/race/share/tmp
+#
+alias abin="cd $abin"
+alias adat="cd $adat"
+alias adoc="cd $adoc"
+alias alog="cd $alog"
+alias aprm="cd $aprm"
+alias arpt="cd $arpt"
+alias asrc="cd $asrc"
+alias atmp="cd $atmp"
+#
+alias cbin="cd $cbin"
+alias cdat="cd $cdat"
+alias cdoc="cd $cdoc"
+alias clog="cd $clog"
+alias cprm="cd $cprm"
+alias crpt="cd $crpt"
+alias csrc="cd $csrc"
+alias ctmp="cd $ctmp"
+#
+alias ebin="cd $ebin"
+alias edat="cd $edat"
+alias edoc="cd $edoc"
+alias elog="cd $elog"
+alias eprm="cd $eprm"
+alias erpt="cd $erpt"
+alias esrc="cd $esrc"
+alias etmp="cd $etmp"
+#
+alias mbin="cd $mbin"
+alias mdat="cd $mdat"
+alias mdoc="cd $mdoc"
+alias mlog="cd $mlog"
+alias mprm="cd $mprm"
+alias mrpt="cd $mrpt"
+alias msrc="cd $msrc"
+alias mtmp="cd $mtmp"
+#
+alias obin="cd $obin"
+alias odat="cd $odat"
+alias odoc="cd $odoc"
+alias olog="cd $olog"
+alias oprm="cd $oprm"
+alias orpt="cd $orpt"
+alias osrc="cd $osrc"
+alias otmp="cd $otmp"
+#
+alias pbin="cd $pbin"
+alias pdat="cd $pdat"
+alias pdoc="cd $pdoc"
+alias plog="cd $plog"
+alias pprm="cd $pprm"
+alias prpt="cd $prpt"
+alias psrc="cd $psrc"
+alias ptmp="cd $ptmp"
+#
+alias sbin="cd $sbin"
+alias sdat="cd $sdat"
+alias sdoc="cd $sdoc"
+alias sinc="cd $sinc"
+alias slib="cd $slib"
+alias slog="cd $slog"
+alias sprm="cd $sprm"
+alias srpt="cd $srpt"
+alias ssrc="cd $ssrc"
+alias stmp="cd $stmp"
+#    
+export stage_abin=/stage/race/altp/bin
+export stage_asrc=/stage/race/altp/src
+export stage_cbin=/stage/race/ceg/bin
+export stage_csrc=/stage/race/ceg/src
+export stage_mbin=/stage/race/misc/bin
+export stage_msrc=/stage/race/misc/src
+export stage_obin=/stage/race/oto/bin
+export stage_osrc=/stage/race/oto/src
+export stage_pbin=/stage/race/parts/bin
+export stage_psrc=/stage/race/parts/src
+export stage_sbin=/stage/race/share/bin
+export stage_sinc=/stage/race/share/inc
+export stage_slib=/stage/race/share/lib
+export stage_ssrc=/stage/race/share/src
+#
+alias stage_abin="cd $stage_abin"
+alias stage_asrc="cd $stage_asrc"
+alias stage_cbin="cd $stage_cbin"
+alias stage_csrc="cd $stage_csrc"
+alias stage_mbin="cd $stage_mbin"
+alias stage_msrc="cd $stage_msrc"
+alias stage_obin="cd $stage_obin"
+alias stage_osrc="cd $stage_osrc"
+alias stage_pbin="cd $stage_pbin"
+alias stage_psrc="cd $stage_psrc"
+alias stage_sbin="cd $stage_sbin"
+alias stage_sinc="cd $stage_sinc"
+alias stage_slib="cd $stage_slib"
+alias stage_ssrc="cd $stage_ssrc"
+#
+######### shared COBOL stuff *********
+export stage_sinc=/stage/race/share/inc
+export stage_slib=/stage/race/share/lib
+alias stage_sinc="cd $stage_sinc"
+alias stage_slib="cd $stage_slib"
+#
+########## system-oriuented aliases #########
+export gbin=/$ACT_LVL/race/bin             # shared by other race developers
+alias  gbin="cd $gbin"                  # shared by other race developers
+export sysbin=/mdev/util/share/bin      # shared by other Mitchell projects
+alias  sysbin="cd $sysbin"              # shared by other Mitchell projects
+#
+########## unix aliases ##########
+alias d='ls -aF'
+alias rm='echo \	uh, use rmi '
+alias rmi='/bin/rm -i'
+alias vi='stty erase ^?;/usr/bin/vi'
+alias hogs='ps aux | head -10'
+#
+
+######### rsh aliases ###########
+
+alias  race_term="xterm -bg black -fg yellow -title race -e rsh race &"
+alias media1_term="xterm -bg black -fg yellow -title media1 -e rsh media1 &"
+
+alias media1="rsh media1"
+alias  b8400="rsh b8400"
+alias  a8400="rsh a8400"
+alias  x8400="rsh x8400"
+alias  y8400="rsh x8400"
+alias media2="rsh media2"
+alias race="rsh race"
+alias raced="rsh raced"
+#
+# Make sort use /tmp
+alias sort='sort -T /tmp'

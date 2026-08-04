@@ -1,0 +1,106 @@
+#!/bin/ksh
+echo "RCS $Id: oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $"
+#*****************************************************************************************
+# PROCNAME oem_job.ksh
+# PURPOSE  Retreive and build UNIX Environment Variables from Oracle Tables
+#          Used by RACE OEM Parts Reformat and Update jobs
+#*****************************************************************************************
+trap 'oem_abndalrt.ksh $?' err
+MPTUSERID=`cat ${RACE}/prm/zmptpass.prm`
+LOGFILE=$(basename ${JOBLOGNAME})
+#*****************************************************************************************
+#  Build UNIX environment variables for the job (based on jobname)
+#*****************************************************************************************
+REFORMATJOB=${JOBNAME}
+UPDATEJOB=${JOBNAME}
+WORKFILE=${JOBNAME}_oem_job.tmp
+#-----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => '${JOBNAME}',    \
+                                      p_tmp_directory => '${OBJ_TMPDIR}', \
+                                      p_tmp_filename  => '${WORKFILE}',   \
+                                      p_log_directory => '${OBJ_LOGDIR}', \
+                                      p_log_filename  => '${LOGFILE%.log}.db.log');
+QUIT;
+%
+
+# rj132422 - This code was added to avoid race condition between db and shell due the nfs
+DB_LOG=${LOGDIR}/${LOGFILE%.log}.db.log
+if [ -s "$DB_LOG" ]; then
+    cat "$DB_LOG" >> "${LOGDIR}/${LOGFILE}"
+    rm  "$DB_LOG"
+fi
+
+#-----------------------------------------------------------------------------------------
+export WORKFILE=${RACE}/tmp/${WORKFILE}
+
+#If the ReformatJob Environment variable isn't defined, abend the process
+export REFORMATJOB=`cat ${WORKFILE}                   | cut -f1  -d","`
+if [ -z "${REFORMATJOB}" ]
+then
+   abndalrt.ksh environment_not_found_in_oem_job_table.tmp
+fi
+export UPDATEJOB=`cat ${WORKFILE}                     | cut -f2  -d","`
+export JOBOEM=`cat ${WORKFILE}                        | cut -f3  -d","`
+export JOBCTRY=`cat ${WORKFILE}                       | cut -f4  -d","`
+export JOBOEMNAME=`cat ${WORKFILE}                    | cut -f5  -d","`
+export OEMABBRLOWER=`cat ${WORKFILE}                  | cut -f6  -d","`
+export JOBPARM=`cat ${WORKFILE}                       | cut -f7  -d","`
+export FORMATOEM=`cat ${WORKFILE}                     | cut -f8  -d","`
+export FORMATCTRY=`cat ${WORKFILE}                    | cut -f9  -d","`
+export JOBFILE_OEMCTRY=`cat ${WORKFILE}               | cut -f10 -d","`
+export REPORTSUFFIX=`cat ${WORKFILE}                  | cut -f11 -d","`
+export REVERSE_SUPER_JOBPARM=`cat ${WORKFILE}         | cut -f12 -d","`
+export PACKAGE_NAME_1=`cat ${WORKFILE}                | cut -f13 -d","`
+export PACKAGE_NAME_2=`cat ${WORKFILE}                | cut -f14 -d","`
+export DUPLICATE_PARTS_EXPECTED_FLAG=`cat ${WORKFILE} | cut -f15 -d","`
+export REFORMAT_BUILDS_RTRANS_FLAG=`cat ${WORKFILE}   | cut -f16 -d","`
+export OBSOLETE_JOB_FLAG=`cat ${WORKFILE}             | cut -f17 -d","`
+export PREPROCESS_SCRIPT_NAME=`cat ${WORKFILE}        | cut -f18 -d","`
+
+
+##########################################################################################
+# The various Oracle Package call by the OEM system use Global Temporary Tables.
+# For some reason (only in the test system at this point in time), the indexes on these
+# Global Tempoary Tables are missing.
+# The missing indexes result in slooooow processing and often aren't discovered missing
+# right away.  To curtail this problem, run a quick check to see if the indexes exist.
+# When an index for a Global Temporary Table is not found, it will be created.
+##########################################################################################
+#-----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+SET SERVEROUTPUT ON SIZE 1000000
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => '${JOBNAME}',       \
+                                                    p_log_directory => '${OBJ_LOGDIR}',    \
+                                                    p_log_filename  => '${LOGFILE%.log}.db.log',       \
+                                                    p_debug_level   => '${RACE_DEBUG_LEVEL}');
+QUIT;
+%
+
+# rj132422 - This code was added to avoid race condition between db and shell due the nfs
+DB_LOG=${LOGDIR}/${LOGFILE%.log}.db.log
+if [ -s "$DB_LOG" ]; then
+    cat "$DB_LOG" >> "${LOGDIR}/${LOGFILE}"
+    rm  "$DB_LOG"
+fi
+#-----------------------------------------------------------------------------------------
+
+#*****************************************************************************************
+# END oem_job.ksh
+#*****************************************************************************************
