@@ -1,0 +1,77 @@
+----------------------------------------------------------------
+----------------------------------------------------------------
+checkin process and mptr300 execution on pawapp7017l
+ 
+
+
+rcheck_out -l oem_job_datafile_prep.ksh oem/bin
+rcheck_out -l oem_job_process_mitchell_ftp_file.ksh oem/bin
+rcheck_out -l oem_ref_mptr299_ftp_tesla_source_file.ksh oem/bin
+rcheck_out -l race_ext.ksh  share/bin
+rcheck_out -l race_oem.ksh share/bin
+rcheck_out -l raceftp.ksh share/bin
+rcheck_out -l oem_job.ksh oem/bin
+rcheck_out -l oem_job_datafile.ksh oem/bin
+
+ 
+
+rcheck_in  -d "1st version before cutover" oem_job_datafile_prep.ksh oem/bin &&
+rcheck_in  -d "1st version before cutover" oem_job_process_mitchell_ftp_file.ksh oem/bin &&
+rcheck_in  -d "1st version before cutover" oem_ref_mptr299_ftp_tesla_source_file.ksh oem/bin &&
+rcheck_in  -d "1st version before cutover" race_ext.ksh  share/bin &&
+rcheck_in  -d "1st version before cutover" race_oem.ksh share/bin &&
+rcheck_in  -d "1st version before cutover" raceftp.ksh share/bin &&
+rcheck_in  -d "1st version before cutover" oem_job.ksh oem/bin &&
+rcheck_in  -d "1st version before cutover" oem_job_datafile.ksh oem/bin  
+
+ls -ltr /stage/race/oem/bin
+
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int     7388 Aug  4 10:10 oem_job_datafile_prep.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int    10223 Aug  4 10:10 oem_job_process_mitchell_ftp_file.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int    14913 Aug  4 10:10 oem_ref_mptr299_ftp_tesla_source_file.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int     5156 Aug  4 10:14 oem_job.ksh
+drwx------. 2 svc-nas-dev@staging.int      domain users@staging.int    24576 Aug  4 10:15 rollback
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int     1930 Aug  4 10:15 oem_job_datafile.ksh
+
+
+ls -ltr /stage/race/share/bin
+
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  2024 Aug  4 10:10 race_ext.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  2229 Aug  4 10:10 race_oem.ksh
+drwx------. 2 svc-nas-dev@staging.int      domain users@staging.int  8192 Aug  4 10:11 rollback
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  1610 Aug  4 10:11 raceftp.ksh
+
+
+
+/prod/race/share/bin/prod_move mptz021.cbl oem/src
+
+/prod/race/share/bin/prod_move oem_job_datafile_prep.ksh oem/bin &&
+/prod/race/share/bin/prod_move oem_job_process_mitchell_ftp_file.ksh oem/bin &&
+/prod/race/share/bin/prod_move oem_ref_mptr299_ftp_tesla_source_file.ksh oem/bin &&
+/prod/race/share/bin/prod_move race_ext.ksh  share/bin &&
+/prod/race/share/bin/prod_move race_oem.ksh share/bin &&
+/prod/race/share/bin/prod_move raceftp.ksh share/bin &&
+/prod/race/share/bin/prod_move oem_job.ksh oem/bin &&
+/prod/race/share/bin/prod_move oem_job_datafile.ksh oem/bin
+
+ls -ltr /prod/race/oem/bin
+drwx------. 2 nobody                          nobody                         28672 Aug  4 10:15 RCS
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int     7388 Aug  4 10:18 oem_job_datafile_prep.ksh
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int    10223 Aug  4 10:18 oem_job_process_mitchell_ftp_file.ksh
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int    14913 Aug  4 10:19 oem_ref_mptr299_ftp_tesla_source_file.ksh
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int     5156 Aug  4 10:19 oem_job.ksh
+drwx------. 2 nobody                          nobody                         24576 Aug  4 10:19 rollback
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int     1930 Aug  4 10:19 oem_job_datafile.ksh
+
+
+ls -ltr /prod/race/share/bin
+drwx------. 2 nobody                          nobody                       8192 Aug  4 10:11 RCS
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int  2024 Aug  4 10:19 race_ext.ksh
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int  2229 Aug  4 10:19 race_oem.ksh
+drwx------. 2 nobody                          nobody                       8192 Aug  4 10:19 rollback
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int  1610 Aug  4 10:19 raceftp.ksh
+
+
+
+
+
