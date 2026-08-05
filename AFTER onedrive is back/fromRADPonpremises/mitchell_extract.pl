@@ -434,7 +434,7 @@ sub extract_files
 
   my $sql_source = qq(
         	BEGIN
- 	               :err_code := pkg_mitchell_extract.sf_mitchell_extract(:pathout);
+ 	               :err_code := pkg_crcom_extract.sf_mitchell_extract(:pathout);
 		END;
  	             );
 

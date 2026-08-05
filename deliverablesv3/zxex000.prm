@@ -1,0 +1,11 @@
+DRIVER_SCRIPT JOB PARM       VERSION  RESTART(T/F)  FTP MACH  FTP DEST PATH       NOVELL PARM  TYPE
+------------- -------------  -------  ------------  --------  ------------------- -----------  ----
+xexm100.ksh   zxex100a.prm      PR         F        N/A      N/A                  N/A          FULL
+xexm110.ksh   zxex100a.prm      PR         F        N/A      N/A                  N/A          FULL
+xexm140.ksh   xex140a.prm       PR         F        N/A      N/A                  N/A          FULL
+xexm200.ksh   zxex100a.prm      PR         T        N/A      N/A                  N/A          FULL
+xexm210.ksh   zxex100a.prm      PR         T        N/A      N/A                  N/A          FULL
+xexr500.ksh   zxex500a.prm      WP         F        N/A      N/A                  N/A          MINI
+xexr510.ksh   zxex500a.prm      WP         F        N/A      N/A                  N/A          MINI 
+xexr520.ksh   zxex520a.prm      PR         F        N/A      N/A                  N/A          MINI 
+xexr530.ksh   zxex520a.prm      PR         F        N/A      N/A                  N/A          MINI 
