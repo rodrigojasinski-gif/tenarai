@@ -1,0 +1,76 @@
+================================================================
+SERVICE NOW TICKET - Create NFS Mount for ALTP/MAPP processing
+Environment: DEV (mdev)
+Assignment Group: CORP-IS-Unix-Middleware-Operations
+================================================================
+
+----------------------------------------------------------------
+SHORT DESCRIPTION
+----------------------------------------------------------------
+Create NFS Mount: Please create new NFS mount point /nas/ftp_data/mdev on the RADx script server
+
+----------------------------------------------------------------
+DESCRIPTION
+----------------------------------------------------------------
+Please create a new NFS mount on the RADx script server (dev/mdev environment) to support the migration of the MAPP/ALTP batch processing away from the legacy \\prod3nt\cdprod02\ftp_data\ SMB share, which is being decommissioned (will not be migrated to AWS).
+
+The new mount should follow the same pattern as the existing OEM_Repair_Doc_Repository mount that is already working on this server.
+
+Existing reference mount (currently working - for reference only):
+  Source: dawsvm7001a.staging.int:/oemdocrepsharedev
+  Local mount point: /nas/mdev/OEM_Repair_Doc_Repository
+  Size: 9.5T
+
+Required new mount:
+  Local mount point: /nas/ftp_data/mdev
+  Source NFS server: <TO BE DEFINED BY OPS - same NAS server as the OEM_Repair_Doc_Repository example, or whichever is recommended>
+  Export name: <TO BE DEFINED BY OPS>
+  Suggested initial size: <please advise based on capacity planning - the legacy prod3nt share contains the full alt-part supplier data history; please provision similarly>
+
+Purpose:
+This mount will host the alt-part supplier data files currently stored on \\prod3nt\cdprod02\ftp_data\mdev\ and will be consumed by the XAMR series batch jobs (XAMR100/101/102 Keystone, XAMR200/201/202 NAPA, XAMR900/901/902 other suppliers) and supporting shell scripts (xamref.ksh, xamupd.ksh, xamrpt.ksh, xam200.ksh, xam001.ksh, xam010.ksh, xam030.ksh, xam069.ksh).
+
+Internal folder structure to be preserved (same as the legacy prod3nt share):
+  /nas/ftp_data/mdev/altp/
+  /nas/ftp_data/mdev/altp/NAPA/
+  /nas/ftp_data/mdev/altp/Internal_Rpts/
+  /nas/ftp_data/mdev/altp/Customer_Rpts/
+
+The mount should be persistent (added to /etc/fstab or autofs) so it survives reboots.
+
+Related work:
+  - Azure DevOps story: AES-XXXX (Remove dependency on FTP_DATA on PROD3NT - ALTP/MAPP)
+  - Predecessor task: AES-3175 (Remove dependency on FTP_DATA on PROD3NT - OEM, completed)
+  - Related decommissioning analysis: AES-3180 (Work with Chuck F to remove Prod3nt dependency for MAPP processing)
+
+Thanks.
+
+----------------------------------------------------------------
+ADDITIONAL COMMENTS
+----------------------------------------------------------------
+Please also provide read and write permissions on this mount to the users race_b1 and rj132422, thanks!
+
+================================================================
+NOTES FOR ME (Rodrigo) BEFORE SUBMITTING - DO NOT INCLUDE IN TICKET
+================================================================
+
+Pending items to fill in before opening the ticket:
+
+1. Confirm with Julian:
+   - Mount point exactly /nas/ftp_data/mdev or different naming convention?
+   - Should the prod ticket be opened in parallel or after dev validation?
+
+2. Open with Ops upfront if not specified:
+   - Source NFS server (dawsvm7001a.staging.int or another)
+   - Export name to use
+   - Initial volume size
+
+3. Check with Chuck Fears / Windows team:
+   - Will this NFS share also be exposed via SMB/CIFS so Chuck's
+     Combine_Stage.bat can write to it from Windows?
+   - If yes, need additional permissions setup
+   - If no, need to coordinate the handoff between prod4nt batch
+     and the new NFS mount (separate task)
+
+4. Story number AES-XXXX:
+   - Replace with actual ADO story number when assigned

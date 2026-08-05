@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALTP/MAPP - Painel de Apoio aos Testes</title>
+<style>
+  :root{
+    --bg:#0f1419; --panel:#1a2230; --panel2:#222d3d; --ink:#e6edf3; --muted:#9aa7b4;
+    --line:#33404f; --accent:#4da3ff;
+    --inp:#2e7d32; --inp-bg:#16301a; --inp-br:#3a9d40;
+    --rt:#c62828; --rt-bg:#33181a; --rt-br:#d8434a;
+    --out:#7b1fa2; --out-bg:#2a1733; --out-br:#a050c0;
+    --batch:#0066cc; --batch-bg:#15263b; --batch-br:#3d7fc4;
+    --actor:#cc7a00; --actor-bg:#33260f; --actor-br:#d99a33;
+    --fold:#5a6b7d; --fold-bg:#202833;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.5;padding:24px;max-width:1100px;margin:0 auto}
+  h1{font-size:24px;margin-bottom:4px}
+  h2{font-size:18px;margin:32px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--line);color:var(--accent)}
+  h3{font-size:14px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:8px}
+  .cfg{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:14px 0;font-size:13px}
+  .cfg code{background:#000;padding:2px 6px;border-radius:4px;color:#7fd1ff;font-size:12px}
+  .cfg .row{display:flex;gap:8px;padding:3px 0;flex-wrap:wrap}
+  .cfg .k{color:var(--muted);min-width:140px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 4px;font-size:12px}
+  .legend span{display:flex;align-items:center;gap:5px}
+  .dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .chains{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+  .chain{flex:1;min-width:280px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
+  .chain h4{font-size:13px;margin-bottom:8px;color:var(--accent)}
+  .chain .step{font-size:12px;padding:3px 0;color:var(--muted)}
+  .chain .step b{color:var(--ink)}
+  .flow{display:flex;flex-direction:column;gap:0;margin:14px 0}
+  .node{border-radius:8px;padding:12px 14px;border:1px solid;position:relative}
+  .node.batch{background:var(--batch-bg);border-color:var(--batch-br)}
+  .node.actor{background:var(--actor-bg);border-color:var(--actor-br)}
+  .node .title{font-weight:600;font-size:14px;margin-bottom:6px}
+  .node .meta{font-size:11px;color:var(--muted);margin-bottom:8px}
+  .arrow{text-align:center;color:var(--muted);font-size:18px;line-height:1;padding:6px 0}
+  .io{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .io-col{flex:1;min-width:240px}
+  .io-col .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:4px}
+  .file{display:block;font-size:12px;padding:5px 8px;border-radius:5px;border:1px solid;margin-bottom:4px}
+  .file.inp{background:var(--inp-bg);border-color:var(--inp-br)}
+  .file.rt{background:var(--rt-bg);border-color:var(--rt-br)}
+  .file.out{background:var(--out-bg);border-color:var(--out-br)}
+  .file .fn{font-weight:600}
+  .file .fp{display:block;color:var(--muted);font-size:10px;font-family:monospace}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px}
+  th,td{text-align:left;padding:7px 9px;border:1px solid var(--line)}
+  th{background:var(--panel2);color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+  tr:nth-child(even) td{background:var(--panel)}
+  td code{font-family:monospace;font-size:11px;color:#7fd1ff}
+  .tree{background:#000;border:1px solid var(--line);border-radius:8px;padding:14px;font-family:monospace;font-size:12px;color:var(--ink);white-space:pre;overflow-x:auto}
+  .tree .c{color:var(--muted)}
+  .tree .g{color:#5fd97a}
+  .tree .p{color:#c98fd6}
+  .check{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 14px;margin:10px 0}
+  .check li{list-style:none;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;display:flex;gap:10px}
+  .check li:last-child{border-bottom:none}
+  .check .n{background:var(--accent);color:#000;font-weight:700;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+  .pill{display:inline-block;font-size:10px;padding:1px 7px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);margin-left:6px}
+  .note{font-size:12px;color:var(--muted);background:var(--panel);border-left:3px solid var(--accent);padding:8px 12px;margin:10px 0;border-radius:0 6px 6px 0}
+  .warn{border-left-color:var(--actor-br)}
+  details{margin:8px 0}
+  summary{cursor:pointer;font-size:13px;color:var(--accent);padding:4px 0}
+</style>
+</head>
+<body>
+
+<h1>ALTP / MAPP &mdash; Painel de Apoio aos Testes</h1>
+<p class="sub">Referencia pratica para rodar os testes E2E no RADD (dawapp7017l). Story AES-XXXX.</p>
+
+<div class="cfg">
+  <div class="row"><span class="k">Config (1 arquivo)</span> <code>altp_ftp_data.ksh</code> &mdash; define tudo abaixo numa linha so</div>
+  <div class="row"><span class="k">ALTP_FTP_DATA</span> <code>/nas/mdev/OEM_Repair_Doc_Repository/ftpdata/mdev</code> <span class="pill">temporario / teste</span></div>
+  <div class="row"><span class="k">ALTP_DIR</span> <code>$ALTP_FTP_DATA/altp</code></div>
+  <div class="row"><span class="k">ALTP_NAPA_DIR</span> <code>$ALTP_FTP_DATA/altp/NAPA</code></div>
+  <div class="row"><span class="k">ALTP_INTRPT_DIR</span> <code>$ALTP_FTP_DATA/altp/Internal_Rpts</code></div>
+  <div class="row"><span class="k">ALTP_CUSTRPT_DIR</span> <code>$ALTP_FTP_DATA/altp/Customer_Rpts</code></div>
+</div>
+
+<div class="legend">
+  <span><i class="dot" style="background:var(--inp-br)"></i> arquivo de entrada</span>
+  <span><i class="dot" style="background:var(--rt-br)"></i> round-trip (batch escreve, analista revisa, batch le)</span>
+  <span><i class="dot" style="background:var(--out-br)"></i> relatorio / saida</span>
+  <span><i class="dot" style="background:var(--batch-br)"></i> processo batch</span>
+  <span><i class="dot" style="background:var(--actor-br)"></i> acao humana</span>
+</div>
+
+<h2>1. Visao geral &mdash; as 3 cadeias compartilham o mesmo motor</h2>
+<p class="sub">Os wrappers (xamr*) sao "lancadores". O trabalho real esta em 3 sub-scripts &mdash; <b>xamref / xamupd / xamrpt</b> &mdash; reaproveitados pelas 3 cadeias. Editando esses 3 (+ xam200), voce cobre tudo.</p>
+<div class="chains">
+  <div class="chain">
+    <h4>Cadeia KEYSTONE</h4>
+    <div class="step"><b>XAMR100</b> &rarr; xamref.ksh <span class="pill">reformat</span></div>
+    <div class="step"><b>XAMR101</b> &rarr; xamupd.ksh <span class="pill">update</span></div>
+    <div class="step"><b>XAMR102</b> &rarr; xamrpt.ksh <span class="pill">report</span></div>
+  </div>
+  <div class="chain">
+    <h4>Cadeia NAPA</h4>
+    <div class="step"><b>XAMR200</b> &rarr; xam200.ksh + xamref.ksh</div>
+    <div class="step"><b>XAMR201</b> &rarr; xamupd.ksh</div>
+    <div class="step"><b>XAMR202</b> &rarr; xamrpt.ksh</div>
+  </div>
+  <div class="chain">
+    <h4>Cadeia MULTI-SUPPLIER</h4>
+    <div class="step"><b>XAMR900</b> &rarr; xamref.ksh</div>
+    <div class="step"><b>XAMR901</b> &rarr; xamupd.ksh</div>
+    <div class="step"><b>XAMR902</b> &rarr; xamrpt.ksh</div>
+  </div>
+</div>
+
+<h2>2. Cadeia KEYSTONE passo a passo &mdash; o teste E2E</h2>
+<p class="sub">Cada caixa azul = um job que voce dispara. Cada caixa laranja = uma acao sua (simulando o analista). Verde = le, vermelho/roxo = escreve.</p>
+
+<h3>Fluxograma</h3>
+<svg viewBox="0 0 780 930" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#0f1419;border:1px solid #33404f;border-radius:8px;margin:8px 0">
+  <defs>
+    <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#9aa7b4"/>
+    </marker>
+  </defs>
+
+  <!-- vertical connectors -->
+  <g stroke="#9aa7b4" stroke-width="1.6" fill="none" marker-end="url(#ah)">
+    <line x1="390" y1="68"  x2="390" y2="92"/>
+    <line x1="390" y1="152" x2="390" y2="176"/>
+    <line x1="390" y1="252" x2="390" y2="276"/>
+    <line x1="390" y1="370" x2="390" y2="394"/>
+    <line x1="390" y1="440" x2="390" y2="464"/>
+    <line x1="390" y1="540" x2="390" y2="564"/>
+    <line x1="390" y1="658" x2="390" y2="682"/>
+    <line x1="390" y1="728" x2="390" y2="752"/>
+    <line x1="390" y1="828" x2="390" y2="852"/>
+  </g>
+  <!-- oracle side connectors -->
+  <g stroke="#6b7785" stroke-width="1.4" fill="none" marker-end="url(#ah)">
+    <line x1="550" y1="215" x2="578" y2="215"/>
+    <line x1="550" y1="503" x2="578" y2="503"/>
+    <line x1="550" y1="791" x2="578" y2="791"/>
+  </g>
+
+  <!-- S1 actor -->
+  <rect x="230" y="16" width="320" height="52" rx="7" fill="#33260f" stroke="#d99a33"/>
+  <text x="390" y="38" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#e6edf3">0. PREPARO</text>
+  <text x="390" y="56" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#9aa7b4">Chuck gera no Windows, voce copia para o folder altp/</text>
+
+  <!-- S2 folder -->
+  <rect x="230" y="92" width="320" height="60" rx="7" fill="#202833" stroke="#5a6b7d"/>
+  <text x="390" y="113" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#9aa7b4">folder  $ALTP_DIR</text>
+  <text x="390" y="135" text-anchor="middle" font-family="monospace" font-size="12" fill="#5fd97a">keystone_combined.txt</text>
+
+  <!-- S3 process -->
+  <rect x="230" y="176" width="320" height="76" rx="7" fill="#15263b" stroke="#3d7fc4"/>
+  <text x="390" y="200" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#e6edf3">XAMR100  -  xamref.ksh</text>
+  <text x="390" y="220" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#9aa7b4">reformat: le o combined, carrega no Oracle,</text>
+  <text x="390" y="236" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#9aa7b4">gera refproc + relatorios</text>
+  <rect x="578" y="193" width="180" height="44" rx="6" fill="#252b36" stroke="#6b7785"/>
+  <text x="668" y="212" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#9aa7b4">Oracle</text>
+  <text x="668" y="227" text-anchor="middle" font-family="monospace" font-size="9" fill="#9aa7b4">PKG_..._LOAD_TRANS</text>
+
+  <!-- S4 folder/files -->
+  <rect x="230" y="276" width="320" height="94" rx="7" fill="#202833" stroke="#5a6b7d"/>
+  <text x="250" y="296" text-anchor="start" font-family="sans-serif" font-size="9.5" fill="#9aa7b4">ESCREVE:</text>
+  <text x="250" y="315" text-anchor="start" font-family="monospace" font-size="11.5" fill="#ff8a8f">keystone_refproc.txt</text>
+  <text x="252" y="329" text-anchor="start" font-family="sans-serif" font-size="9" fill="#9aa7b4">-&gt; $ALTP_DIR   (round-trip)</text>
+  <text x="250" y="349" text-anchor="start" font-family="monospace" font-size="11.5" fill="#c98fd6">keystone_referrs.txt  /  keystone_refsum.txt</text>
+  <text x="252" y="363" text-anchor="start" font-family="sans-serif" font-size="9" fill="#9aa7b4">-&gt; $ALTP_INTRPT_DIR</text>
+
+  <!-- S5 actor -->
+  <rect x="230" y="394" width="320" height="46" rx="7" fill="#33260f" stroke="#d99a33"/>
+  <text x="390" y="413" text-anchor="middle" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#e6edf3">Analista revisa  keystone_refproc.txt</text>
+  <text x="390" y="429" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#9aa7b4">no teste: so abrir/conferir - mesmo lugar, $ALTP_DIR</text>
+
+  <!-- S6 process -->
+  <rect x="230" y="464" width="320" height="76" rx="7" fill="#15263b" stroke="#3d7fc4"/>
+  <text x="390" y="488" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#e6edf3">XAMR101  -  xamupd.ksh</text>
+  <text x="390" y="508" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#9aa7b4">update: valida part numbers, atualiza</text>
+  <text x="390" y="524" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#9aa7b4">part_altpart_xref, gera rpt_prov + relatorios</text>
+  <rect x="578" y="481" width="180" height="44" rx="6" fill="#252b36" stroke="#6b7785"/>
+  <text x="668" y="500" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#9aa7b4">Oracle</text>
+  <text x="668" y="515" text-anchor="middle" font-family="monospace" font-size="9" fill="#9aa7b4">VERIFY + UPDATE</text>
+
+  <!-- S7 folder/files -->
+  <rect x="230" y="564" width="320" height="94" rx="7" fill="#202833" stroke="#5a6b7d"/>
+  <text x="250" y="584" text-anchor="start" font-family="sans-serif" font-size="9.5" fill="#9aa7b4">ESCREVE:</text>
+  <text x="250" y="603" text-anchor="start" font-family="monospace" font-size="11.5" fill="#ff8a8f">keystone_rpt_prov.txt</text>
+  <text x="252" y="617" text-anchor="start" font-family="sans-serif" font-size="9" fill="#9aa7b4">-&gt; $ALTP_DIR   (round-trip)</text>
+  <text x="250" y="637" text-anchor="start" font-family="monospace" font-size="11.5" fill="#c98fd6">keystone_partver_sum.txt  /  keystone_updt_sum.txt</text>
+  <text x="252" y="651" text-anchor="start" font-family="sans-serif" font-size="9" fill="#9aa7b4">-&gt; $ALTP_INTRPT_DIR</text>
+
+  <!-- S8 actor -->
+  <rect x="230" y="682" width="320" height="46" rx="7" fill="#33260f" stroke="#d99a33"/>
+  <text x="390" y="701" text-anchor="middle" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#e6edf3">Analista revisa  keystone_rpt_prov.txt</text>
+  <text x="390" y="717" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#9aa7b4">no teste: so abrir/conferir - mesmo lugar, $ALTP_DIR</text>
+
+  <!-- S9 process -->
+  <rect x="230" y="752" width="320" height="76" rx="7" fill="#15263b" stroke="#3d7fc4"/>
+  <text x="390" y="776" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#e6edf3">XAMR102  -  xamrpt.ksh</text>
+  <text x="390" y="796" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#9aa7b4">report: gera relatorios de excecao por</text>
+  <text x="390" y="812" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#9aa7b4">provider, monta o zip</text>
+  <rect x="578" y="769" width="180" height="44" rx="6" fill="#252b36" stroke="#6b7785"/>
+  <text x="668" y="788" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#9aa7b4">Oracle</text>
+  <text x="668" y="803" text-anchor="middle" font-family="monospace" font-size="9" fill="#9aa7b4">sp_provider_..._rpts</text>
+
+  <!-- S10 output -->
+  <rect x="230" y="852" width="320" height="58" rx="7" fill="#2a1733" stroke="#a050c0"/>
+  <text x="390" y="874" text-anchor="middle" font-family="monospace" font-size="12" fill="#c98fd6">mitch_exc_rpts.zip</text>
+  <text x="390" y="893" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#9aa7b4">enviado aos suppliers via email / Mitchell FTP (nao prod3nt)</text>
+</svg>
+
+<h3>Detalhe passo a passo</h3>
+<div class="flow">
+
+  <div class="node actor">
+    <div class="title">0. Preparo &mdash; Chuck + voce</div>
+    <div class="meta">Chuck gera o arquivo no Windows e te manda. Voce copia pro folder de teste pelo lado Linux.</div>
+    <div class="io"><div class="io-col">
+      <div class="lbl">resultado</div>
+      <span class="file inp"><span class="fn">keystone_combined.txt</span><span class="fp">$ALTP_DIR/</span></span>
+    </div></div>
+  </div>
+  <div class="arrow">&darr;</div>
+
+  <div class="node batch">
+    <div class="title">1. XAMR100 &mdash; reformat <span class="pill">xamr100.ksh &rarr; xamref.ksh</span></div>
+    <div class="meta">Le o combined, limpa, carrega no Oracle (PKG_ALTERNATE_PARTS_LOAD_TRANS), gera o refproc + relatorios.</div>
+    <div class="io">
+      <div class="io-col">
+        <div class="lbl">le</div>
+        <span class="file inp"><span class="fn">keystone_combined.txt</span><span class="fp">$ALTP_DIR/</span></span>
+      </div>
+      <div class="io-col">
+        <div class="lbl">escreve</div>
+        <span class="file rt"><span class="fn">keystone_refproc.txt</span><span class="fp">$ALTP_DIR/</span></span>
+        <span class="file out"><span class="fn">keystone_referrs.txt</span><span class="fp">$ALTP_INTRPT_DIR/</span></span>
+        <span class="file out"><span class="fn">keystone_refsum.txt</span><span class="fp">$ALTP_INTRPT_DIR/</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="arrow">&darr;</div>
+
+  <div class="node actor">
+    <div class="title">2. Revisao do analista (simulada)</div>
+    <div class="meta">No teste: so confirmar que da pra abrir e ler o refproc. Em producao o analista edita e salva de volta no mesmo lugar.</div>
+    <div class="io"><div class="io-col">
+      <div class="lbl">arquivo</div>
+      <span class="file rt"><span class="fn">keystone_refproc.txt</span><span class="fp">$ALTP_DIR/ (revisado, mesmo lugar)</span></span>
+    </div></div>
+  </div>
+  <div class="arrow">&darr;</div>
+
+  <div class="node batch">
+    <div class="title">2b. XAMR101 &mdash; update <span class="pill">xamr101.ksh &rarr; xamupd.ksh</span></div>
+    <div class="meta">Le o refproc revisado, valida part numbers, atualiza part_altpart_xref no Oracle, gera o rpt_prov + relatorios.</div>
+    <div class="io">
+      <div class="io-col">
+        <div class="lbl">le</div>
+        <span class="file rt"><span class="fn">keystone_refproc.txt</span><span class="fp">$ALTP_DIR/</span></span>
+      </div>
+      <div class="io-col">
+        <div class="lbl">escreve</div>
+        <span class="file rt"><span class="fn">keystone_rpt_prov.txt</span><span class="fp">$ALTP_DIR/</span></span>
+        <span class="file out"><span class="fn">keystone_partver_sum.txt</span><span class="fp">$ALTP_INTRPT_DIR/</span></span>
+        <span class="file out"><span class="fn">keystone_updt_sum.txt</span><span class="fp">$ALTP_INTRPT_DIR/</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="arrow">&darr;</div>
+
+  <div class="node actor">
+    <div class="title">3. Revisao do analista (simulada)</div>
+    <div class="meta">Mesma ideia: confirmar que da pra abrir o rpt_prov.</div>
+    <div class="io"><div class="io-col">
+      <div class="lbl">arquivo</div>
+      <span class="file rt"><span class="fn">keystone_rpt_prov.txt</span><span class="fp">$ALTP_DIR/ (revisado, mesmo lugar)</span></span>
+    </div></div>
+  </div>
+  <div class="arrow">&darr;</div>
+
+  <div class="node batch">
+    <div class="title">3b. XAMR102 &mdash; report <span class="pill">xamr102.ksh &rarr; xamrpt.ksh</span></div>
+    <div class="meta">Le o rpt_prov revisado, gera relatorios de excecao por provider, monta o zip e envia pros suppliers (email ou Mitchell FTP &mdash; NAO prod3nt).</div>
+    <div class="io">
+      <div class="io-col">
+        <div class="lbl">le</div>
+        <span class="file rt"><span class="fn">keystone_rpt_prov.txt</span><span class="fp">$ALTP_DIR/</span></span>
+      </div>
+      <div class="io-col">
+        <div class="lbl">envia (fora do escopo prod3nt)</div>
+        <span class="file out"><span class="fn">mitch_exc_rpts.zip</span><span class="fp">email / Mitchell FTP (scp) &mdash; sem mudanca</span></span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="note warn"><b>Atencao:</b> os arquivos <i>round-trip</i> (vermelho) ficam em <code>$ALTP_DIR/</code> &mdash; mesma pasta onde sao escritos E lidos. O analista trabalha sempre nesse mesmo lugar, igual era no prod3nt. Nada de mover arquivo entre pastas.</div>
+
+<h2>3. Mapa completo: qual arquivo vai em qual pasta</h2>
+<table>
+  <tr><th>Arquivo</th><th>Quem produz</th><th>Pasta (variavel)</th><th>Caminho concreto no teste</th></tr>
+  <tr><td><code>keystone_combined.txt</code></td><td>Chuck</td><td><code>$ALTP_DIR</code></td><td><code>.../ftpdata/mdev/altp/</code></td></tr>
+  <tr><td><code>multiple_combined.txt</code></td><td>Chuck</td><td><code>$ALTP_DIR</code></td><td><code>.../altp/</code></td></tr>
+  <tr><td><code>copy_supplier.txt</code></td><td>Chuck / analista</td><td><code>$ALTP_DIR</code></td><td><code>.../altp/</code></td></tr>
+  <tr><td><code>del_supplier_list.txt</code></td><td>Chuck / analista</td><td><code>$ALTP_DIR</code></td><td><code>.../altp/</code></td></tr>
+  <tr><td><code>capacert.prn</code></td><td>Chuck / analista</td><td><code>$ALTP_DIR</code></td><td><code>.../altp/</code></td></tr>
+  <tr><td><code>*_refproc.txt</code></td><td>xamref (round-trip)</td><td><code>$ALTP_DIR</code></td><td><code>.../altp/</code></td></tr>
+  <tr><td><code>*_rpt_prov.txt</code></td><td>xamupd (round-trip)</td><td><code>$ALTP_DIR</code></td><td><code>.../altp/</code></td></tr>
+  <tr><td><code>napa_combined.txt</code></td><td>xam200</td><td><code>$ALTP_DIR</code></td><td><code>.../altp/</code></td></tr>
+  <tr><td><code>COL.hdr</code> / <code>COLNW.hdr</code></td><td>Chuck (estatico)</td><td><code>$ALTP_NAPA_DIR</code></td><td><code>.../altp/NAPA/</code></td></tr>
+  <tr><td><code>col.txt</code> / <code>colnw.txt</code></td><td>xam200</td><td><code>$ALTP_NAPA_DIR</code></td><td><code>.../altp/NAPA/</code></td></tr>
+  <tr><td><code>CollisionFromNapa.zip</code></td><td>xam200 (backup)</td><td><code>$ALTP_NAPA_DIR</code></td><td><code>.../altp/NAPA/</code></td></tr>
+  <tr><td><code>*_referrs.txt</code> / <code>*_refsum.txt</code></td><td>xamref</td><td><code>$ALTP_INTRPT_DIR</code></td><td><code>.../altp/Internal_Rpts/</code></td></tr>
+  <tr><td><code>*_partver_sum.txt</code> / <code>*_updt_sum.txt</code></td><td>xamupd</td><td><code>$ALTP_INTRPT_DIR</code></td><td><code>.../altp/Internal_Rpts/</code></td></tr>
+  <tr><td><code>cat_dtl.rpt</code> / <code>noclssum.rpt</code></td><td>xam010</td><td><code>$ALTP_INTRPT_DIR</code></td><td><code>.../altp/Internal_Rpts/</code></td></tr>
+  <tr><td><code>category.rpt</code></td><td>xam010</td><td><code>$ALTP_CUSTRPT_DIR</code></td><td><code>.../altp/Customer_Rpts/</code></td></tr>
+  <tr><td><code>Mitchell_CollisionFromNAPA*.zip</code></td><td>NAPA (supplier)</td><td>Mitchell FTP <span class="pill">sem mudanca</span></td><td><code>$FTP_BUSINESS_PATH/NAPA/mdev/incoming/</code></td></tr>
+  <tr><td><code>mitch_exc_rpts.zip</code></td><td>xamrpt</td><td>Mitchell FTP / email <span class="pill">sem mudanca</span></td><td><code>$FTP_BUSINESS_PATH/.../outgoing/</code></td></tr>
+</table>
+
+<h2>4. Arvore de pastas a criar (setup_test_env.sh faz isso)</h2>
+<div class="tree"><span class="c"># dentro do mount NFS que ja existe:</span>
+/nas/mdev/OEM_Repair_Doc_Repository/ftpdata/mdev/
+└── altp/
+    ├── <span class="g">keystone_combined.txt</span>   <span class="c"># voce coloca aqui (do Chuck)</span>
+    ├── <span class="p">keystone_refproc.txt</span>     <span class="c"># XAMR100 gera, XAMR101 le</span>
+    ├── <span class="p">keystone_rpt_prov.txt</span>    <span class="c"># XAMR101 gera, XAMR102 le</span>
+    ├── NAPA/                       <span class="c"># headers + reformatados NAPA</span>
+    ├── Internal_Rpts/              <span class="c"># referrs, refsum, partver_sum, updt_sum...</span>
+    └── Customer_Rpts/              <span class="c"># category.rpt</span>
+</div>
+
+<h2>5. Ordem de execucao do teste</h2>
+<ul class="check">
+  <li><span class="n">1</span><div>Deploy: copiar <code>altp_ftp_data.ksh</code> + os 9 scripts pro diretorio de scripts do RACE no RADD. <code>chmod +x</code>, conferir <code>file *.ksh</code> (sem CRLF).</div></li>
+  <li><span class="n">2</span><div>Rodar <code>./setup_test_env.sh</code> &mdash; cria <code>altp/</code>, <code>altp/NAPA/</code>, <code>altp/Internal_Rpts/</code>, <code>altp/Customer_Rpts/</code> e testa o write.</div></li>
+  <li><span class="n">3</span><div>Pedir <code>keystone_combined.txt</code> pro Chuck. Copiar pra <code>$ALTP_DIR/</code>.</div></li>
+  <li><span class="n">4</span><div>Redirecionar emails de teste: editar <code>zxamrefa.prm</code>, <code>zxamupda.prm</code>, <code>zxamrpta.prm</code> pro seu email (backup antes).</div></li>
+  <li><span class="n">5</span><div>Rodar <code>xamr100.ksh</code>. Conferir: refproc + referrs + refsum criados. Log sem erro.</div></li>
+  <li><span class="n">6</span><div>Conferir/abrir <code>keystone_refproc.txt</code> (simula revisao do analista).</div></li>
+  <li><span class="n">7</span><div>Rodar <code>xamr101.ksh</code>. Conferir: rpt_prov + partver_sum + updt_sum criados. Oracle <code>part_altpart_xref</code> atualizada.</div></li>
+  <li><span class="n">8</span><div>Conferir/abrir <code>keystone_rpt_prov.txt</code> (simula revisao do analista).</div></li>
+  <li><span class="n">9</span><div>Rodar <code>xamr102.ksh</code>. Conferir: zip gerado, email de teste recebido.</div></li>
+  <li><span class="n">10</span><div>Coletar evidencias (logs de $RACE/log/, screenshots, ls -la das pastas). Restaurar os .prm de email.</div></li>
+</ul>
+
+<h2>6. Cadeia NAPA &mdash; o que muda</h2>
+<details>
+<summary>Ver detalhes da cadeia NAPA (XAMR200)</summary>
+<div class="flow" style="margin-top:10px">
+  <div class="node batch">
+    <div class="title">XAMR200 &mdash; parte 1: xam200.ksh</div>
+    <div class="meta">Baixa o zip da NAPA (do Mitchell FTP, nao prod3nt), descompacta, junta com headers, gera o napa_combined.</div>
+    <div class="io">
+      <div class="io-col">
+        <div class="lbl">le</div>
+        <span class="file inp"><span class="fn">Mitchell_CollisionFromNAPA*.zip</span><span class="fp">Mitchell FTP (scp - sem mudanca)</span></span>
+        <span class="file inp"><span class="fn">COL.hdr / COLNW.hdr</span><span class="fp">$ALTP_NAPA_DIR/</span></span>
+      </div>
+      <div class="io-col">
+        <div class="lbl">escreve</div>
+        <span class="file out"><span class="fn">CollisionFromNapa.zip</span><span class="fp">$ALTP_NAPA_DIR/ (backup)</span></span>
+        <span class="file out"><span class="fn">col.txt / colnw.txt</span><span class="fp">$ALTP_NAPA_DIR/</span></span>
+        <span class="file rt"><span class="fn">napa_combined.txt</span><span class="fp">$ALTP_DIR/</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="arrow">&darr;</div>
+  <div class="node batch">
+    <div class="title">XAMR200 &mdash; parte 2: xamref.ksh</div>
+    <div class="meta">Mesmo motor da Keystone, agora com qualifier "napa". Le napa_combined, gera napa_refproc. Dai segue igual: XAMR201 (xamupd), XAMR202 (xamrpt).</div>
+  </div>
+</div>
+<p class="sub">Depois do XAMR200, a cadeia NAPA usa <b>os mesmos xamupd/xamrpt</b> da Keystone &mdash; so muda o qualifier.</p>
+</details>
+
+<p class="sub" style="margin-top:30px;border-top:1px solid var(--line);padding-top:12px">
+Gerado para a story AES-XXXX &mdash; ambiente DEV RADD (dawapp7017l). Caminho de teste e temporario; quando o NAS definitivo for decidido, muda-se 1 linha em <code>altp_ftp_data.ksh</code>.
+</p>
+
+</body>
+</html>
