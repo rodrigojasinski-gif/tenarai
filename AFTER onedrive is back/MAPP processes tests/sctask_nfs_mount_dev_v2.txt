@@ -1,0 +1,112 @@
+################################################################
+##                                                            ##
+##   *** DRAFT - DO NOT SUBMIT YET ***                         ##
+##                                                            ##
+##   The final NAS folder/path has NOT been decided yet.       ##
+##   This ticket requests the DEDICATED PERMANENT mount.       ##
+##                                                            ##
+##   For now, E2E testing uses a TEMPORARY location inside an  ##
+##   existing mount - no ticket needed for that:               ##
+##     /nas/mdev/OEM_Repair_Doc_Repository/ftpdata/mdev        ##
+##                                                            ##
+##   Submit this ticket ONLY after Julian / Ops confirm the    ##
+##   final path. The path /nas/ftp_data/mdev below is a        ##
+##   CANDIDATE - replace it with the confirmed value first.    ##
+##                                                            ##
+################################################################
+
+================================================================
+SERVICE NOW TICKET - Create NFS Mount for ALTP/MAPP processing
+Environment: DEV
+Target server: RADD (<dev-hostname-tbd>)
+Assignment Group: CORP-IS-Unix-Middleware-Operations
+================================================================
+
+----------------------------------------------------------------
+SHORT DESCRIPTION
+----------------------------------------------------------------
+Create new NFS shared folder mounted on RADD (<dev-hostname-tbd>) at /nas/ftp_data/mdev to replace the prod3nt FTP_DATA dependency for the MAPP/ALTP batch processing
+
+----------------------------------------------------------------
+DESCRIPTION
+----------------------------------------------------------------
+== Current state ==
+
+The MAPP/ALTP batch processing on the RACE/RADx environment currently relies on a Windows network share hosted on the prod3nt server. The full path used today is:
+
+    \\prod3nt\cdprod02\ftp_data\
+
+Inside that share, the dev-environment subtree we depend on is:
+
+    \\prod3nt\cdprod02\ftp_data\mdev\altp\
+    \\prod3nt\cdprod02\ftp_data\mdev\altp\NAPA\
+    \\prod3nt\cdprod02\ftp_data\mdev\altp\Internal_Rpts\
+    \\prod3nt\cdprod02\ftp_data\mdev\altp\Customer_Rpts\
+
+This share is accessed from the dev script server RADD (<dev-hostname-tbd>) by the XAMR series shell scripts (XAMR100, XAMR101, XAMR102, XAMR200, XAMR201, XAMR202, XAMR900, XAMR901, XAMR902) and supporting scripts (xamref.ksh, xamupd.ksh, xamrpt.ksh, xam200.ksh, xam010.ksh, xam001.ksh, xam030.ksh, xam069.ksh) via the FTP-based fileget.exp and fileput.exp procedures, mediated by the ${NOVELL} environment variable.
+
+The prod3nt server is being sunset / decommissioned (it will not be migrated to AWS). Once it is shut down, all batch jobs that depend on this share will fail unless the dependency is removed beforehand.
+
+This work is the dev counterpart of the OEM dependency removal already completed under story AES-3175 and tracks under the ALTP follow-up story AES-XXXX (to be assigned).
+
+== What we need ==
+
+Please provision an NFS share and mount it on RADD (<dev-hostname-tbd>) at the following local mount point:
+
+    /nas/ftp_data/mdev
+
+== Important: please add this new mount to the same NAS mounting script / configuration that already manages the existing NAS mounts on this server ==
+
+There is already a NAS mounting mechanism in place on RADD (<dev-hostname-tbd>) that brings up shares such as the one shown below at boot time (or on demand via autofs):
+
+    dawsvm7001a.staging.int:/oemdocrepsharedev    9.5T  8.6T  944G  91%  /nas/mdev/OEM_Repair_Doc_Repository
+
+The new mount for /nas/ftp_data/mdev should be ADDED TO THAT SAME script / configuration file (whether it lives in /etc/fstab, /etc/auto.master, /etc/auto.<map>, or a custom mount helper script your team maintains). Please do not create a separate mounting mechanism for our share - we want it to come up using the same pattern, the same automation, and the same monitoring as OEM_Repair_Doc_Repository, so it behaves consistently and survives reboots / failovers the same way.
+
+Suggested parameters for the new mount (please adjust per Ops standards):
+
+    Source NFS server: <to be defined by Ops - likely dawsvm7001a.staging.int or similar>
+    Source export name: <to be defined by Ops>
+    Local mount point on RADD (<dev-hostname-tbd>): /nas/ftp_data/mdev
+    Filesystem type: NFS v4
+    Options: rw, _netdev, persistent across reboot via the same mechanism already used for OEM_Repair_Doc_Repository
+    Initial size: please size based on capacity planning - the legacy prod3nt share holds the full alt-part supplier data history, please provision similarly
+
+Once the mount is up, the following internal directory structure will need to exist (so the batch jobs can find the same paths they use today, just under the new mount root). We are happy to create these subdirectories ourselves if the mount is delivered empty - please confirm:
+
+    /nas/ftp_data/mdev/altp/
+    /nas/ftp_data/mdev/altp/NAPA/
+    /nas/ftp_data/mdev/altp/Internal_Rpts/
+    /nas/ftp_data/mdev/altp/Customer_Rpts/
+
+== Why this approach ==
+
+By mounting the new NFS share at a local path, the batch shell scripts on RADD (<dev-hostname-tbd>) can be migrated from FTP-based access (fileget.exp / fileput.exp pointed at prod3nt) to local file operations (cp, mv) pointed at /nas/ftp_data/mdev. This is faster, simpler, and removes the prod3nt dependency cleanly.
+
+The prod equivalent will be requested in a separate ticket once the prod NAS / NFS server is identified and the data clone for prod is ready.
+
+Thanks.
+
+----------------------------------------------------------------
+ADDITIONAL COMMENTS
+----------------------------------------------------------------
+Please also provide read and write permissions on this mount and on all subdirectories listed above to the users race_b1 and rj132422.
+
+Two follow-up clarifications that may be useful:
+
+1. Will the same NFS share need to be exposed via SMB / CIFS so that the Windows-side process (Chuck Fears' Combine_Stage.bat, currently running on prod4nt and writing to prod3nt) can write into it from Windows? If yes, please advise if that is in scope for this ticket or should be a separate request.
+
+2. Is there an automated process to migrate / replicate the existing data currently on \\prod3nt\cdprod02\ftp_data\mdev\altp\ into the new /nas/ftp_data/mdev/altp/ mount, or should we coordinate that copy manually with Chuck once the mount is ready?
+
+Thanks!
+
+================================================================
+NOTES FOR ME (Rodrigo) BEFORE SUBMITTING - REMOVE BEFORE PASTING
+================================================================
+
+Items to fill in before opening the ticket:
+
+[ ] Replace <dev-hostname-tbd> with the actual hostname of RADD (run: hostname -f on the RADD server)
+[ ] Replace AES-XXXX with the actual story number when assigned
+[ ] Confirm with Julian whether to include or remove the two follow-up clarifications at the bottom (some Ops teams prefer they go in as separate tickets to keep this one focused on infra-only)
+[ ] Confirm with Julian whether to ask Ops to also create the altp subdirectories or leave that to us
