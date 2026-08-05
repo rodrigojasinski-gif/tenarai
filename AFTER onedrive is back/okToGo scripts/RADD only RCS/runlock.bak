@@ -1,5 +1,5 @@
 #! /bin/ksh
-#$Id: runlock,v 1.4 2007/04/06 02:07:19 gw8440 Exp rj132422 $
+#$Id: runlock,v 1.3 2007/03/19 01:02:40 gw8440 Exp gw8440 $
 ## modify to access prod server alias racercs gw 03/28/07
 # rj132422 - linux migration: RCS repo now lives on the prod host (the AIX alias racercs is gone)
 

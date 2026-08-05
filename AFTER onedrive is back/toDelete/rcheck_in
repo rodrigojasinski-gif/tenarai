@@ -1,0 +1,513 @@
+#!/bin/ksh 
+#$Id: rcheck_in,v 1.7 2021/07/03 01:43:25 pg2697 Exp $  
+###############################################################################
+# SCRIPT NAME: rcheck_in                                          
+# SCRIPT DESC: 05/07/2013 pag - new check_in script for Oracle 11G and beyond.   
+#              06/21/2021 pag - changed GCC_COMMAND
+###############################################################################
+#set -xv
+
+#########################################################################################
+# throws error if this is run in PROD
+#########################################################################################
+  if [ $ACT_LVL = "mdev" ]
+  then 
+    echo "You are running on MDEV server. OK to proceed with check in."
+  else
+    echo "ERROR! This may only be run on MDEV server. ABENDING."
+    exit -1 
+  fi
+
+#########################################################################################
+# get and verify Description arg
+#########################################################################################
+  if [[ $# = "0" || $# > "4" ]]
+  then
+    echo Usage: rcheck_in [-d "change_description"] filename subsys_name/component_name"\007"
+    echo " Example: rcheck_in -d \"fix report 25\" xfcz001.cbl ceg/src"
+    exit -1
+  fi
+    
+  DESC_ARG=""                                                   # Description argument
+
+  while getopts "d:" ARG                                        # parse parmeters
+  do
+    if [ $ARG = "d" ]                                         # set -d value
+      then
+        DESC_ARG="-d "$OPTARG
+    fi
+  done
+
+  if [[ -z $DESC_ARG ]]                                         # setup modification description not entered
+  then      
+    read mdesc?"Enter modification description: "
+    DESC_ARG="-d "$mdesc 
+  fi
+
+#########################################################################################
+# get and verify file for check_in exists
+#########################################################################################
+  shift 'OPTIND - 1'
+  if [[ -s $1 ]]                                                # Verify file to check in exists
+  then
+    echo " " 2>/dev/null
+  else
+    echo "Filename Not Found or is empty: " $1   "Make sure you are executing from your home checkin directory and that file is there."  
+    exit -1
+  fi   
+
+  export RACETMP=$RACE                                            # RACE path based on login selection  (e.g. /mdev/race/ext)
+  export RACE=/mdev/race/$(echo $2 | awk -F/ '{print $1}')        # RACE path based on subsystem entered upon execution of checkin (e.g. /mdev/race/oem  if you entered oem/src)  
+  export MSYS=$RACE                                               # same as $RACE right now (e.g. /mdev/race/oem)
+  export RCSDIR=pawapp7017l.production.int:/prod/race             # 2026/06 Linux prod RCS host (was racercs)
+  export STGDIR=/stage/race                                       # prefix to development stage directory
+
+
+##########################################################      # for verification/testing
+##echo "$1  -  $2"
+##########################################################      # for verification/testing
+  export FILENAME_EXT=$1
+  export FILEDIR=$2
+  export FILENAME_EXT_BEFORE=${FILENAME_EXT}_before_checkin
+
+  rverify $FILENAME_EXT $FILEDIR                               # verify argument-name strings
+  if [ $? != 0 ]
+  then
+    exit -1
+  fi
+
+##########################################################      # for verification/testing
+#echo "RACETMP     : $RACETMP" 
+#echo "RACE        : $RACE"
+#echo "MSYS        : $RACE"
+#echo "RCSDIR      : $RCSDIR"
+#echo "STGDIR      : $STGDIR"
+#echo "DESC_ARG    : $DESC_ARG"                                        
+#echo "FILEDIR     : $FILEDIR"
+#echo "FILENAME_EXT: $FILENAME_EXT"
+##########################################################      # for verification/testing
+
+
+#########################################################################################
+# Determines extension.
+# Checks for compile information from rcheck_in_compile_info.prm
+# Verifies it is a file type that the script can handle. 
+# Checks if directory is correct for object type.
+#########################################################################################
+  export EXTENSION=$(echo $FILENAME_EXT | awk -F. '{print $(NF)}')     
+  export DIRECTORY=$(echo $FILEDIR | awk -F/ '{print $(NF)}')
+
+#########################################################################################
+# If c program, check parm file for compile information.
+# Added head -1 because without it, grep was finding more than one occurrence of filename_ext
+# due to test pgms. (e.g. search for atoe.c resulted in atoe.c and ttt_atoe.c) 
+#########################################################################################
+  export C_PGM_FOUND=`grep $FILENAME_EXT /$ACT_LVL/race/share/prm/rcheck_in_compile_info.prm |head -1 |awk '{print $1}' 2>/dev/null`
+  if [ ! -z $C_PGM_FOUND ]
+  then
+    export PGM_TYPE=`grep $FILENAME_EXT //$ACT_LVL/race/share/prm/rcheck_in_compile_info.prm |head -1 |awk '{print $2}'`  
+    export EXEC_NAME=`grep $FILENAME_EXT //$ACT_LVL/race/share/prm/rcheck_in_compile_info.prm |head -1 |awk '{print $3}'`
+    export EXEC_LOC=`grep $FILENAME_EXT //$ACT_LVL/race/share/prm/rcheck_in_compile_info.prm |head -1 |awk '{print $4}'`
+    export COMPILE_TYPE=`grep $FILENAME_EXT //$ACT_LVL/race/share/prm/rcheck_in_compile_info.prm |head -1 |awk '{print $5}'`
+	export LINK_OBJECT=`grep $FILENAME_EXT //$ACT_LVL/race/share/prm/rcheck_in_compile_info.prm |head -1|awk '{print $6}'`
+  fi
+
+##########################################################      # for verification/testing
+#echo "C_PGM_FOUND : " $C_PGM_FOUND
+#echo "PGM_TYPE    : " $PGM_TYPE
+#echo "LINK_OBJECT : " $LINK_OBJECT
+#echo "EXEC_NAME   : " $EXEC_NAME
+#echo "EXEC_LOC    : " $EXEC_LOC
+#echo "COMPILE_TYPE: " $COMPILE_TYPE
+##########################################################      # for verification/testing
+
+  if [ $EXTENSION = "cpy" ] 
+  then 
+    echo "Verifying this is a copybook."
+    if [ $DIRECTORY != "inc" ]
+    then 
+      echo "ERROR! Copybooks can only be checked into 'inc' directories. Cannot checkin."
+      exit -1
+    fi
+  elif [ $EXTENSION = "cbl" ]
+  then 
+    echo "Verifying this is a COBOL program."
+    if [ $DIRECTORY != "src" ]
+    then 
+      echo "ERROR! COBOL programs can only be checked into 'src' directories. Cannot checkin."
+      exit -1
+    fi
+  elif [ $EXTENSION = "c" ]
+  then 
+    echo "Verifying this is a C program and its associated compile code is in checkin script."
+    if [ $DIRECTORY != "src" ]
+    then 
+      echo "ERROR! C programs having extensions of 'c' can only be checked into 'src' directories. Cannot checkin."
+      exit -1
+    elif [[ -z $C_PGM_FOUND ]]
+    then 
+      echo "ERROR! compile info for this program is not defined in /${ACT_LVL}/race/share/prm/rcheck_in_compile_info.prm."
+	    echo "Cannot be compiled during check_in process; therefore cannot be checked_in."
+      exit -1 
+    fi
+  elif [ $EXTENSION = "pc" ]
+  then 
+    echo "Verifying this is a C program."
+    if [ $DIRECTORY != "src" ]
+    then 
+      echo "ERROR! C programs having extensions of 'pc' can only be checked into 'src' directories. Cannot checkin."
+      exit -1
+    elif [[ -z $C_PGM_FOUND ]]
+    then 
+      echo "ERROR! compile info for this program is not defined in /${ACT_LVL}/race/share/prm/rcheck_in_compile_info.prm."
+	  echo "Cannot be compiled during check_in process; therefore cannot be checked_in."
+      exit -1 
+    fi
+  elif [ $EXTENSION = "ksh" ]
+  then 
+    echo "Verifying this is a ksh script."
+    if [ $DIRECTORY != "bin" ]
+    then 
+      echo "ERROR! Scripts can only be checked into 'bin' directories. Cannot checkin."
+      exit -1
+    fi
+  elif [ $EXTENSION = $FILENAME_EXT ]
+  then 
+    echo "Verifying this is a script with no extension."
+    if [ $DIRECTORY != "bin" ]
+    then 
+      echo "ERROR! Scripts can only be checked into 'bin' directories. Cannot checkin."
+      exit -1
+    fi
+  elif [ $EXTENSION = "mk" ]
+  then 
+    echo "Verifying this is a make file."
+    if [ $DIRECTORY != "bin" ]
+    then 
+      echo "ERROR! Make files can only be checked into 'bin' directories. Cannot checkin."
+      exit -1
+    fi
+  elif [ $EXTENSION = "awk" ]
+  then 
+    echo "Verifying this is an awk file."
+    if [ $DIRECTORY != "bin" ]
+    then 
+      echo "ERROR! awk files can only be checked into 'bin' directories. Cannot checkin."
+      exit -1
+    fi
+  elif [ $EXTENSION = "exp" ]
+  then 
+    echo "Verifying this is an exp script."
+    if [ $DIRECTORY != "bin" ]
+    then 
+      echo "ERROR! exp script can only be checked into 'bin' directories. Cannot checkin."
+      exit -1
+    fi
+  elif [ $EXTENSION = "pl" ]
+  then 
+    echo "Verifying this is a perl script."
+    if [ $DIRECTORY != "bin" ]
+    then 
+      echo "ERROR! Perl can only be checked into 'bin' directories. Cannot checkin."
+      exit -1
+    fi
+  elif [ $EXTENSION = "prm" ]
+  then 
+    echo "Verifying this is a prm file."
+    if [ $DIRECTORY != "prm" ]
+    then 
+      echo "ERROR! Parms can only be checked into 'prm' directories. Cannot checkin."
+      exit -1
+    fi
+  elif [ $EXTENSION = "ctl" ]
+  then 
+    echo "Verifying this is an Oracle ctl file."
+    if [ $DIRECTORY != "prm" ]
+    then 
+      echo "ERROR! Oracle control files can only be checked into 'prm' directories. Cannot checkin."
+        exit -1
+    fi
+  elif [ $EXTENSION = "o" ]
+  then 
+    echo "ERROR! C program executables are NOT checked in. They are created by checking in source (which invokes a compile). They are moved to prod via prod_move."
+    exit -1
+  elif [ $EXTENSION = "so" ]
+  then 
+    echo "ERROR! C program executables are NOT checked in. They are created by checking in source (which invokes a compile). They are moved to prod via prod_move."
+    exit -1
+  else
+    echo "ERROR! Unknown extension. Cannot checkin."
+    exit -1
+  fi
+
+#########################################################################################
+# execute race_chkin.ksh (subscript) and determine if checkin was successful.
+#
+# File movement within rcheck_in.ksh:
+# 1) home -> mdev/tmp
+# 2) mdev/tmp -> prod/tmp
+# 3) prod/tmp -> RCS
+# 4) RCS -> prod/tmp (updated with version and revision history)
+# 5) stage -> stage/.../rollback  (prev version)
+# 6) prod/tmp -> stage  (new version)
+#########################################################################################
+#CHECKIN_OK=0                                                                         # For testing (Also, comment out check_in.ksh)
+ 
+  CHECKIN_OK=-1                                                                        # default to not okay
+  check_in.ksh < $FILENAME_EXT "$DESC_ARG" $FILENAME_EXT $FILEDIR                      # check it in
+  if [ $? = 0 ]                                                                        # test return code of checkin...
+   then
+     CHECKIN_OK=0
+   else 
+     echo "Checkin was not successful"                                                 # just in case it returns (instead of abends in called rtn)
+     exit -1
+  fi
+
+#########################################################################################
+# Based on type of file:
+# ---------------------
+# -back up previous working (home) and mdev version
+# -copy new stage version to working (home) and mdev directories
+# -compile, if necessary
+# -backup previous execution object(s) within mdev and stage directories, if necessary
+# -copy execution object(s) to various mdev and stage directories, if necessary
+#########################################################################################
+  if [ $CHECKIN_OK = 0 ] 
+  then 
+    #########################################################################################
+    # COPYBOOKS:
+    # -change permissions on stage so that user and group can read or write to the object
+    # -backup object you used for checkin to different name (copy to retain date)
+    # -move old mdev object to rollback
+    # -copy new stage file to mdev directory 
+    # NOTE: don't need copybook in your home directory
+    #########################################################################################
+    if [ $EXTENSION = "cpy" ]                                                     
+    then
+      chmod ug+wr /stage/race/$FILEDIR/$FILENAME_EXT                                                                                                                     
+      mv ./$FILENAME_EXT ./$FILENAME_EXT_BEFORE  
+      if [ -s /mdev/race/${FILEDIR}/${FILENAME_EXT} ] 
+      then
+        cp -p /mdev/race/$FILEDIR/$FILENAME_EXT /mdev/race/$FILEDIR/rollback/$FILENAME_EXT 2>/dev/null
+        rm -f /mdev/race/$FILEDIR/$FILENAME_EXT 
+      fi  
+      #echo "Copying new stage copybook to mdev as copybooks must exist in mdev (for COBOL compiles). \n"
+      cp -p /stage/race/$FILEDIR/$FILENAME_EXT /mdev/race/$FILEDIR/$FILENAME_EXT 2>/dev/null    
+    fi
+    
+    #########################################################################################
+    # COBOL:
+    # 1) Handle the "src" first
+    #    -change permissions on stage so that user and group can read or write to file
+    #    -backup object you used for checkin to different name 
+    #    -move old mdev object to rollback (COBOL src shouldn't exist in mdev but in case it does...)
+    #    -NOTE: NEW src is not needed in mdev
+    # 2) Next compile the "src" to create executable and populate stage and mdev directories
+    #    -copy new source in stage to your working (checkin) directory
+    #    -determine basename needed for compile (and other assoc filenames)
+    #    -invoke qcompile from your working (checkin) directory (outputs of compile are in your working directory)
+    #    -move compile lis and lst files to stage lst dir
+    #    -move old executable in stage bin to bin rollback
+    #    -move new executable from your working (checkin) directory to stage bin
+    #    -change permissions on stage so that user and group can read, write, or execute 
+    #    -move old mdev exe (if any) to rollback so that stage version will be executed
+    #    NOTE: NEW executable is not placed in mdev. It should be executed from stage.
+    #          (mdev bin is used for group testing of TEST code.)
+    #########################################################################################
+    if [ $EXTENSION = "cbl" ]                                                    
+    then
+      # handle "src"
+      chmod ug+wr /stage/race/$FILEDIR/$FILENAME_EXT                                                                                          
+      mv ./$FILENAME_EXT ./$FILENAME_EXT_BEFORE      
+      if [ -s /mdev/race/${FILEDIR}/${FILENAME_EXT} ] 
+      then
+         cp -p /mdev/race/$FILEDIR/$FILENAME_EXT /mdev/race/$FILEDIR/rollback/$FILENAME_EXT 2>/dev/null
+         rm -f /mdev/race/$FILEDIR/$FILENAME_EXT
+      fi       
+                                                        
+      # compile "src" to create executable
+      cp -p /stage/race/$FILEDIR/$FILENAME_EXT ./$FILENAME_EXT 
+      export FILE_BASENAME=$(basename $FILENAME_EXT .cbl)                               
+      #echo "\nCompiling new RCS version of COBOL program\n"
+      qcompile $FILE_BASENAME                                                   
+      #echo "Moving compile lists to stage\n"
+      mv $FILE_BASENAME.l?? /stage/race/$FILEDIR/lst                          
+      #echo "Moving executable to stage\n"   
+      if [ -s /stage/race/${FILEDIR}/../bin/${FILE_BASENAME} ]
+      then
+         cp -p /stage/race/$FILEDIR/../bin/$FILE_BASENAME /stage/race/$FILEDIR/../bin/rollback/$FILE_BASENAME
+         rm -f /stage/race/$FILEDIR/../bin/$FILE_BASENAME                   
+      fi
+      mv ./$FILE_BASENAME /stage/race/$FILEDIR/../bin                         
+      chmod ug+wrx /stage/race/$FILEDIR/../bin/$FILE_BASENAME                                                                                                                                    
+      #echo "Moving old mdev executable (if any) to rollback so that stage version will be executed. \n"    
+      if [ -s /mdev/race/${FILEDIR}/../bin/${FILE_BASENAME} ] 
+      then
+         cp -p /mdev/race/$FILEDIR/../bin/$FILE_BASENAME /mdev/race/$FILEDIR/../bin/rollback/$FILE_BASENAME 2>/dev/null
+         rm -f /mdev/race/$FILEDIR/../bin/$FILE_BASENAME
+      fi      
+      rm -f ./$FILENAME_EXT
+      rm -f ./$FILE_BASENAME.idy
+    fi
+   
+    #########################################################################################
+    # C Programs with .c or .pc extension:
+    # 1) Handle the "src" first
+    #    -change permissions on stage so that user and group can read or write to file
+    #    -backup object you used for checkin to different name
+    #    -move old mdev object to rollback (C src shouldn't exist in mdev but in case it does...)
+    # 2) Next compile the "src" and populate stage and mdev directories with executable
+    #    -copy new source in stage to your working (checkin) directory (for compile purposes)
+    #    -set variable for GCC command execution (same for all pgms except ftp_um_put)
+    #    -determine type of compile
+    #    - NOTE: for main program that is linked with a called program, copy assoc link object 
+    #            from share/lib to your working (checkin) directory (for compile purposes)
+    #    - Perform compile
+    #    - copy executable to assoc'd execution location after backing up prior version to rollback dir
+    #########################################################################################
+    if [ $EXTENSION = "c" ] || [ $EXTENSION = "pc" ]                                                   
+    then
+		
+      # move the source code
+      chmod ug+wr /stage/race/$FILEDIR/$FILENAME_EXT                                                                                          
+      mv ./$FILENAME_EXT ./$FILENAME_EXT_BEFORE  
+      if [ -s /mdev/race/${FILEDIR}/${FILENAME_EXT} ] 
+      then
+        cp -p /mdev/race/$FILEDIR/$FILENAME_EXT /mdev/race/$FILEDIR/rollback/$FILENAME_EXT 2>/dev/null
+        rm -f /mdev/race/$FILEDIR/$FILENAME_EXT 
+      fi           
+ 
+      # compile the source code to create executable (type of compile based on prm table)
+      cp /stage/race/$FILEDIR/$FILENAME_EXT ./$FILENAME_EXT 
+      
+      #20210621 export GCC_COMMAND="/usr/bin/gcc -maix64 -nostdinc -I /usr/include" 
+      export GCC_COMMAND="gcc -maix64 -w -nostdinc -I /usr/include"       
+
+      if [ $COMPILE_TYPE = "GCC-1ARG" ]
+      then
+        #called program
+        echo "\nCompiling called program $FILENAME_EXT - that is called by one or more main c program(s) - (COMPILE_TYPE = GCC-1ARG)"
+        ${GCC_COMMAND} -c ${FILENAME_EXT} 2>&1
+      elif [ $COMPILE_TYPE = "GCC-2ARG" ]
+      then 
+        #main program with no subprogram   (COMPILE_TYPE = GCC-2ARG)
+        echo "\nCompiling ${FILENAME_EXT} - no linked routines - (COMPILE_TYPE = GCC-2ARG)" 
+        ${GCC_COMMAND} -o ${EXEC_NAME} ${FILENAME_EXT} 2>&1	   
+      elif [ $COMPILE_TYPE = "GCC-3ARG" ]
+      then
+        #main program with subprogram  COMPILE_TYPE = GCC-3ARG)
+        cp -p /stage/race/$FILEDIR/../lib/$LINK_OBJECT ./$LINK_OBJECT 
+        echo "\nCompiling main c program ${FILENAME_EXT} - with linked routine ${LINK_OBJECT} - (COMPILE_TYPE = GCC-3ARG) " 			
+        ${GCC_COMMAND} -o ${EXEC_NAME} ${FILENAME_EXT} ${LINK_OBJECT} 2>&1
+      elif [ $COMPILE_TYPE = "PROCCOMP" ]
+      then
+        echo "\nCompiling called program ${FILENAME_EXT} as ${EXEC_NAME} - that is called by one or more Oracle COBOL program(s) - (COMPILE_TYPE = PROCCOMP)"
+        export FILE_BASENAME=$(basename $FILENAME_EXT .pc)
+        proccomp ${FILE_BASENAME} 2>&1
+      elif [ $COMPILE_TYPE = "UM_FTP_PUT" ]
+      then			
+        #called program um_ftp_put ONLY (COMPILE_TYPE = UM_FTP_PUT)"
+        echo "\nCompiling called program ${FILENAME_EXT} as ${EXEC_NAME} - that is called by Oracle perl script - (COMPILE_TYPE = UM_FTP_PUT)"
+        make -f /$ACT_LVL/race/share/bin/um_ftp_put.mk 
+      elif [ $COMPILE_TYPE = "TTT_UM_FTP_PUT" ]
+      then
+        #called program ttt_um_ftp_put ONLY (COMPILE_TYPE = TTT_UM_FTP_PUT)"
+        echo "\nCompiling called program ${FILENAME_EXT} as ${EXEC_NAME} - that is called by Oracle perl script - (COMPILE_TYPE = TTT_UM_FTP_PUT)"
+        make -f /$ACT_LVL/race/share/bin/ttt_um_ftp_put.mk
+      fi  
+
+      #stage - move executable to either bin or lib directory (based on prm table entry)
+      if [ -s /stage/race/${FILEDIR}/../${EXEC_LOC}/${EXEC_NAME} ] 
+      then
+        cp -p /stage/race/$FILEDIR/../$EXEC_LOC/$EXEC_NAME /stage/race/$FILEDIR/../$EXEC_LOC/rollback
+        rm -f /stage/race/$FILEDIR/../$EXEC_LOC/$EXEC_NAME
+      fi                   
+      mv ./$EXEC_NAME /stage/race/$FILEDIR/../$EXEC_LOC                         
+      chmod ug+wrx /stage/race/$FILEDIR/../$EXEC_LOC/$EXEC_NAME
+      #mdev - if called program, move executable to lib directory     
+      if [ $PGM_TYPE = "CALLED" ]
+      then
+        if [ -s /mdev/race/$FILEDIR/../$EXEC_LOC/$EXEC_NAME ] 
+        then
+          cp -p /mdev/race/$FILEDIR/../$EXEC_LOC/$EXEC_NAME /mdev/race/$FILEDIR/../$EXEC_LOC/rollback/$EXEC_NAME 2>/dev/null
+          rm -f /mdev/race/$FILEDIR/../$EXEC_LOC/$EXEC_NAME
+        fi                                                                                                                                            
+        cp /stage/race/$FILEDIR/../$EXEC_LOC/$EXEC_NAME /mdev/race/$FILEDIR/../$EXEC_LOC
+      fi      
+      rm -f ./$FILENAME_EXT
+      rm -f ./$FILENAME_EXT.so.imp
+      rm -f ./$FILENAME_EXT.so.exp
+    fi
+                                             
+
+    #########################################################################################
+    # Scripts - All of the executable code/scripts that go in bin including korne shell scripts (with 
+    # and without extension), make files (mk), awk, expect scripts (exp), and perl (pl):
+    # -change permissions on stage so that user and group can read, write or execute file
+    # -backup object you used for checkin to different name
+    # -move old mdev object to rollback (so new stage version will be executed)
+    # -if sql.ksh or a mk file, copy new source in stage to mdev directory (as path is ref'd in job script) 
+    #########################################################################################
+
+    if [ $EXTENSION = "ksh" ] || [ $EXTENSION = "$FILENAME_EXT" ] || [ $EXTENSION = "mk" ] || [ $EXTENSION = "awk" ] || [ $EXTENSION = "exp" ] || [ $EXTENSION = "pl" ] 
+    then
+      chmod ug+wrx /stage/race/$FILEDIR/$FILENAME_EXT                          
+      mv ./$FILENAME_EXT ./$FILENAME_EXT_BEFORE                              
+      #echo "Moving old mdev object (if any) to rollback. \n" 
+      if [ -s /mdev/race/${FILEDIR}/${FILENAME_EXT} ] 
+      then
+        cp -p /mdev/race/$FILEDIR/$FILENAME_EXT /mdev/race/$FILEDIR/rollback/$FILENAME_EXT 2>/dev/null
+        rm -f /mdev/race/$FILEDIR/$FILENAME_EXT
+      fi  
+      #echo "Copying new stage to mdev as sql.ksh and mk must exist in mdev. \n" 
+      export SQLKSH=$(echo $FILENAME_EXT | awk -F_ '{print $(NF)}')
+      if [ $SQLKSH = "sql.ksh" ] || [ $EXTENSION = "mk" ]
+      then
+        cp -p /stage/race/$FILEDIR/$FILENAME_EXT /mdev/race/$FILEDIR/$FILENAME_EXT 2>/dev/null
+      fi
+    fi         
+
+    #########################################################################################
+    # Parameter Files:
+    # -change permissions on stage so that user and group can read, write or execute file
+    # -backup object you used for checkin to different name
+    # -move old mdev object to rollback (so new stage version will be executed)
+    # -copy new source in stage to mdev directory (as path is ref'd in job script) 
+    #########################################################################################  
+    if [ $EXTENSION = "prm" ] || [ $EXTENSION = "ctl" ]                                                        
+    then
+      chmod ug+wrx /stage/race/$FILEDIR/$FILENAME_EXT                            
+      mv ./$FILENAME_EXT ./$FILENAME_EXT_BEFORE                                                                                
+      #echo "Moving old mdev prm (if any) to rollback. \n"
+      if [ -s /mdev/race/${FILEDIR}/${FILENAME_EXT} ] 
+      then
+        cp -p /mdev/race/$FILEDIR/$FILENAME_EXT /mdev/race/$FILEDIR/rollback/$FILENAME_EXT 2>/dev/null
+        rm -f /mdev/race/$FILEDIR/$FILENAME_EXT 
+      fi  
+      #echo "Copying new stage prm to mdev as prm files must exist in mdev. \n"
+      cp -p /stage/race/$FILEDIR/$FILENAME_EXT /mdev/race/$FILEDIR/$FILENAME_EXT 2>/dev/null 
+    fi
+
+  fi     ### end of if [$CHECKIN_OK = 0] ###  
+  
+
+#########################################################################################
+# Display Summary Information
+#########################################################################################
+  if [ $CHECKIN_OK = 0 ]
+  then
+    rstatus $FILENAME_EXT $FILEDIR
+    echo "rcheck_in is completed. You MUST request a PROD_MOVE be run so that:"
+    echo "- If source code was checked in, executable is moved from stage into prod."
+    echo "- If non-source code was checked in, latest RCS version is copied into associated prod directory."
+    echo "*************************************************************************************************"
+  fi
+
+#########################################################################################
+# restore RACE path based on login selection  (e.g. /mdev/race/ext)
+#########################################################################################
+  export RACE=$RACETMP        
+
+#########################################################################################
+# end of script
+#########################################################################################

@@ -47,7 +47,7 @@ export OBJ_PRMDIR=RACE_OEM_PRM_DIR
 
 export JOBNAME=$(basename $0 .ksh)
 export JOBLOGNAME=${RACE}/log/$(logname.ksh ${JOBNAME} $1)
-export LOG=${RACE}/log/${JOBNAME}_$$.sqlout   # rj132422 - default sqlplus capture log (empty $LOG aborts the redirect on RHEL)
+export LOG=${RACE}/tmp/${JOBNAME}_$$.sqlout   # rj132422 - default sqlplus capture log (empty $LOG aborts the redirect on RHEL)
 #==========================================================================
 #  END
 #==========================================================================

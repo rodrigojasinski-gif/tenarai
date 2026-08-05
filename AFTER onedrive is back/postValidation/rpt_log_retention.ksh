@@ -55,8 +55,8 @@ whenever sqlerror exit sql.sqlcode
 QUIT;
 CODE_BLOCK
 
-[ -s "$LOG" ] && cat "$LOG"          # rj132422 - show sqlplus output in the job log
-[ -n "$LOG_TMP" ] && rm -f "$LOG"    # rj132422 - only remove the log this script created
+[ -s "$LOG" ] && cat "$LOG"     # rj132422 - show sqlplus output in the job log
+[ -f "$LOG" ] && rm -f "$LOG"   # rj132422 - only remove the log this script has created, if exists
 
 export DIRNAME=`cat ${RACE}/tmp/${RPT_TMPFILE} | cut -f1  -d"|"`
 export RETENTION=`cat ${RACE}/tmp/${RPT_TMPFILE} | cut -f2  -d"|"`

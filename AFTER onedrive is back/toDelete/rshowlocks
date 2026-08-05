@@ -1,0 +1,52 @@
+#!/bin/ksh
+#$Id: rshowlocks,v 1.6 2021/07/03 01:47:55 pg2697 Exp $
+## modified to list all locked files in prod: bin, src, prm and inc folders gw 3/11/07
+## modify to access prod server alias racercs gw 03/28/07
+## modified to correct 'arg list too long' error gw 5/3/07 
+## change rsh to ssh. removed -e flag (invalid flag)  pag
+# rj132422 - linux migration: the RCS repo moved to the prod host (the AIX alias racercs is gone)
+#set -xv
+
+# rj132422 - prod host holding the RCS repo, and service account that owns it
+RCSHOST=pawapp7017l.production.int
+RCSSVC=svc-apd-race-prd@production.int
+# rj132422 - rlog lives in /usr/local/bin, which is outside sudo's secure_path, so it needs the full path
+RCSBIN=/usr/local/bin
+
+# rj132422 - the subsystem list is spelled out because the /prod/race/*/ glob would be expanded by our own
+#            shell before sudo runs, and we have no read access there.
+#            rverify also accepts misc, oto and parts, but those have no RCS dirs in prod (nor on the old AIX box)
+SUBSYS="altp ceg qrp share ext oem"
+# rj132422 - only these two subsystems carry an inc/RCS dir
+SUBSYS_INC="share ext"
+
+# rj132422 - build the RCS dir list for one component so a single find call covers every subsystem
+rcs_dirs()
+{
+  case $1 in
+    inc) LIST="$SUBSYS_INC" ;;
+    *)   LIST="$SUBSYS" ;;
+  esac
+  for S in $LIST
+  do
+    print -n "/prod/race/$S/$1/RCS "
+  done
+}
+
+# rj132422 - 'cd /tmp' avoids find's 'cannot restore working directory' warning (our home is unreadable by the service account)
+#            -name '*,v' skips non-RCS leftovers sitting in the RCS dirs, which rlog would reject one by one
+#            LogLevel=ERROR drops the login banner the prod host prints on every connection, but keeps real errors
+rcs_locks()
+{
+  ssh -o LogLevel=ERROR $RCSHOST "cd /tmp && sudo -u $RCSSVC find $(rcs_dirs $1) -type f -name '*,v' -exec $RCSBIN/rlog -L -R {} \\;"
+}
+
+echo "============================================="
+echo "The following are checked out:"
+
+rcs_locks bin | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+rcs_locks src | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+rcs_locks prm | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+rcs_locks inc | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+##rsh media1  'find /prod/race/*/bin/RCS/ -type f -exec rlog -L -R {} \;' | awk -F/ '{ printf "race:  %s %s/%s\n", $7,$4,$5 }' | sed "s/,v//"
+echo "============================================="
