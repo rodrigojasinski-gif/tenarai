@@ -1,0 +1,72 @@
+#!/usr/bin/expect --
+# sends a single file using sftp from Unix to ftp.mitchell.com
+#
+# requires 5 arguments: userid, password, source file, destination directory, ftpfilename
+# there is a fourth optional argument: ascii - sets transfer mode to ascii; default is binary.
+
+#########################################################################################################
+# 10/19/2017 PB - copied from ftpput.exp
+# 10/02/2019 PG2697 - chg'd SFTP_SERVER name
+#######################################################################################################
+
+# 10/02/2019 PG2697
+#set SFTP_SERVER "ftp.mitchell.com"
+
+set SFTP_SERVER "sftp-corp.mitchell.com"
+set STEP STEP010
+
+#Check for parameter errors
+
+log_user 0          ;#turn off standard out / will use expect commands to send standard out
+
+#check for correct number of arguments
+if {$argc < 5} {
+   send_error "\nincorrect number of arguments\n"
+   send_error "\nusage:  $argv0 sourcefile destinationfile dest_dir \[ ascii \]\n"
+   exit 1 }
+
+#convert arguments to variables; 5 arguements expected
+set user [lindex $argv 0]
+set passwd [lindex $argv 1]
+set source_file [lindex $argv 2]
+set dest_dir [lindex $argv 3]
+set ftpfilename [lindex $argv 4]
+
+set xfer_mode binary        ;# default to binary transfer mode
+if { $argc > 5 } {
+   set xfer_mode ascii }
+   
+# 10/02/2019 PG2697
+#if { [catch {set SFTP_SERVER ftp.mitchell.com} !=0] } {
+
+if { [catch {set SFTP_SERVER sftp-corp.mitchell.com} !=0] } {
+      send_error "\nENV VARIABLE SFTP_SERVER NOT FOUND\n"; exit 1}
+send_user "\nftp server: $SFTP_SERVER\n"
+  
+#check for existance of source file
+if {[file exists $source_file] == 0}  {
+   send_user "$source_file does not exist\n"
+   exit 1 }
+
+set timeout 60            ;# set timeout to 20 seconds
+
+set STEP STEP020
+#Start ftp session
+
+send_user "\nEstablishing sftp connection to $SFTP_SERVER for file $source_file \n"
+
+
+spawn /usr/bin/sftp -o Port=22 $user@$SFTP_SERVER;  #start sftp connection to $SFTP_SERVER.
+expect "password:"
+send "$passwd\r"
+expect "sftp>"
+send "cd /$dest_dir\r"
+expect "sftp>"
+send "put $source_file $ftpfilename\r"
+expect "sftp>"
+send "bye\r"
+
+send_user "\nAfter connection to $SFTP_SERVER to put file\n"
+
+exit 0
+
