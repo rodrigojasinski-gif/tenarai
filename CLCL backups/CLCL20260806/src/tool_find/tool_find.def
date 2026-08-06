@@ -1,0 +1,10 @@
+EXETYPE WINDOWS
+
+EXPORTS
+	get_tool_info
+
+	tool_find
+	tool_find_property
+
+	tool_find_next
+	tool_find_next_property
