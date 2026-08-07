@@ -1,0 +1,24 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+# User specific environment and startup programs
+export HOSTNAME=`/usr/bin/hostname 2>/dev/null`
+export ACT_LVL=prod
+export PATH=$HOME/bin:/usr/local/bin/perl:.:$PATH
+export SRVR=`hostname`
+export SERVER_NAME=`hostname`
+
+# BEGIN ORACLE ENVIRONMENT
+umask 022
+export ORACLE_BASE=/u01/app/oracle
+export ORACLE_HOME=/u01/app/oracle/product/19.3.0/client64
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib:$LD_LIBRARY_PATH
+export PATH=$ORACLE_HOME/bin:$PATH
+export ORACLE_HOSTNAME=pawapp7017l
+export ORA_INVENTORY=/u01/app/oraInventory
+# END ORACLE ENVIRONMENT
+

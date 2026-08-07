@@ -1,0 +1,4 @@
+
+Host ftp-ssh.mitchell.com
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
