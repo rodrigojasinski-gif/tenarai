@@ -9,8 +9,7 @@
   export PROCNAME=$(basename $0 .ksh_run)
   trap 'abndalrt.ksh $?' err
 
-# Change rj132422 - 20260424 - MAPP/ALTP file paths now come from race_altp.ksh
-# Replaces the legacy prod3nt / ${NOVELL} FTP dependency.
+# Change rj132422 - 20260424 - MAPP/ALTP file paths Replaces the legacy prod3nt / ${NOVELL} FTP dependency.
 
 ############################################################################
 # INITIALIZE VARIABLES PASSED TO AND USED BY THIS PROC SUB-SCRIPT.         #

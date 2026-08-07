@@ -1,0 +1,1068 @@
+#!/bin/ksh
+ echo "$Id: xam010.ksh,v 1.17 2017/06/09 16:35:25 jl101765 Exp $"
+############################################################################
+#  PROCNAME:  xam010                                                       #
+#  ALTERNATE PARTS ODD EXTRACT PROCESS                                     #
+#  CREATE VARIOUS ALTERNATE PARTS RELATED FILES FOR DELIVERY TO:           #
+#  1. MAPP ODD DIRECTORIES (PRODUCT, ARCHIVE, and UAT)                     #
+#  2. LOAD INTO MAPP MATRIX DATABASES (MAPP-Q AND MAPP-P)                  #
+#  3. UM/MAPP HOST REPORTING (GEN-PRINT)                                   #
+#  ALSO, CREATE CONTROL REPORTS FOR DATA ANALYST.                          #
+############################################################################
+
+set -xv
+export PROCNAME=$(basename $0 .ksh_run)
+trap 'abndalrt.ksh    $?' err
+print ProcessId = $$
+
+export XAMUSERID=`cat $RACE/prm/zxampass.prm`
+export SQL_JOBNAME=$JOBNAME
+export SQL_TMP_PATH=$OBJ_TMPDIR
+export SQL_RPT_PATH=$OBJ_RPTDIR
+export SQL_LOG_PATH=$OBJ_LOGDIR
+export SQL_LOGFILE=${JOBLOGNAME}
+export SQL_RESTART=$PKG_RS
+
+export RPTDATE=$(date +'%C%y%m%d%H%M%S')
+export FILEDATE=$(date +'%C%y%m%d')
+
+#---------------------------------------------------------------------TEMP FILE REMOVAL
+
+#STEP Step001R
+#**********************************************************************
+#*   REMOVE TEMP FILES                                                *
+#*   1) Remove temp files - from last run. (tmp and ttt)              * 
+#**********************************************************************
+export STEPNAME=Step001R
+echo "    Start   ${STEPNAME}           "$(date)
+
+trap '' err
+find $RACE/tmp/ -type f -name xamr010\* -exec rm {} \; 2> /dev/null
+trap 'abndalrt.ksh    $?' err
+
+#* WARNING!! Do NOT insert a space between the "2" and the ">" as this could hose up 
+#* the /dev/null file! The find command was structured this way to avoid hitting the 
+#* tags directory and to avoid getting an arglist too long error message.
+
+
+#---------------------------------------------------------------------EXTRACT PROCEDURE
+
+#STEP Step005R
+#*********************************************************************************************************************
+#* EXECUTE EXT.PKG_MAPP_ODD.sp_main.
+#* This step produces all Alternate Parts related extracts used by
+#* EDI Gen-Print, MMM DB load, and UM incrementals.
+#*
+#* This procedure is restartable. To restart at a step within this
+#* step, enter: {jobname} {script_step} {procedure_step_number}.
+#* e.g. xamr010.ksh Step005R 090
+#* 
+#* Steps are as follows:
+#* sp_main is the main procedure that calls everything else (& controls restartability)
+#* always executed - sf_get_last_extract_date
+#*                 - retrieves date assoc'd with the last time data was extracted
+#*             010 - sp_pre_extract
+#*                 - drops indexes, truncates tables, populates tables and builds indexes
+#*             020 - sp_extract_supplier_edi
+#*                 - builds xamr010_mmsuppl_edi_{date}.tmp containing supplier admin data for EDI
+#*             030 - sp_extract_disclaim_edi
+#*                 - builds xamr010_disclaim_edi_{date}.tmp containing state disclaimer data for EDI
+#*             040 - sp_extract_admin_mmm
+#*                 - builds xamr010_admin_mmm_{date}.tmp containing supplier admin data for MMM
+#*             050 - sp_extract_suplrcat_mmm
+#*                 - builds xamr010_suplrcat_mmm_{date}.tmp containing supplier category data for MMM
+#*             060 - sp_extract_cat_hdrs_mmm
+#*                 - builds xamr010_cat_hdrs_mmm_{date}.tmp containing category header data for MMM
+#*             070 - sp_extract_cat000
+#*                 - builds xamr010_altparts_cat000.tmp containing altparts not assigned to class codes
+#*                   (used in later job step for internal reporting)
+#*             080 - sp_create_incremental
+#*                 - truncate and populate incremental tables
+#*             090 - sp_extract_supplier_um
+#*                 - builds xamr010_altprtsp_um_{date}.tmp containing supplier admin incremental data for UM
+#*             100 - sp_extract_mmcatg_um
+#*                 - builds xamr010_mmcatg_um_{date}.tmp containing category header incremental data for UM
+#*             110 - sp_extract_disclaim_um
+#*                 - builds xamr010_disclaim_um_{date}.tmp containing state disclaimer incremental data for UM
+#*             120 - sp_extract_altpart_um
+#*                 - builds one-to-many xamr010_supl_####_um_{date}.ttt file(s) containing supplier parts incremental
+#*                   data for UM; where #### is the alternate part supplier's number.
+#*             130 - sp_update_part_current
+#*                 - update "current" tables
+#* always executed - sp_update_mapp_log
+#*                 - updates log table with current date (assoc'd with data extract)
+#*********************************************************************************************************************
+
+export STEPNAME=Step005R
+echo "    Start   ${STEPNAME}           "$(date)
+
+sqlplus << % 2>&1 > $LOG
+$XAMUSERID
+
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 132;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+
+exec PKG_MAPP_ODD.SP_MAIN('$SQL_TMP_PATH','$SQL_JOBNAME','$SQL_LOG_PATH','$SQL_LOGFILE','$SQL_RESTART');
+
+QUIT;
+%
+
+#---------------------------------------------------------------------EXTRACT SUMMARY REPORT
+
+#STEP Step010R
+#**********************************************************************
+#*   CONCATENATE ALL EXTRACT SUMMARY REPORTS INTO ONE REPORT          *
+#**********************************************************************
+export STEPNAME=Step010R
+echo "    Start   ${STEPNAME}           "$(date)
+
+#Commented in AES-3148 - Commented all but "DD_RP
+#export DD_RPT1=$RACE/tmp/${JOBNAME}_mmsuppl_edi_*.rpt
+#export DD_RPT2=$RACE/tmp/${JOBNAME}_disclaim_edi_*.rpt
+#export DD_RPT3=$RACE/tmp/${JOBNAME}_admin_mmm_*.rpt
+#export DD_RPT4=$RACE/tmp/${JOBNAME}_suplrcat_mmm_*.rpt
+#export DD_RPT5=$RACE/tmp/${JOBNAME}_cat_hdrs_mmm_*.rpt 
+#export DD_RPT6=$RACE/tmp/${JOBNAME}_cat000_*.rpt
+#export DD_RPT7=$RACE/tmp/${JOBNAME}_altprtsp_um_*.rpt
+#export DD_RPT8=$RACE/tmp/${JOBNAME}_mmcatg_um_*.rpt
+#export DD_RPT9=$RACE/tmp/${JOBNAME}_disclaim_um_*.rpt
+#export DD_RPT10=$RACE/tmp/${JOBNAME}_altparts_um_*.rpt
+
+#export DD_SUMMARY=$RACE/tmp/${JOBNAME}_extrsums.tmp
+
+#cat $DD_RPT1 $DD_RPT2 $DD_RPT3 $DD_RPT4 $DD_RPT5 $DD_RPT6 $DD_RPT7 $DD_RPT8 $DD_RPT9 $DD_RPT10 > $DD_SUMMARY
+
+#Commented in AES-3148 - Stop generating unused files from XAM010 job.
+: <<'END_COMMENT'
+#STEP Step015R
+#**********************************************************************
+#*  FTP EXTRACT SUMMARY REPORT TO DATA ANALYST'S RPT DIR              *
+#**********************************************************************
+export STEPNAME=Step015R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export FTP_FILE=$RACE/tmp/${JOBNAME}_extrsums.tmp
+export FTP_LOG=$RACE/tmp/${JOBNAME}_ftplog_extrsums.tmp
+
+fileput.exp $FTP_FILE extrsums.rpt ${NOVELL}altp/Internal_Rpts ascii | tee $FTP_LOG
+
+
+#STEP Step016R
+#**********************************************************************
+#*   COPY EXTRACT SUMMARY REPORT TO MAPP ODD ARCHIVE DIRECTORY        *
+#**********************************************************************
+export STEPNAME=Step016R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_extrsums.tmp
+export DD_FILE2=$RACE/../../odd/mapp/archive/dat/extrsums_${FILEDATE}.rpt
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+#STEP Step018R
+#**********************************************************************
+#*   COPY EXTRACT SUMMARY REPORT TO PERMANENT RACE REPORT DIRECTORY   *
+#*   ALSO, Manage version retention of report (“Culling”) 
+#**********************************************************************
+export STEPNAME=Step018R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_extrsums.tmp
+export DD_FILE2=$RACE/rpt/${JOBNAME}s_extrsums_${RPTDATE}.rpt
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+rpt_log_retention.ksh "${JOBNAME}s"
+
+#---------------------------------------------------------------------MMSUPPL EDI FILE
+
+#STEP Step020R
+#**********************************************************************
+#*   BUILD MMSUPPL EDI GDG                                            *
+#**********************************************************************
+export STEPNAME=Step020R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_mmsuppl_edi_*.tmp
+export DD_FILE2=$( setgdg.ksh \
+                "$RACE/dat/${JOBNAME}_mmsuppl_edi.dat(+1)" NEW 8)
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+
+#STEP Step025R
+#**********************************************************************
+#*  FTP MMSUPPL EDI FILE TO NT SERVER FOR USE BY UM HOST RPTING.      *
+#*  NOTE: Use binary ftp so that <CR> not included in file.           *
+#**********************************************************************
+export STEPNAME=Step025R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export FTP_FILE=$RACE/tmp/${JOBNAME}_mmsuppl_edi_*.tmp
+export FTP_LOG=$RACE/tmp/${JOBNAME}_ftplog_mmsuppl.tmp
+
+fileput.exp $FTP_FILE mmsuppl.seq ${NOVELL}race | tee $FTP_LOG
+
+
+#STEP Step026R
+#**********************************************************************
+#*  COPY MMSUPPL EDI FILE TO MAPP ODD ARCHIVE DIRECTORY               *
+#**********************************************************************
+export STEPNAME=Step026R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_mmsuppl_edi_*.tmp
+export DD_FILE2=$RACE/../../odd/mapp/archive/dat/mmsuppl_edi_${FILEDATE}.seq
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+
+#---------------------------------------------------------------------DISCLAIM EDI FILE
+
+
+#STEP Step030R
+#**********************************************************************
+#*   BUILD DISCLAIM EDI GDG                                           *
+#**********************************************************************
+export STEPNAME=Step030R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_disclaim_edi*.tmp
+export DD_FILE2=$( setgdg.ksh \
+                "$RACE/dat/${JOBNAME}_disclaim_edi.dat(+1)" NEW 8)
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+
+#STEP Step035R
+#**********************************************************************
+#*  FTP STATE DISCLAIMER FILE TO NT SERVER FOR USE BY UM HOST RPTING. *
+#*  NOTE: Use binary ftp so that <CR> not included in file.           *
+#**********************************************************************
+export STEPNAME=Step035R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export FTP_FILE=$RACE/tmp/${JOBNAME}_disclaim_edi*.tmp
+export FTP_LOG=$RACE/tmp/${JOBNAME}_ftplog_disclaim.tmp
+
+fileput.exp $FTP_FILE disclaim.seq ${NOVELL}race | tee $FTP_LOG
+
+#STEP Step036R
+#**********************************************************************
+#*  COPY EDI DISCLAIMER FILE TO MAPP ODD ARCHIVE DIRECTORY            *
+#**********************************************************************
+export STEPNAME=Step036R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_disclaim_edi*.tmp
+export DD_FILE2=$RACE/../../odd/mapp/archive/dat/disclaim_edi_${FILEDATE}.seq
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+
+#---------------------------------------------------------------------ADMIN MMM FILE
+
+
+#STEP Step040R
+#**********************************************************************
+#*   BUILD MMM SUPPL ADMIN GDG                                        *
+#**********************************************************************
+export STEPNAME=Step040R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_admin_mmm_*.tmp
+export DD_FILE2=$( setgdg.ksh \
+                "$RACE/dat/${JOBNAME}_admin_mmm.dat(+1)" NEW 8)
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+
+#STEP Step045R
+#**********************************************************************
+#*  REMOTE COPY SUPPLIER ADMIN FILE TO MAPP DATABASE BUILD DIRECTORY  *
+#**********************************************************************
+export STEPNAME=Step045R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export RMT_FILE=$RACE/tmp/${JOBNAME}_admin_mmm_*.tmp
+export LOC_FILE=/${ACT_LVL}/geis/ftpvm/dat/${JOBNAME}_admin_mmm.dat
+ssh -nq ${MAPP_HOST} rm -f ${LOC_FILE}
+scp -q ${RMT_FILE} ${MAPP_HOST}:${LOC_FILE}
+
+#####old method of transfer 2015/01 PAG  (Remove after successful prod run.)
+#####export LOC_FILE=$RACE/../../geis/ftpvm/dat/${JOBNAME}_admin_mmm.dat
+#####rcp -p $RMT_FILE ${GEI_HOST}:${LOC_FILE}
+
+
+#STEP Step046R
+#**********************************************************************
+#*  COPY MMM ADMIN FILE TO MAPP ODD ARCHIVE DIRECTORY                 *
+#**********************************************************************
+export STEPNAME=Step046R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_admin_mmm_*.tmp
+export DD_FILE2=$RACE/../../odd/mapp/archive/dat/admin_mmm_${FILEDATE}.dat
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+
+#---------------------------------------------------------------------SUPLRCAT MMM FILE
+
+#STEP Step050R
+#**********************************************************************
+#*   BUILD MMM SUPPLIER CATEGORIES GDG                                *
+#**********************************************************************
+export STEPNAME=Step050R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_suplrcat_mmm_*.tmp
+export DD_FILE2=$( setgdg.ksh \
+       "$RACE/dat/${JOBNAME}_suplrcat_mmm.dat(+1)" NEW 8)
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+
+#STEP Step055R
+#**********************************************************************
+#*  REMOTE COPY SUPPLIER CATEGORIES FILE.                             *
+#**********************************************************************
+export STEPNAME=Step055R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export RMT_FILE=$RACE/tmp/${JOBNAME}_suplrcat_mmm_*.tmp
+export LOC_FILE=/${ACT_LVL}/geis/ftpvm/dat/${JOBNAME}_suplrcat_mmm.dat
+ssh -nq ${MAPP_HOST} rm -f ${LOC_FILE}
+scp -q ${RMT_FILE} ${MAPP_HOST}:${LOC_FILE}
+
+#####old method of transfer 2015/01 PAG  (Remove after successful prod run.)
+#####export LOC_FILE=$RACE/../../geis/ftpvm/dat/${JOBNAME}_suplrcat_mmm.dat
+#####rcp -p $RMT_FILE ${GEI_HOST}:${LOC_FILE}
+
+
+#STEP Step056R
+#**********************************************************************
+#*  COPY MMM SUPLRCAT FILE TO MAPP ODD ARCHIVE DIRECTORY              *
+#**********************************************************************
+export STEPNAME=Step056R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_suplrcat_mmm_*.tmp
+export DD_FILE2=$RACE/../../odd/mapp/archive/dat/suplrcat_mmm_${FILEDATE}.dat
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+
+#---------------------------------------------------------------------CAT HDRS MMM FILE
+
+#STEP Step060R
+#**********************************************************************
+#*   BUILD MMM CATEGORY HEADERS GDG                                   *
+#**********************************************************************
+export STEPNAME=Step060R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_cat_hdrs_mmm_*.tmp
+export DD_FILE2=$( setgdg.ksh \
+       "$RACE/dat/${JOBNAME}_cat_hdrs_mmm.dat(+1)" NEW 8)
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+#STEP Step065R
+#**********************************************************************
+#*  REMOTE COPY CAT HDRS FILE.                                        *
+#**********************************************************************
+export STEPNAME=Step065R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export RMT_FILE=$RACE/tmp/${JOBNAME}_cat_hdrs_mmm_*.tmp
+export LOC_FILE=/${ACT_LVL}/geis/ftpvm/dat/${JOBNAME}_cat_hdrs_mmm.dat
+ssh -nq ${MAPP_HOST} rm -f ${LOC_FILE}
+scp -q ${RMT_FILE} ${MAPP_HOST}:${LOC_FILE}
+
+#####old method of transfer 2015/01 PAG (Remove after successful prod run.)
+#####export LOC_FILE=$RACE/../../geis/ftpvm/dat/${JOBNAME}_cat_hdrs_mmm.dat
+#####rcp -p $RMT_FILE ${GEI_HOST}:${LOC_FILE}
+
+
+#STEP Step066R
+#**********************************************************************
+#*  COPY MMM CAT HDRS FILE TO MAPP ODD ARCHIVE DIRECTORY              *
+#**********************************************************************
+export STEPNAME=Step066R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_cat_hdrs_mmm_*.tmp
+export DD_FILE2=$RACE/../../odd/mapp/archive/dat/cat_hdrs_mmm_${FILEDATE}.dat
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+
+#---------------------------------------------------------------------ALTPRTSP UM FILE
+
+#STEP Step090R
+#**********************************************************************
+#*  IF AN INCREMENTAL UM SUPPLIER FILE WAS CREATED IN STEP005R, THEN: *
+#*  1. BUILD UM SUPPLIER GDG                                          *
+#**********************************************************************
+export STEPNAME=Step090R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_altprtsp_um_*.tmp
+export DD_FILE2=$( setgdg.ksh \
+       "$RACE/dat/${JOBNAME}_altprtsp_um.dat(+1)" NEW 8)
+
+if [ ! -s $DD_FILE1 ]
+  then
+    echo "NOTE: No incremental UM Suppier File created this time.\a"
+  else
+    cp $DD_FILE1 $DD_FILE2 2>&1
+fi
+
+#STEP Step095R
+#**********************************************************************
+#*  COPY TO PRODUCT DIRECTORY                                         *                                   
+#*  IF AN INCREMENTAL UM SUPPLIER FILE WAS CREATED IN STEP005R, THEN: *
+#*  1. COPY UM SUPPLIER FILE GIVING IT AN EXTENSION OF "ttt".         *
+#*  2. RENAME THE "ttt" FILE TO A "txt" FILE SO THAT ODD MECHANISM    *
+#*     CAN PICK IT UP.                                                *
+#**********************************************************************
+export STEPNAME=Step095R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export RACE_FILE=$RACE/tmp/${JOBNAME}_altprtsp_um_*.tmp
+export TTT_FILE=$RACE/../../odd/mapp/product/dat/altprtsp${FILEDATE}.ttt
+export TXT_FILE=$RACE/../../odd/mapp/product/dat/altprtsp${FILEDATE}.txt
+
+if [ ! -s $RACE_FILE ]
+  then
+    echo "NOTE: No incremental UM Suppier File copied this time.\a"
+  else
+    cp $RACE_FILE $TTT_FILE 2>&1
+    mv $TTT_FILE $TXT_FILE
+fi
+
+
+#STEP Step096R
+#**********************************************************************
+#*  COPY TO UAT DIRECTORY                                             *
+#*  IF AN INCREMENTAL UM SUPPLIER FILE WAS CREATED IN STEP005R, THEN: *
+#*  1. COPY UM SUPPLIER FILE GIVING IT AN EXTENSION OF "ttt".         *
+#*  2. RENAME THE "ttt" FILE TO A "txt" FILE SO THAT ODD MECHANISM    *
+#*     CAN PICK IT UP.                                                *
+#**********************************************************************
+export STEPNAME=Step096R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export RACE_FILE=$RACE/tmp/${JOBNAME}_altprtsp_um_*.tmp
+export TTT_FILE=$RACE/../../odd/mapp/uat/dat/altprtsp${FILEDATE}.ttt
+export TXT_FILE=$RACE/../../odd/mapp/uat/dat/altprtsp${FILEDATE}.txt
+
+if [ ! -s $RACE_FILE ]
+  then
+    echo "NOTE: No incremental UM Suppier File copied this time.\a"
+  else
+    cp $RACE_FILE $TTT_FILE 2>&1
+    mv ${TTT_FILE} ${TXT_FILE}
+fi
+
+#STEP Step097R
+#**********************************************************************
+#*  IF AN INCREMENTAL UM SUPPLIER FILE WAS CREATED IN STEP005R, THEN: *
+#*  COPY ALTPRTSP UM FILE TO MAPP ODD ARCHIVE DIRECTORY               *
+#**********************************************************************
+export STEPNAME=Step097R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_altprtsp_um_*.tmp
+export DD_FILE2=$RACE/../../odd/mapp/archive/dat/altprtsp${FILEDATE}.txt
+
+if [ ! -s $DD_FILE1 ]
+  then
+    echo "NOTE: No incremental UM Suppier File created this time.\a"
+  else
+    cp $DD_FILE1 $DD_FILE2 2>&1
+fi
+
+
+#---------------------------------------------------------------------MMCATG UM FILE
+
+#STEP Step100R
+#**********************************************************************
+#*  IF AN INCREMENTAL UM CATEGORY FILE WAS CREATED IN STEP005R, THEN: *
+#*  1. BUILD UM CATEGORY GDG                                          *
+#**********************************************************************
+export STEPNAME=Step100R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_mmcatg_um_*.tmp
+export DD_FILE2=$( setgdg.ksh \
+       "$RACE/dat/${JOBNAME}_mmcatg_um.dat(+1)" NEW 8)
+
+if [ ! -s $DD_FILE1 ]
+  then
+    echo "NOTE: No incremental UM Category File created this time.\a"
+  else
+    cp $DD_FILE1 $DD_FILE2 2>&1
+fi
+
+#STEP Step103R
+#**********************************************************************
+#*  ADD CARRIAGE RETURN AND LINE FEED TO THIS FILE FOR USE BY UM.     *
+#*  SINCE FILE IS NOT BEING FTP'D TO AN NT ENVIRONMENT (WHICH WOULD   *
+#*  ADD THESE), WE MUST ADD THEM BEFORE PLACING THE FILE IN THE CIFS- *
+#*  SHARED DIRECTORIES.                                               *
+#**********************************************************************
+export STEPNAME=Step103R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export RACE_FILE=$RACE/tmp/${JOBNAME}_mmcatg_um_*.tmp
+export CRLF_FILE=$RACE/tmp/${JOBNAME}_mmcatg_um_crlf.ttt
+
+
+
+    if [ ! -s $RACE_FILE ]
+    then
+        echo "NOTE: No incremental UM Category File to be copied this time.\a"
+    else
+        awk 'sub("$", "\r")' ${RACE_FILE} > ${CRLF_FILE}
+    fi
+
+#STEP Step105R
+#**********************************************************************
+#*  COPY TO PRODUCT DIRECTORY                                         *
+#*  IF AN INCREMENTAL UM CATEGORY FILE WAS CREATED IN STEP005R, THEN: *
+#*  1. COPY UM CATEGORY FILE GIVING IT AN EXTENSION OF "ttt".         *
+#*  2. RENAME THE "ttt" FILE TO A "txt" FILE SO THAT ODD MECHANISM    *
+#*     CAN PICK IT UP.                                                *
+#**********************************************************************
+export STEPNAME=Step105R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export CRLF_FILE=$RACE/tmp/${JOBNAME}_mmcatg_um_crlf.ttt
+export TTT_FILE=$RACE/../../odd/mapp/product/dat/mmcatg${FILEDATE}.ttt
+export TXT_FILE=$RACE/../../odd/mapp/product/dat/mmcatg${FILEDATE}.txt
+
+
+    if [ ! -s $CRLF_FILE ]
+    then
+        echo "Step skipped. No file to copy.\a"
+    else
+        cp $CRLF_FILE $TTT_FILE 2>&1
+        mv $TTT_FILE $TXT_FILE
+    fi
+
+#STEP Step106R
+#**********************************************************************
+#*  COPY TO UAT DIRECTORY                                             *
+#*  IF AN INCREMENTAL UM CATEGORY FILE WAS CREATED IN STEP005R, THEN: *
+#*  1. COPY UM CATEGORY FILE GIVING IT AN EXTENSION OF "ttt".         *
+#*  2. RENAME THE "ttt" FILE TO A "txt" FILE SO THAT ODD MECHANISM    *
+#*     CAN PICK IT UP.                                                *
+#**********************************************************************
+export STEPNAME=Step106R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export CRLF_FILE=$RACE/tmp/${JOBNAME}_mmcatg_um_crlf.ttt
+export TTT_FILE=$RACE/../../odd/mapp/uat/dat/mmcatg${FILEDATE}.ttt
+export TXT_FILE=$RACE/../../odd/mapp/uat/dat/mmcatg${FILEDATE}.txt
+
+
+    if [ ! -s $CRLF_FILE ]
+    then
+        echo "Step skipped. No file to copy.\a"
+    else
+        cp $CRLF_FILE $TTT_FILE 2>&1
+        mv $TTT_FILE $TXT_FILE
+    fi
+
+
+#STEP Step107R
+#**********************************************************************
+#*  IF AN INCREMENTAL UM CATEGORY FILE WAS CREATED IN STEP005R, THEN: *
+#*  COPY MMCATG UM FILE TO MAPP ODD ARCHIVE DIRECTORY                 *
+#**********************************************************************
+export STEPNAME=Step107R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export CRLF_FILE=$RACE/tmp/${JOBNAME}_mmcatg_um_crlf.ttt
+export TXT_FILE=$RACE/../../odd/mapp/archive/dat/mmcatg${FILEDATE}.txt
+
+if [ ! -s $CRLF_FILE ]
+  then
+    echo "Step skipped. No file to copy.\a"
+  else
+    cp $CRLF_FILE $TXT_FILE 2>&1
+fi
+
+
+#---------------------------------------------------------------------DISCLAIM UM FILE
+
+#STEP Step110R
+#**********************************************************************
+#*  IF AN INCREMENTAL UM DISCLAIMER FILE WAS CREATED IN STEP005R, THEN*
+#*  1. BUILD UM SUPPLIER GDG                                          *
+#**********************************************************************
+export STEPNAME=Step110R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_disclaim_um_*.tmp
+export DD_FILE2=$( setgdg.ksh \
+       "$RACE/dat/${JOBNAME}_disclaim_um.dat(+1)" NEW 8)
+
+if [ ! -s $DD_FILE1 ]
+  then
+    echo "NOTE: No incremental UM Disclaimer File created this time.\a"
+  else
+    cp $DD_FILE1 $DD_FILE2 2>&1
+fi
+
+#STEP Step115R
+#**********************************************************************
+#*  COPY TO PRODUCT DIRECTORY                                         *
+#*  IF AN INCREMENTAL UM DISCLAIMER FILE WAS CREATED IN STEP005R, THEN*
+#*  1. COPY UM DISCLAIMER FILE GIVING IT AN EXTENSION OF "ttt".       *
+#*  2. RENAME THE "ttt" FILE TO A "txt" FILE SO THAT ODD MECHANISM    *
+#*     CAN PICK IT UP.                                                *
+#**********************************************************************
+export STEPNAME=Step115R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export RACE_FILE=$RACE/tmp/${JOBNAME}_disclaim_um_*.tmp
+export TTT_FILE=$RACE/../../odd/mapp/product/dat/disclaim${FILEDATE}.ttt
+export TXT_FILE=$RACE/../../odd/mapp/product/dat/disclaim${FILEDATE}.txt
+
+
+    if [ ! -s $RACE_FILE ]
+    then
+        echo "NOTE: No incremental UM Disclaimer File copied this time.\a"
+    else
+        cp $RACE_FILE ${TTT_FILE}
+        mv ${TTT_FILE} ${TXT_FILE}
+    fi
+
+
+#STEP Step116R
+#**********************************************************************
+#*  COPY TO UAT DIRECTORY                                             *
+#*  IF AN INCREMENTAL UM DISCLAIMER FILE WAS CREATED IN STEP005R, THEN*
+#*  1. COPY UM DISCLAIMER FILE GIVING IT AN EXTENSION OF "ttt".       *
+#*  2. RENAME THE "ttt" FILE TO A "txt" FILE SO THAT ODD MECHANISM    *
+#*     CAN PICK IT UP.                                                *
+#**********************************************************************
+export STEPNAME=Step116R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export RACE_FILE=$RACE/tmp/${JOBNAME}_disclaim_um_*.tmp
+export TTT_FILE=$RACE/../../odd/mapp/uat/dat/disclaim${FILEDATE}.ttt
+export TXT_FILE=$RACE/../../odd/mapp/uat/dat/disclaim${FILEDATE}.txt
+
+
+    if [ ! -s $RACE_FILE ]
+    then
+        echo "NOTE: No incremental UM Disclaimer File copied this time.\a"
+    else
+        cp $RACE_FILE ${TTT_FILE}
+        mv ${TTT_FILE} ${TXT_FILE}
+    fi
+
+
+#STEP Step117R
+#**********************************************************************
+#*  IF AN INCREMENTAL UM DISCLAIMER FILE WAS CREATED IN STEP005R, THEN*
+#*  COPY DISCLAIM UM FILE TO MAPP ODD ARCHIVE DIRECTORY               *
+#**********************************************************************
+export STEPNAME=Step117R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_disclaim_um_*.tmp
+export DD_FILE2=$RACE/../../odd/mapp/archive/dat/disclaim${FILEDATE}.txt
+
+if [ ! -s $DD_FILE1 ]
+  then
+    echo "NOTE: No incremental UM Disclaimer File created this time.\a"
+  else
+    cp $DD_FILE1 $DD_FILE2 2>&1
+fi
+
+
+#---------------------------------------------------------------------SUPPLIER PARTS UM FILE(S) 
+
+#STEP Step120R
+#**********************************************************************
+#*  IF ANY INCREMENTAL UM SUPPLIER PARTS FILE(S) WERE CREATED IN      *
+#*  STEP005R, THEN:                                                   *
+#*  COPY THESE FILE(S) TO MAPP ODD PRODUCT DIRECTORY.                 *
+#**********************************************************************
+export STEPNAME=Step120R
+echo "    Start   ${STEPNAME}           "$(date)
+
+
+export FILE_LIST=$RACE/tmp/${JOBNAME}_supl_list_um_*.tmp
+export ODD_PRODUCT_DIR=$RACE/../../odd/mapp/product/dat/
+export RACE_DIR=$RACE/tmp/
+
+while read LINE
+do 
+  export TTT_FILE=`echo $LINE | cut -f1 -d"|"`
+  export TXT_FILE=`echo $LINE | cut -f2 -d"|"`
+  cp ${RACE_DIR}${TTT_FILE} ${ODD_PRODUCT_DIR}${TTT_FILE}
+  mv ${ODD_PRODUCT_DIR}${TTT_FILE} ${ODD_PRODUCT_DIR}${TXT_FILE}
+done<$FILE_LIST
+
+
+#STEP Step121R
+#**********************************************************************
+#*  IF ANY INCREMENTAL UM SUPPLIER PARTS FILE(S) WERE CREATED IN      *
+#*  STEP005R, THEN:                                                   *
+#*  COPY THESE FILE(S) TO MAPP ODD UAT DIRECTORY.                     *
+#**********************************************************************
+export STEPNAME=Step121R
+echo "    Start   ${STEPNAME}           "$(date)
+
+
+export FILE_LIST=$RACE/tmp/${JOBNAME}_supl_list_um_*.tmp
+export ODD_UAT_DIR=$RACE/../../odd/mapp/uat/dat/
+export RACE_DIR=$RACE/tmp/
+
+while read LINE
+do 
+  export TTT_FILE=`echo $LINE | cut -f1 -d"|"`
+  export TXT_FILE=`echo $LINE | cut -f2 -d"|"`
+  cp ${RACE_DIR}${TTT_FILE} ${ODD_UAT_DIR}${TTT_FILE}
+  mv ${ODD_UAT_DIR}${TTT_FILE} ${ODD_UAT_DIR}${TXT_FILE}
+done<$FILE_LIST
+
+
+#STEP Step122R
+#**********************************************************************
+#*  IF ANY INCREMENTAL UM SUPPLIER PARTS FILE(S) WERE CREATED IN      *
+#*  STEP005R, THEN:                                                   *
+#*  COPY THESE FILE(S) TO MAPP ODD ARCHIVE DIRECTORY.                 *
+#**********************************************************************
+export STEPNAME=Step122R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export FILE_LIST=$RACE/tmp/${JOBNAME}_supl_list_um_*.tmp
+export ODD_ARCHIVE_DIR=$RACE/../../odd/mapp/archive/dat/
+export RACE_DIR=$RACE/tmp/
+
+while read LINE
+do 
+  export TTT_FILE=`echo $LINE | cut -f1 -d"|"`
+  export TXT_FILE=`echo $LINE | cut -f2 -d"|"`
+  cp ${RACE_DIR}${TTT_FILE} ${ODD_ARCHIVE_DIR}${TTT_FILE}
+  mv ${ODD_ARCHIVE_DIR}${TTT_FILE} ${ODD_ARCHIVE_DIR}${TXT_FILE}
+done<$FILE_LIST
+
+
+#STEP Step125R
+#**********************************************************************
+#*  COPY UM SUPL LIST FILE TO PERMANENT FILENAME W/I RACE SO THERE'S A*
+#*  RECORD OF WHAT SUPPLIER FILES WERE CREATED AND COPIED.            *
+#**********************************************************************
+export STEPNAME=Step125R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_FILE1=$RACE/tmp/${JOBNAME}_supl_list_um_*.tmp
+export DD_FILE2=$( setgdg.ksh \
+                "$RACE/dat/${JOBNAME}_supl_list_um.dat(+1)" NEW 8)
+
+cp $DD_FILE1 $DD_FILE2 2>&1
+
+END_COMMENT
+#Commented in AES-3148 - Stop generating unused files from XAM010 job.
+
+#---------------------------------------------------------------------CATEGORY HEADER REPORTS 
+
+#STEP Step130R
+#*********************************************************************
+#* 1 EXTRACT MAPP CATEGORY HDR FILE (FROM ALTPART_CLASS TABLE)       *
+#* 2 PRODUCE CATEGORY HEADER DETAIL & SUMMARY RPTS (FOR INTERNAL USE)*
+#* 3 CREATE DATAFILE TO BE USED FOR CLIENT REPORT (LATER STEP)       *
+#*   ALSO, Manage version retention of reports (“Culling”)           * 
+#*********************************************************************
+export STEPNAME=Step130R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export SQL_EXTRACT='_cat_hdrs.tmp'                   
+export SQL_DTL1RPT=d_catcdi_${RPTDATE}.rpt
+export SQL_SUMRPT=e_cathdrs_${RPTDATE}.rpt
+export SQL_RPTEXTR='_cat_hdrs_dtl_cust.tmp'
+
+sqlplus << %
+$XAMUSERID
+
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 132;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+
+exec SP_CREATE_ALTPART_CLASS_GEIS('$SQL_TMP_PATH','$SQL_RPT_PATH','$SQL_JOBNAME','$SQL_EXTRACT','$SQL_DTL1RPT','$SQL_RPTEXTR','$SQL_SUMRPT');
+
+QUIT;
+%
+
+rpt_log_retention.ksh "${JOBNAME}d"
+rpt_log_retention.ksh "${JOBNAME}e"
+
+#STEP Step135
+#**********************************************************************
+#*  FTP CATEGORY DETAIL REPORT TO DATA ANALYST'S REPORT DIRECTORY     *
+#**********************************************************************
+export STEPNAME=Step135
+echo "    Start   ${STEPNAME}           "$(date)
+
+export FTP_FILE=$RACE/rpt/${JOBNAME}d_catcdi_${RPTDATE}.rpt
+export FTP_LOG=$RACE/tmp/${JOBNAME}_ftplog_catcdi.tmp
+
+# Change rj132422 - 20260424 - Remove prod3nt dependency; use NFS-mounted path
+# sed adds CR to preserve the former 'ascii' fileput behavior (LF -> CRLF for Windows analysts)
+sed 's/\r*$/\r/' $FTP_FILE > ${ALTP_INTRPT_DIR}/cat_dtl.rpt 2>$FTP_LOG
+
+
+#STEP Step140R
+#*********************************************************************
+#* 1 SORT CATEGORY HEADER DATA BY: MM_SEQ_NUM            pos 1-3     *
+#*                                 PRTC DESCRIPTION      pos 75-200  *
+#* 2 DROP DUPLICATES                                                 *
+#*********************************************************************
+export STEPNAME=Step140R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_SORTIN=$RACE/tmp/${JOBNAME}_cat_hdrs_dtl_cust.tmp
+export DD_SORTOUT=$RACE/tmp/${JOBNAME}_cat_hdrs_dtl_cust.srt
+
+sort -u -T $RACE/tmp -k1.1,1.3 -k1.45,1.100 -o $DD_SORTOUT $DD_SORTIN
+
+
+#STEP Step145R
+#*********************************************************************
+#* 1 CREATE CATEGORY HEADER REPORT (FOR EXTERNAL CLIENTS)            *
+#*   ALSO, Manage version retention of report (“Culling”)            *
+#*********************************************************************
+export STEPNAME=Step145R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export SQL_FILEIN='_cat_hdrs_dtl_cust.srt'
+export SQL_DTL1RPT=f_cathdrc_${RPTDATE}.rpt
+
+sqlplus << %
+$XAMUSERID
+
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 132;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+
+exec SP_ALTPART_CLASS_CLIENT_RPT('$SQL_TMP_PATH','$SQL_RPT_PATH','$SQL_JOBNAME','$SQL_FILEIN','$SQL_DTL1RPT');
+
+QUIT;
+%
+
+rpt_log_retention.ksh "${JOBNAME}f"
+
+#STEP Step150
+#**********************************************************************
+#*  FTP EXTERNAL CUSTOMER'S CATEGORY HEADER REPORT TO SPECIAL DIRECTORY
+#**********************************************************************
+export STEPNAME=Step150
+echo "    Start   ${STEPNAME}           "$(date)
+
+export FTP_FILE=$RACE/rpt/${JOBNAME}f_cathdrc_${RPTDATE}.rpt
+export FTP_LOG=$RACE/tmp/${JOBNAME}_ftplog_cathdrc.tmp
+
+# Change rj132422 - 20260424 - Remove prod3nt dependency; use NFS-mounted path
+# sed adds CR to preserve the former 'ascii' fileput behavior (LF -> CRLF for Windows analysts)
+sed 's/\r*$/\r/' $FTP_FILE > ${ALTP_CUSTRPT_DIR}/category.rpt 2>$FTP_LOG
+
+
+
+#---------------------------------------------------------------------PRTC NOT ASSIGNED REPORTS
+
+#STEP Step160R
+#*********************************************************************
+#*   SORT PRTC/CATEGORY DATA BY: PRTC_BODY               pos 47-50   *
+#*                               SERVICE & LINE BARCODE  pos 01-12   *
+#*                               ALTP SUPPLIER & PART #  pos 14-37   *
+#*                                                                   *
+#*   NOTE: cat000.tmp (I/P) file was created in Step005              *
+#*********************************************************************
+export STEPNAME=Step160R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export DD_SORTIN=$RACE/tmp/${JOBNAME}_altparts_cat000.tmp
+export DD_SORTOUT=$RACE/tmp/${JOBNAME}_altparts_cat000.srt
+
+sort -T $RACE/tmp -k1.47,1.50 -k1.1,1.12 -k1.14,1.37 -o $DD_SORTOUT $DD_SORTIN
+
+
+#STEP Step165R
+#*********************************************************************
+#*   GENERATES 2 REPORTS:                                            *
+#*   1. PRTC NOT ASSIGNED TO CLASS SUMMARY REPORT                    *
+#*   2. PRTC NOT ASSIGNED TO CLASS DETAIL REPORT                     *
+#*   ALSO, Manage version retention of reports (“Culling”)           *
+#*********************************************************************
+export STEPNAME=Step165R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export SQL_FILEIN='_altparts_cat000.srt'
+export SQL_DTLRPT=g_noclsdtl_${RPTDATE}.rpt
+export SQL_SUMRPT=c_noclssum_${RPTDATE}.rpt
+
+sqlplus << %
+$XAMUSERID
+
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 132;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+
+exec SP_ALTPART_PRTC_NOCLASS_RPT('$SQL_TMP_PATH','$SQL_RPT_PATH','$SQL_JOBNAME','$SQL_FILEIN','$SQL_DTLRPT','$SQL_SUMRPT');
+
+QUIT;
+%
+
+rpt_log_retention.ksh "${JOBNAME}g"
+rpt_log_retention.ksh "${JOBNAME}c"
+
+#STEP Step170
+#**********************************************************************
+#*  FTP PRTC NOT ASSIGNED SUMMARY REPORT TO DATA ANALYST'S RPT DIR    *
+#**********************************************************************
+export STEPNAME=Step170
+echo "    Start   ${STEPNAME}           "$(date)
+
+export FTP_FILE=$RACE/rpt/${JOBNAME}c_noclssum_${RPTDATE}.rpt
+export FTP_LOG=$RACE/tmp/${JOBNAME}_ftplog_noclssum.tmp
+
+# Change rj132422 - 20260424 - Remove prod3nt dependency; use NFS-mounted path
+# sed adds CR to preserve the former 'ascii' fileput behavior (LF -> CRLF for Windows analysts)
+sed 's/\r*$/\r/' $FTP_FILE > ${ALTP_INTRPT_DIR}/noclssum.rpt 2>$FTP_LOG
+
+#Commented in AES-3148 - Stop generating unused files from XAM010 job.
+: <<'END_COMMENT'
+#STEP Step175
+#**********************************************************************
+#*  FTP PRTC NOT ASSIGNED DETAIL REPORT TO DATA ANALYST'S RPT DIR     *
+#**********************************************************************
+export STEPNAME=Step175
+echo "    Start   ${STEPNAME}           "$(date)
+
+export FTP_FILE=$RACE/rpt/${JOBNAME}g_noclsdtl_${RPTDATE}.rpt
+export FTP_LOG=$RACE/tmp/${JOBNAME}_ftplog_noclsdtl.tmp
+
+fileput.exp $FTP_FILE noclsdtl.rpt ${NOVELL}altp/Internal_Rpts ascii | tee $FTP_LOG
+
+END_COMMENT
+#Commented in AES-3148 - Stop generating unused files from XAM010 job.
+#---------------------------------------------------------------------SEND EMAIL
+
+#STEP Step800R
+#**********************************************************************
+#*   SEND EMAIL TO VARIOUS RECIPIENTS RE: SUCCESSFUL FILE CREATION    *
+#**********************************************************************
+export STEPNAME=Step800R
+echo "    Start   ${STEPNAME}           "$(date)
+
+export MAIL_LIST=$RACE/prm/xam010r.prm
+export TEXT_FILE=$RACE/prm/xam010m.prm
+
+#Commented in AES-3148 - Stop generating unused files from XAM010 job.
+: <<'END_COMMENT'
+export DD_FILE1=$RACE/tmp/${JOBNAME}_altprtsp_um_*.tmp
+export DD_FILE2=$RACE/tmp/${JOBNAME}_mmcatg_um_*.tmp
+export DD_FILE3=$RACE/tmp/${JOBNAME}_disclaim_um_*.tmp
+export DD_FILE4=$RACE/tmp/${JOBNAME}_supl_list_um_*.tmp
+
+if [ -s $DD_FILE1 ] 
+then
+   export FTP_TEXT=$(head -n +1 $TEXT_FILE | awk '{print}' )
+   echo "\n********************************************* 
+         \n At least 1 UM file was created in this run. 
+         \n*********************************************"
+elif [ -s $DD_FILE2 ]
+then
+   export FTP_TEXT=$(head -n +1 $TEXT_FILE | awk '{print}' )
+   echo "\n*********************************************
+         \n At least 1 UM file was created in this run. 
+         \n*********************************************"
+elif [ -s $DD_FILE3 ]
+then
+   export FTP_TEXT=$(head -n +1 $TEXT_FILE | awk '{print}' )
+   echo "\n*********************************************
+         \n At least 1 UM file was created in this run. 
+         \n*********************************************"
+elif [ -s $DD_FILE4 ]
+then
+   export FTP_TEXT=$(head -n +1 $TEXT_FILE | awk '{print}' )
+   echo "\n*********************************************
+         \n At least 1 UM file was created in this run. 
+         \n*********************************************"
+else 
+   export FTP_TEXT=$(tail -n -1 $TEXT_FILE  | awk '{print}' )
+   echo "\n*********************************************
+         \n No UM ODD files were created in this run.   
+         \n*********************************************"
+fi
+END_COMMENT
+#Commented in AES-3148 - Stop generating unused files from XAM010 job.
+
+while read LINE
+do 
+  export RECIP=`echo $LINE | cut -f1`
+  if [ ${ACT_LVL} = prod ]
+  then
+    echo "This is an email notification of the MAPP ODD Extract." | mailx -s "MAPP ODD Extract - PRODUCTION"  ${RECIP}
+  else
+    echo "This is an email notification of the MAPP ODD Extract." | mailx -s "MAPP ODD Extract - TEST (DEV)"  ${RECIP}
+  fi    
+done<$MAIL_LIST
+
+#---------------------------------------------------------------------FILE REMOVAL
+
+#STEP Step900R
+#**********************************************************************
+#*   REMOVE FILES OLDER THAN 76 DAYS FROM MAPP ODD ARCHIVE DIRECTORY  *
+#**********************************************************************
+export STEPNAME=Step900R
+echo "    Start   ${STEPNAME}           "$(date)
+
+trap '' err
+find $RACE/../../odd/mapp/archive/dat/ -type f -mtime +76 -exec rm {} \; 2> /dev/null
+trap 'abndalrt.ksh    $?' err
+
+#* WARNING!! Do NOT insert a space between the "2" and the ">" as this could hose up 
+#* the /dev/null file! The find command was structured this way to avoid hitting the 
+#* tags directory and to avoid getting an arglist too long error message.
+
+
+#STEP Step999R
+#**********************************************************************
+#*   REMOVE TEMP FILES                                                *
+#*   1) Remove temp files. (tmp and ttt)                              * 
+#**********************************************************************
+#export STEPNAME=Step999R
+#echo "    Start   ${STEPNAME}           "$(date)
+
+trap '' err
+find $RACE/tmp/ -type f -name xamr010\* -exec rm {} \; 2> /dev/null
+trap 'abndalrt.ksh    $?' err
+
+#* WARNING!! Do NOT insert a space between the "2" and the ">" as this could hose up 
+#* the /dev/null file! The find command was structured this way to avoid hitting the 
+#* tags directory and to avoid getting an arglist too long error message.
+
+
+#* END-OF-SCRIPT ******************************************************

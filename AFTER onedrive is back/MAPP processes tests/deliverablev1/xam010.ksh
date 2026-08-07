@@ -1,5 +1,5 @@
 #!/bin/ksh
- echo "$Id: xam010.ksh,v 1.18 2026/04/07 13:24:02 rd131153 Exp $"
+ echo "$Id: xam010.ksh,v 1.17 2017/06/09 16:35:25 jl101765 Exp $"
 ############################################################################
 #  PROCNAME:  xam010                                                       #
 #  ALTERNATE PARTS ODD EXTRACT PROCESS                                     #
@@ -13,10 +13,6 @@
 set -xv
 export PROCNAME=$(basename $0 .ksh_run)
 trap 'abndalrt.ksh    $?' err
-
-# Change rj132422 - 20260424 - MAPP/ALTP file paths now come from race_altp.ksh
-# Replaces the legacy prod3nt / ${NOVELL} FTP dependency.
-
 print ProcessId = $$
 
 export XAMUSERID=`cat $RACE/prm/zxampass.prm`
@@ -115,8 +111,6 @@ exec PKG_MAPP_ODD.SP_MAIN('$SQL_TMP_PATH','$SQL_JOBNAME','$SQL_LOG_PATH','$SQL_L
 QUIT;
 %
 
-
-
 #---------------------------------------------------------------------EXTRACT SUMMARY REPORT
 
 #STEP Step010R
@@ -172,7 +166,7 @@ cp $DD_FILE1 $DD_FILE2 2>&1
 #STEP Step018R
 #**********************************************************************
 #*   COPY EXTRACT SUMMARY REPORT TO PERMANENT RACE REPORT DIRECTORY   *
-#*   ALSO, Manage version retention of report ('''Culling''') 
+#*   ALSO, Manage version retention of report (“Culling”) 
 #**********************************************************************
 export STEPNAME=Step018R
 echo "    Start   ${STEPNAME}           "$(date)
@@ -272,6 +266,7 @@ cp $DD_FILE1 $DD_FILE2 2>&1
 
 #---------------------------------------------------------------------ADMIN MMM FILE
 
+
 #STEP Step040R
 #**********************************************************************
 #*   BUILD MMM SUPPL ADMIN GDG                                        *
@@ -330,6 +325,7 @@ export DD_FILE2=$( setgdg.ksh \
        "$RACE/dat/${JOBNAME}_suplrcat_mmm.dat(+1)" NEW 8)
 
 cp $DD_FILE1 $DD_FILE2 2>&1
+
 
 #STEP Step055R
 #**********************************************************************
@@ -404,6 +400,7 @@ export DD_FILE1=$RACE/tmp/${JOBNAME}_cat_hdrs_mmm_*.tmp
 export DD_FILE2=$RACE/../../odd/mapp/archive/dat/cat_hdrs_mmm_${FILEDATE}.dat
 
 cp $DD_FILE1 $DD_FILE2 2>&1
+
 
 #---------------------------------------------------------------------ALTPRTSP UM FILE
 
@@ -787,7 +784,7 @@ END_COMMENT
 #* 1 EXTRACT MAPP CATEGORY HDR FILE (FROM ALTPART_CLASS TABLE)       *
 #* 2 PRODUCE CATEGORY HEADER DETAIL & SUMMARY RPTS (FOR INTERNAL USE)*
 #* 3 CREATE DATAFILE TO BE USED FOR CLIENT REPORT (LATER STEP)       *
-#*   ALSO, Manage version retention of reports ('''Culling''')           * 
+#*   ALSO, Manage version retention of reports (“Culling”)           * 
 #*********************************************************************
 export STEPNAME=Step130R
 echo "    Start   ${STEPNAME}           "$(date)
@@ -844,10 +841,11 @@ export DD_SORTOUT=$RACE/tmp/${JOBNAME}_cat_hdrs_dtl_cust.srt
 
 sort -u -T $RACE/tmp -k1.1,1.3 -k1.45,1.100 -o $DD_SORTOUT $DD_SORTIN
 
+
 #STEP Step145R
 #*********************************************************************
 #* 1 CREATE CATEGORY HEADER REPORT (FOR EXTERNAL CLIENTS)            *
-#*   ALSO, Manage version retention of report ('''Culling''')            *
+#*   ALSO, Manage version retention of report (“Culling”)            *
 #*********************************************************************
 export STEPNAME=Step145R
 echo "    Start   ${STEPNAME}           "$(date)
@@ -912,7 +910,7 @@ sort -T $RACE/tmp -k1.47,1.50 -k1.1,1.12 -k1.14,1.37 -o $DD_SORTOUT $DD_SORTIN
 #*   GENERATES 2 REPORTS:                                            *
 #*   1. PRTC NOT ASSIGNED TO CLASS SUMMARY REPORT                    *
 #*   2. PRTC NOT ASSIGNED TO CLASS DETAIL REPORT                     *
-#*   ALSO, Manage version retention of reports ('''Culling''')           *
+#*   ALSO, Manage version retention of reports (“Culling”)           *
 #*********************************************************************
 export STEPNAME=Step165R
 echo "    Start   ${STEPNAME}           "$(date)

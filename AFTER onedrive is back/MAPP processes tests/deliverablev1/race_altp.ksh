@@ -1,5 +1,5 @@
 #!/bin/ksh
-#$Id: race_altp.ksh,v 1.8 2016/05/04 21:48:43 pg2697 Exp $
+#$Id: race_altp.ksh,v 1.9 2026/08/05 11:44:35 rj132422 Exp $
 #==========================================================================
 # race_altp.ksh
 #
@@ -7,9 +7,9 @@
 #     The purpose of this script is to set the RACE and PATH
 #     environment variables for the Editorial System 'ALTP' subsystem.
 #
-# Change rj132422 - 20260424 - Define MAPP/ALTP NFS file-exchange paths here (ALTP_FTP_DATA + derived), replacing the decommissioned prod3nt/${NOVELL} FTP dependency
+# Change rj132422 - 20260424 - Define MAPP/ALTP NFS file-exchange paths replacing the decommissioned prod3nt/${NOVELL} FTP dependency
 # 2016/05/03 PAG Removed COSREPORT export statement. (CosReport is no longer used.)
-# 2008/08/29 PAG Moved valueing of jobname and joblogname from job script to
+# 2008/08/29 PAG Moved valueing of jobname and joblogname from job script to 
 #                this shared script. (AIX upgrade made "logname" no longer valid.)
 # 2006/02/23 JLW Environment variables for standard directory objects.
 # 2006/10/04 JLW Remove path from raceftp.ksh
@@ -35,7 +35,7 @@ else
    export ALTP_FTP_DATA=/nas/mdev/OEM_Repair_Doc_Repository/ftpdata/mdev
 fi
 
-# MAPP/ALTP file-exchange sub-paths derived from ALTP_FTP_DATA (NFS-mounted)
+# MAPP/ALTP file-exchange sub-paths derived from ALTP_FTP_DATA (NFS-mounted) - rj132422
 export ALTP_DIR=${ALTP_FTP_DATA}/altp
 export ALTP_NAPA_DIR=${ALTP_FTP_DATA}/altp/NAPA
 export ALTP_INTRPT_DIR=${ALTP_FTP_DATA}/altp/Internal_Rpts
@@ -52,6 +52,8 @@ export OBJ_PRMDIR=RACE_ALTP_PRM_DIR
 
 export JOBNAME=$(basename $0 .ksh)
 export JOBLOGNAME=${RACE}/log/$(logname.ksh ${JOBNAME} $1)
+export LOG=${RACE}/tmp/${JOBNAME}_$$.sqlout   # rj132422 - default sqlplus capture log (empty $LOG aborts the redirect on RHEL)
+export PATH=$HOME:$PATH   # TEST ONLY 
 
 #==========================================================================
 #  END

@@ -12,9 +12,6 @@ set -xv
 export PROCNAME=$(basename $0 .ksh_run)
 trap 'abndalrt.ksh $?' err
 
-# Change rj132422 - 20260424 - MAPP/ALTP file paths now come from race_altp.ksh
-# Replaces the legacy prod3nt / ${NOVELL} FTP dependency.
-
 export RPTDATE=$(date +'%C%y%m%d%H%M%S')
 
 #STEP Step010R
@@ -33,12 +30,11 @@ export RPTDATE=$(date +'%C%y%m%d%H%M%S')
     # Verify that the file copied exists and that it contains data
     if [ ! -s ${ZIPFILE} ]
     then
-# Change rj132422 - 20260424 - AIX->RHEL: use print for reliable \n handling on ksh93
-       print "\n*********************************************************************************"
-       print "File that was copied is empty or it does not exist!"
-       print "Source: ${FTPFILE}"
-       print "Target: ${ZIPFILE}"
-       print "*********************************************************************************\n"
+       echo "\n*********************************************************************************"
+       echo "File that was copied is empty or it does not exist!"
+       echo "Source: ${FTPFILE}"
+       echo "Target: ${ZIPFILE}"
+       echo "*********************************************************************************\n"
        $( abndalrt.ksh 911 )
     fi
 
@@ -71,11 +67,10 @@ export RPTDATE=$(date +'%C%y%m%d%H%M%S')
 
     if [[ -n "$ntcount" && "$ntcount" = "$unixcount" ]]
       then
-       print " file copy counts are good "
+       echo " ftp directory counts are good "
     else
-       print " ***** error ***** file copy counts do not match "
-       print " SOURCE byte count = $unixcount "
-       print " TARGET byte count = $ntcount "
+       echo " ***** error ***** ftp directory counts do not match "
+       echo " UNIX byte count = $unixcount "
        abndalrt.ksh ftp_get
     fi
 
@@ -104,7 +99,7 @@ export RPTDATE=$(date +'%C%y%m%d%H%M%S')
 
     reccnt1=$(wc -c $RAWFILE1 | awk ' {print $1}' )
 
-# Change rj132422 - 20260424 - AIX->RHEL: quote vars and use [[ ]] for safe test
+# Change rj132422 - 20260424 - AIX->RHEL syntax adjustment
     if [[ "$reccnt1" -eq 0 ]]
         then echo " unzipped input file is no good "
              $( abndalrt.ksh 911 )
@@ -164,7 +159,7 @@ export RPTDATE=$(date +'%C%y%m%d%H%M%S')
 
     reccnt1=$(wc -c $RAWFILE2 | awk ' {print $1}' )
 
-# Change rj132422 - 20260424 - AIX->RHEL: quote vars and use [[ ]] for safe test
+# Change rj132422 - 20260424 - AIX->RHEL syntax adjustment
     if [[ "$reccnt1" -eq 0 ]]
         then echo " unzipped input file is no good "
              $( abndalrt.ksh 911 )
@@ -286,7 +281,7 @@ rpt_log_retention.ksh "${JOBNAME}d"
 
   if [[ ! -s ${UNXFILE} ]]
   then
-       print " ***** error ***** file copy failed - target missing or empty "
+       echo " ***** error ***** file copy failed - target missing or empty \n \n"
        print " SOURCE = ${NTDIR}/${NTFILE} "
        cat $FTPLOG 2>/dev/null
        abndalrt.ksh ftp_get
@@ -297,11 +292,10 @@ rpt_log_retention.ksh "${JOBNAME}d"
 
   if [[ -n "$ntcount" && "$ntcount" = "$unixcount" ]]
     then
-       print " file copy counts are good "
+       echo " ftp directory counts are good "
   else
-       print " ***** error ***** file copy counts do not match "
-       print " SOURCE byte count = $ntcount "
-       print " TARGET byte count = $unixcount "
+       echo " ***** error ***** ftp directory counts do not match "
+       echo " UNIX byte count = $unixcount "
        abndalrt.ksh ftp_get
   fi
 
@@ -338,8 +332,8 @@ rpt_log_retention.ksh "${JOBNAME}d"
 
   if [[ ! -s ${UNXFILE} ]]
   then
-       print " ***** error ***** file copy failed - target missing or empty "
-       print " SOURCE = ${NTDIR}/${NTFILE} "
+       echo " ***** error ***** file copy failed - target missing or empty \n"
+       echo " SOURCE = ${NTDIR}/${NTFILE} \n"
        cat $FTPLOG 2>/dev/null
        abndalrt.ksh ftp_get
   fi
@@ -349,11 +343,10 @@ rpt_log_retention.ksh "${JOBNAME}d"
 
   if [[ -n "$ntcount" && "$ntcount" = "$unixcount" ]]
     then
-       print " file copy counts are good "
+       echo " file copy counts are good "
   else
-       print " ***** error ***** file copy counts do not match "
-       print " SOURCE byte count = $ntcount "
-       print " TARGET byte count = $unixcount "
+       echo " ***** error ***** ftp directory counts do not match "
+       echo " UNIX byte count = $unixcount "
        abndalrt.ksh ftp_get
   fi
 
@@ -404,7 +397,7 @@ rpt_log_retention.ksh "${JOBNAME}d"
     export NTDIR=${ALTP_DIR}
     export FTPLOG=$RACE/tmp/${JOBNAME}_napa_combined_ftp.tmp
 
-# sed adds CR to preserve the former 'ascii' fileput behavior (LF -> CRLF for Windows analysts)
+# sed adds CR to preserve the former 'ascii' fileput behavior (LF -> CRLF)
     sed 's/\r*$/\r/' $FTPFILE > ${NTDIR}/${NTFILE} 2>$FTPLOG
 
 

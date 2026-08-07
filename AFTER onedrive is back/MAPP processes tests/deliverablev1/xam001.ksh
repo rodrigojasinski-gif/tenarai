@@ -5,13 +5,10 @@
 ############################################################################
 
 set -xv
-export PROCNAME=$(basename $0 .ksh_run)
-trap 'abndalrt.ksh   $?' err
+export PROCNAME=$(basename $0 .ksh_run)   
+trap 'abndalrt.ksh   $?' err    
 
-# Change rj132422 - 20260424 - MAPP/ALTP file paths now come from race_altp.ksh
-# Replaces the legacy prod3nt / ${NOVELL} FTP dependency.
-
-#STEP Step010R
+#STEP Step010R                                                              
     export STEPNAME=Step010R
     echo "    Start   ${STEPNAME}           "$(date)
 #*--------------------------------------------------------------------------
@@ -30,8 +27,8 @@ trap 'abndalrt.ksh   $?' err
 #* verify the copy produced a non-empty file BEFORE comparing counts
    if [[ ! -s ${DD_UNXDISK} ]]
    then
-          print " ***** error ***** file copy failed - target missing or empty "
-          print " SOURCE = ${DD_NOVELDIR}/${DD_NOVELDSK} "
+          echo " ***** error ***** file copy failed - target missing or empty "
+          echo " SOURCE = ${DD_NOVELDIR}/${DD_NOVELDSK} "
           cat $DD_STDOUT 2>/dev/null
           abndalrt.ksh ftp_get
    fi
@@ -42,11 +39,11 @@ trap 'abndalrt.ksh   $?' err
 #* check for empty file and abend, if so
    if [[ -n "$novelcount" && "$novelcount" = "$unixcount" ]]
        then
-          print " file copy counts are good "
+          echo " file copy counts are good "
        else
-          print " ***** error ***** file copy counts do not match "
-          print " SOURCE byte count = $novelcount "
-          print " TARGET byte count = $unixcount "
+          echo " ***** error ***** file copy counts do not match "
+          echo " SOURCE byte count = $novelcount "
+          echo " TARGET byte count = $unixcount "
           abndalrt.ksh ftp_get
    fi
 

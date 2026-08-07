@@ -27,13 +27,13 @@ whenever sqlerror exit sql.sqlcode
     exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => '${JOBNAME}',    \
                                       p_tmp_directory => '${OBJ_TMPDIR}', \
                                       p_tmp_filename  => '${WORKFILE}',   \
-                                      p_log_directory => '${OBJ_LOGDIR}', \
+                                      p_log_directory => '${OBJ_TMPDIR}', \
                                       p_log_filename  => '${LOGFILE%.log}.db.log');
 QUIT;
 %
 
 # rj132422 - This code was added to avoid race condition between db and shell due the nfs
-DB_LOG=${LOGDIR}/${LOGFILE%.log}.db.log
+DB_LOG=${RACE}/tmp/${LOGFILE%.log}.db.log
 if [ -s "$DB_LOG" ]; then
     cat "$DB_LOG" >> "${LOGDIR}/${LOGFILE}"
     rm  "$DB_LOG"
@@ -94,7 +94,7 @@ QUIT;
 %
 
 # rj132422 - This code was added to avoid race condition between db and shell due the nfs
-DB_LOG=${LOGDIR}/${LOGFILE%.log}.db.log
+DB_LOG=${RACE}/tmp/${LOGFILE%.log}.db.log
 if [ -s "$DB_LOG" ]; then
     cat "$DB_LOG" >> "${LOGDIR}/${LOGFILE}"
     rm  "$DB_LOG"

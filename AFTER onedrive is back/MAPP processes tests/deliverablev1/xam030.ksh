@@ -8,12 +8,9 @@
 #***************************************************************************
   
 set -xv
-export PROCNAME=$(basename $0 .ksh_run)
-trap 'abndalrt.ksh    $?' err
-
-# Change rj132422 - 20260424 - MAPP/ALTP file paths now come from race_altp.ksh
-# Replaces the legacy prod3nt / ${NOVELL} FTP dependency.
-
+export PROCNAME=$(basename $0 .ksh_run)   
+trap 'abndalrt.ksh    $?' err    
+  
   export XAMUSERID=`cat $RACE/prm/zxampass.prm`
 
 #STEP Step100R
@@ -36,8 +33,8 @@ trap 'abndalrt.ksh    $?' err
 
   if [[ ! -s ${UNXFILE} ]]
   then
-       print " ***** error ***** file copy failed - target missing or empty "
-       print " SOURCE = ${NTDIR}/${NTFILE} "
+       echo " ***** error ***** file copy failed - target missing or empty \n"
+       echo " SOURCE = ${NTDIR}/${NTFILE} "
        cat $FTPLOG 2>/dev/null
        abndalrt.ksh ftp_get
   fi
@@ -47,11 +44,10 @@ trap 'abndalrt.ksh    $?' err
 
   if [[ -n "$ntcount" && "$ntcount" = "$unixcount" ]]
     then
-       print " file copy counts are good "
+       echo " file copy counts are good "
   else
-       print " ***** error ***** file copy counts do not match "
-       print " SOURCE byte count = $ntcount "
-       print " TARGET byte count = $unixcount "
+       echo " ***** error ***** ftp directory counts do not match "
+       echo " UNIX byte count = $unixcount "
        abndalrt.ksh ftp_get
   fi
 

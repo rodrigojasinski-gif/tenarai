@@ -9,9 +9,6 @@
   export PROCNAME=$(basename $0 .ksh_run)
   trap 'abndalrt.ksh $?' err
 
-# Change rj132422 - 20260424 - MAPP/ALTP file paths now come from race_altp.ksh
-# Replaces the legacy prod3nt / ${NOVELL} FTP dependency.
-
 ############################################################################
 # INITIALIZE VARIABLES PASSED TO AND USED BY THIS PROC SUB-SCRIPT.         #
 #                                                                          #
@@ -70,12 +67,12 @@
 
   if [[ ! -s ${UNXFILE} ]]
     then
-       print " ***** error ***** file copy failed or source file is empty "
-       print " SOURCE = ${NTDIR}/${NTFILE} "
+       echo " ***** error ***** file copy failed or source file is empty "
+       echo " SOURCE = ${NTDIR}/${NTFILE} "
        abndalrt.ksh ftp_get
   else
        unixcount=$(wc -c ${UNXFILE} | awk '{print $1}')
-       print " file copy is good - UNIX byte count = $unixcount "
+       echo " file copy is good - UNIX byte count = $unixcount "
   fi
 
 
@@ -242,7 +239,7 @@ rpt_log_retention.ksh "${JOBNAME}b"
   export FTPFILE=$RACE/rpt/${JOBNAME}b_${QUALIFIER}_updtsum_${RPTDATE}.rpt
   export FTPLOG=$RACE/tmp/${JOBNAME}_ftp_updtsum.tmp
 # Change rj132422 - 20260424 - Remove prod3nt dependency; use NFS-mounted path
-# sed adds CR to preserve the former 'ascii' fileput behavior (LF -> CRLF for Windows analysts)
+# sed adds CR to preserve the former 'ascii' fileput behavior (LF -> CRLF)
   sed 's/\r*$/\r/' $FTPFILE > ${ALTP_INTRPT_DIR}/${QUALIFIER}_updt_sum.txt 2>$FTPLOG
 
 

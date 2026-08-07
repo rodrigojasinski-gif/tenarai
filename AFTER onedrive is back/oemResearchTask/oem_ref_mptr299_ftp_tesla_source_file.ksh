@@ -1,5 +1,5 @@
 #!/bin/ksh
-echo "RCS $Id: oem_ref_mptr299_ftp_tesla_source_file.ksh,v 1.6 2024/01/17 23:25:13 pg2697 Exp $"
+echo "RCS $Id: oem_ref_mptr299_ftp_tesla_source_file.ksh,v 1.8 2026/08/04 17:10:34 rj132422 Exp rj132422 $"
 set -xv
 #*****************************************************************************************
 # PROCNAME oem_ref_mptr299_ftp_tesla_source_file.ksh                                            
