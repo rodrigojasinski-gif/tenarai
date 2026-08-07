@@ -6,17 +6,17 @@ works in both.
 
 ---
 
-## Package contents — 10 files (all in `deliverablev1/`)
+## Package contents — 9 files (all in `deliverablev1/`)
 
 | File | Deploy to | Notes |
 |---|---|---|
 | `race_altp.ksh` | `share/bin` | Subsystem profile. **Now defines** `ALTP_FTP_DATA` + derived paths. **SHARED** — sourced by every ALTP wrapper. |
 | `xamref.ksh` `xamupd.ksh` `xamrpt.ksh` | `altp/bin` | XAMR100/900, 101/901, 102/902 sub-scripts (reformat / update / report). |
 | `xam200.ksh` `xam010.ksh` `xam001.ksh` `xam030.ksh` `xam069.ksh` | `altp/bin` | NAPA chain + auxiliaries. |
-| `xamr200.ksh` | `altp/bin` | The only wrapper that changed (1 `echo`→`print` fix). |
-
 **Not included** (unchanged, already on the server — do NOT redeploy):
 `xamr100/101/102/201/202/900/901/902/001/010/030/069`.
+
+> `xamr200.ksh` was **intentionally left out**: its only change is a cosmetic `echo`→`print` fix on a single restart-only log line. Deferred to avoid touching a wrapper for a non-functional change.
 
 The old `altp_ftp_data.ksh` is **gone** — its config lives in `race_altp.ksh` now.
 
@@ -38,7 +38,7 @@ The old `altp_ftp_data.ksh` is **gone** — its config lives in `race_altp.ksh` 
 
 1. **Back up the originals via RCS** before overwriting (so you can roll back):
    `race_altp.ksh` (v1.8), `xamref.ksh` (v1.4), `xamupd.ksh` (v1.5),
-   `xamrpt.ksh` (v1.17), plus `xam200/010/001/030/069` and `xamr200`.
+   `xamrpt.ksh` (v1.17), plus `xam200/010/001/030/069`.
    Find the dirs with: `which race_altp.ksh` (share/bin) and `which xamref.ksh` (altp/bin).
 
 2. **Copy the files** to their dirs (see table). Deploy `race_altp.ksh` **with or before**
