@@ -171,7 +171,8 @@ then
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Backup the existing FTP'd file
-  if [ -e ${EXISTING_FTP_FILE} ]
+  # rj132422 - prod3nt backup disabled (prod3nt decommissioned); local /dat GDG backup already covers it
+  if false   # was: if [ -e ${EXISTING_FTP_FILE} ]
   then
     # Copy to ftp_data on 'Prod3nt\Cdprod02' bkup directory 
     FTP_LOGFILE=$RACE/tmp/${JOBNAME}_ftp_transfer_log.tmp
@@ -197,6 +198,8 @@ then
   echo "FTP_XFR_FILE_NAME= ${FTP_XFR_FILE_NAME}"
   #P. Becotted end of change
   cp ${FTP_XFR_FILE_NAME} ${NEW_XFR_FTP_FILE}
+  # rj132422 - prod3nt backup disabled (prod3nt decommissioned); the local /dat backup above already covers it
+  if false; then
   # Copy to ftp_data on 'Prod3nt\Cdprod02' bkup directory 
   FTP_LOGFILE=$RACE/tmp/${JOBNAME}_ftp_transfer_log_new.tmp   
   fileput.exp ${NEW_XFR_FTP_FILE} ${WORK_FTP_FILE_NAME} ${NOVELL}oem | tee ${FTP_LOGFILE}
@@ -208,6 +211,7 @@ then
   else
     echo "ftp ${NEW_XFR_FTP_FILE} failed: ftp says ${FTPBYTECOUNT}, real count is ${GOODBYTECOUNT}"
     oem_abndalrt.ksh ftp_put
+  fi
   fi
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   
 fi
