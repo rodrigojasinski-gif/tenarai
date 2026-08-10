@@ -1,5 +1,4 @@
-----------------------------------------------------------------
-----------------------------------------------------------------
+
 checkin process and mptr300 execution on pawapp7017l
  
 
@@ -25,7 +24,6 @@ rcheck_in  -d "1st version before cutover" oem_job.ksh oem/bin &&
 rcheck_in  -d "1st version before cutover" oem_job_datafile.ksh oem/bin  
 
 ls -ltr /stage/race/oem/bin
-
 -rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int     7388 Aug  4 10:10 oem_job_datafile_prep.ksh
 -rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int    10223 Aug  4 10:10 oem_job_process_mitchell_ftp_file.ksh
 -rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int    14913 Aug  4 10:10 oem_ref_mptr299_ftp_tesla_source_file.ksh
@@ -35,7 +33,6 @@ drwx------. 2 svc-nas-dev@staging.int      domain users@staging.int    24576 Aug
 
 
 ls -ltr /stage/race/share/bin
-
 -rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  2024 Aug  4 10:10 race_ext.ksh
 -rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  2229 Aug  4 10:10 race_oem.ksh
 drwx------. 2 svc-nas-dev@staging.int      domain users@staging.int  8192 Aug  4 10:11 rollback
@@ -44,7 +41,6 @@ drwx------. 2 svc-nas-dev@staging.int      domain users@staging.int  8192 Aug  4
 
 
 /prod/race/share/bin/prod_move mptz021.cbl oem/src
-
 /prod/race/share/bin/prod_move oem_job_datafile_prep.ksh oem/bin &&
 /prod/race/share/bin/prod_move oem_job_process_mitchell_ftp_file.ksh oem/bin &&
 /prod/race/share/bin/prod_move oem_ref_mptr299_ftp_tesla_source_file.ksh oem/bin &&
@@ -74,4 +70,306 @@ drwx------. 2 nobody                          nobody                       8192 
 
 
 
+----------------------------------------------------------------
+----------------------------------------------------------------
 
+
+
+rcheck_out -l mpt_elim_dup_old_new_part.awk oem/bin &&
+rcheck_out -l mpt_elim_dup_tran.awk oem/bin
+
+rcheck_in  -d "1st version before cutover" mpt_elim_dup_old_new_part.awk oem/bin &&
+rcheck_in  -d "1st version before cutover" mpt_elim_dup_tran.awk oem/bin 
+
+/prod/race/share/bin/prod_move mpt_elim_dup_old_new_part.awk oem/bin  &&
+/prod/race/share/bin/prod_move mpt_elim_dup_tran.awk oem/bin 
+
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+
+rcheck_out -l  rrevlog share/bin &&
+rcheck_out -l rrevlog share/bin
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+
+
+rcheck_out -l mptz012.cbl oem/src
+rcheck_in -d "Compiling from AIX to RHEL" mptz012.cbl oem/src
+
+rcheck_out -l mptz014.cbl oem/src
+rcheck_in -d "Compiling from AIX to RHEL" mptz014.cbl oem/src
+
+
+rcheck_out -l mptz016.cbl oem/src
+rcheck_in -d "Compiling from AIX to RHEL" mptz016.cbl oem/src
+
+rcheck_out -l mptz999.cbl oem/src
+rcheck_in -d "Compiling from AIX to RHEL" mptz999.cbl oem/src
+
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      839704 Jul 31 05:08 mptz007
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      783440 Jul 31 05:10 mptz023
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      783360 Jul 31 09:51 mptz025
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      851816 Jul 31 09:54 mptz026
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      812776 Jul 31 09:57 mptz024
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      783856 Jul 31 09:59 mptz013
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      788616 Jul 31 10:00 mptz022
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int     7388 Aug  4 10:10 oem_job_datafile_prep.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int    10223 Aug  4 10:10 oem_job_process_mitchell_ftp_file.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int    14913 Aug  4 10:10 oem_ref_mptr299_ftp_tesla_source_file.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int     5156 Aug  4 10:14 oem_job.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int     1930 Aug  4 10:15 oem_job_datafile.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int     3536 Aug  4 11:49 mpt_elim_dup_old_new_part.awk
+drwx------. 2 svc-nas-dev@staging.int      domain users@staging.int    24576 Aug  4 11:50 rollback
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int     4373 Aug  4 11:50 mpt_elim_dup_tran.awk
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      773624 Aug  4 12:39 mptz012
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      760392 Aug  4 12:40 mptz014
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      735632 Aug  4 12:41 mptz016
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      735648 Aug  4 12:42 mptz016r
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      798360 Aug  4 12:43 mptz021
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      817616 Aug  4 12:45 mptz028
+-rwx------. 1 rj132422@corp.int            domain users@corp.int      765536 Aug  4 12:46 mptz999
+
+
+
+/prod/race/share/bin/prod_move mptz012.cbl oem/src  &&
+/prod/race/share/bin/prod_move mptz014.cbl oem/src  &&
+/prod/race/share/bin/prod_move mptz016.cbl oem/src  &&
+/prod/race/share/bin/prod_move mptz016r.cbl oem/src  &&
+/prod/race/share/bin/prod_move mptz021.cbl oem/src  &&
+/prod/race/share/bin/prod_move mptz028.cbl oem/src  &&
+/prod/race/share/bin/prod_move mptz999.cbl oem/src
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+rpt_log_retention.ksh 
+
+rcheck_out -l rcheck_out    share/bin &&
+rcheck_out -l rel_lock.ksh  share/bin &&
+rcheck_out -l rev_log.ksh   share/bin &&
+rcheck_out -l rrevlog       share/bin &&
+rcheck_out -l rshowlockers  share/bin &&
+rcheck_out -l rshowlocks    share/bin &&
+rcheck_out -l rstatus       share/bin &&
+rcheck_out -l runlock       share/bin &&
+rcheck_out -l check_out.ksh share/bin &&
+rcheck_out -l rcheck_in     share/bin &&
+rcheck_out -l check_in.ksh share/bin 
+
+rcheck_in -d "Version accessing AWS RCS" rcheck_out share/bin 
+rcheck_in -d "Version accessing AWS RCS" rel_lock.ksh share/bin 
+rcheck_in -d "Version accessing AWS RCS" rrevlog       share/bin  
+rcheck_in -d "Version accessing AWS RCS" rshowlockers  share/bin  
+rcheck_in -d "Version accessing AWS RCS" rshowlocks    share/bin  
+rcheck_in -d "Version accessing AWS RCS" rstatus       share/bin  
+rcheck_in -d "Version accessing AWS RCS" check_out.ksh share/bin  
+rcheck_in -d "Version accessing AWS RCS" check_in.ksh      share/bin 
+rcheck_in -d "Version accessing AWS RCS" rcheck_in     share/bin  
+rcheck_in -d "Version accessing AWS RCS" rev_log.ksh   share/bin  
+rcheck_in -d "Version accessing AWS RCS" runlock       share/bin  
+
+
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  3565 Aug  4 13:32 rcheck_out
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  3070 Aug  4 13:32 rel_lock.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int   911 Aug  4 13:33 rrevlog
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  1018 Aug  4 13:33 rshowlockers
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  2511 Aug  4 13:33 rshowlocks
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 10928 Aug  4 13:34 rstatus
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  5459 Aug  4 13:50 check_out.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 10287 Aug  4 13:52 check_in.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 25987 Aug  4 13:53 rcheck_in
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  3200 Aug  4 13:55 rev_log.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int   876 Aug  4 13:55 runlock           
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+rpt_log_retention.ksh
+
+rcheck_out -l rpt_log_retention.ksh share/bin 
+rcheck_in -d "AIX to RHEL migration" rpt_log_retention.ksh share/bin 
+
+rcheck_out -l race_ceg.ksh  share/bin &&
+rcheck_out -l race_ext.ksh  share/bin &&
+rcheck_out -l race_oem.ksh  share/bin &&
+rcheck_out -l race_qrp.ksh  share/bin &&
+rcheck_out -l race_altp.ksh share/bin 
+
+rcheck_in -d "AIX to RHEL migration" race_ceg.ksh  share/bin &&
+rcheck_in -d "AIX to RHEL migration" race_ext.ksh  share/bin &&
+rcheck_in -d "AIX to RHEL migration" race_oem.ksh  share/bin &&
+rcheck_in -d "AIX to RHEL migration" race_qrp.ksh  share/bin &&
+rcheck_in -d "AIX to RHEL migration" race_altp.ksh share/bin 
+
+
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  1610 Aug  4 10:11 raceftp.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  3565 Aug  4 13:32 rcheck_out
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  3070 Aug  4 13:32 rel_lock.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int   911 Aug  4 13:33 rrevlog
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  1018 Aug  4 13:33 rshowlockers
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  2511 Aug  4 13:33 rshowlocks
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 10928 Aug  4 13:34 rstatus
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  5459 Aug  4 13:50 check_out.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 10287 Aug  4 13:52 check_in.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 25987 Aug  4 13:53 rcheck_in
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  3200 Aug  4 13:55 rev_log.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int   876 Aug  4 13:55 runlock
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  4622 Aug  5 04:40 rpt_log_retention.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  1860 Aug  5 04:43 race_ceg.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  2024 Aug  5 04:43 race_ext.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  2229 Aug  5 04:43 race_oem.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  1860 Aug  5 04:43 race_qrp.ksh
+drwx------. 2 svc-nas-dev@staging.int      domain users@staging.int  8192 Aug  5 04:44 rollback
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  1999 Aug  5 04:44 race_altp.ksh
+
+
+/prod/race/share/bin/prod_move race_ceg.ksh  share/bin  &&
+/prod/race/share/bin/prod_move race_ext.ksh  share/bin  &&
+/prod/race/share/bin/prod_move race_oem.ksh  share/bin  &&
+/prod/race/share/bin/prod_move race_qrp.ksh  share/bin  &&
+/prod/race/share/bin/prod_move race_altp.ksh share/bin
+
+/prod/race/share/bin/prod_move rpt_log_retention.ksh share/bin
+
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int  1610 Aug  4 10:19 raceftp.ksh
+drwx------. 2 nobody                          nobody                       8192 Aug  5 04:44 RCS
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int  1860 Aug  5 04:47 race_ceg.ksh
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int  2024 Aug  5 04:47 race_ext.ksh
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int  2229 Aug  5 04:47 race_oem.ksh
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int  1860 Aug  5 04:47 race_qrp.ksh
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int  1999 Aug  5 04:47 race_altp.ksh
+drwx------. 2 nobody                          nobody                       8192 Aug  5 04:48 rollback
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int  4622 Aug  5 04:48 rpt_log_retention.ksh
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+ 
+
+
+rcheck_out -l   ext/bin &&
+rcheck_out -l   ext/bin &&
+rcheck_out -l   ext/bin &&
+rcheck_out -l  ext/bin 
+rcheck_out -l  xex015.ksh ext/bin 
+
+rcheck_in -d "AIX to RHEL migration" xex017.ksh ext/bin &&
+rcheck_in -d "AIX to RHEL migration" xex018.ksh ext/bin &&
+rcheck_in -d "AIX to RHEL migration" xex019.ksh ext/bin &&
+rcheck_in -d "AIX to RHEL migration" xex999.ksh ext/bin &&
+rcheck_in -d "AIX to RHEL migration v2" xex015.ksh ext/bin 
+
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  1176 Aug  5 05:02 xex017.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int   927 Aug  5 05:02 xex018.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int   926 Aug  5 05:03 xex019.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  1398 Aug  5 05:03 xex999.ksh
+drwx------. 2 svc-nas-dev@staging.int      domain users@staging.int  4096 Aug  5 05:03 rollback
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  6555 Aug  5 05:03 xex015.ksh
+
+/prod/race/share/bin/prod_move xex017.ksh ext/bin  &&
+/prod/race/share/bin/prod_move xex018.ksh ext/bin  &&
+/prod/race/share/bin/prod_move xex019.ksh ext/bin  &&
+/prod/race/share/bin/prod_move xex999.ksh ext/bin  &&
+/prod/race/share/bin/prod_move xex015.ksh ext/bin
+
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int     1176 Aug  5 05:05 xex017.ksh
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int      927 Aug  5 05:05 xex018.ksh
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int      926 Aug  5 05:05 xex019.ksh
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int     1398 Aug  5 05:05 xex999.ksh
+drwx------. 2 nobody                          nobody                          4096 Aug  5 05:05 rollback
+-rwx------. 1 svc-apd-race-prd@production.int domain users@production.int     6555 Aug  5 05:05 xex015.ksh
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+
+
+
+rcheck_out -l oem_job.ksh oem/bin &&
+rcheck_out -l oem_job_datafile.ksh oem/bin
+
+
+rcheck_in -d "DB log adjustment" oem_job.ksh oem/bin &&
+rcheck_in -d "DB log adjustment" oem_job_datafile.ksh oem/bin 
+
+
+
+/prod/race/share/bin/prod_move oem_job.ksh oem/bin &&
+/prod/race/share/bin/prod_move oem_job_datafile.ksh oem/bin
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+rcheck_out  xam069.ksh        altp/bin &&
+rcheck_out  xam200.ksh        altp/bin  &&
+rcheck_out  xamref.ksh        altp/bin  &&
+rcheck_out  xamrpt.ksh        altp/bin  &&
+rcheck_out  xamupd.ksh        altp/bin  &&
+rcheck_out  conv_txt_excel.pl altp/bin  &&
+rcheck_out  race_altp.ksh     share/bin  &&
+rcheck_out  xam001.ksh        altp/bin  &&
+rcheck_out -l xam010.ksh        altp/bin  &&
+rcheck_out -l xam030.ksh        altp/bin  
+
+
+
+ls -ltr xam069.ksh        
+ls -ltr xam200.ksh        
+ls -ltr xamref.ksh        
+ls -ltr xamrpt.ksh        
+ls -ltr xamupd.ksh        
+ls -ltr conv_txt_excel.pl 
+ls -ltr race_altp.ksh     
+ls -ltr xam001.ksh        
+ls -ltr xam010.ksh        
+ls -ltr xam030.ksh        
+
+
+rcheck_in -d "Mapp processes update" xam069.ksh        altp/bin &&
+rcheck_in -d "Mapp processes update" xam200.ksh        altp/bin  &&
+rcheck_in -d "Mapp processes update" xamref.ksh        altp/bin  &&
+rcheck_in -d "Mapp processes update" xamrpt.ksh        altp/bin  &&
+rcheck_in -d "Mapp processes update" xamupd.ksh        altp/bin  &&
+rcheck_in -d "Mapp processes update" conv_txt_excel.pl altp/bin  &&
+rcheck_in -d "Mapp processes update" race_altp.ksh     share/bin  &&
+rcheck_in -d "Mapp processes update" xam001.ksh        altp/bin  &&
+rcheck_in -d "Mapp processes update" xam010.ksh        altp/bin  &&
+rcheck_in -d "Mapp processes update" xam030.ksh        altp/bin  
+
+
+-rwx------. 1 svc-nas-dev@staging.int      domain users@staging.int 34589 Aug 24  2020 conv_txt_excel.pl
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 10088 Aug  7 14:41 xam069.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 16596 Aug  7 14:41 xam200.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 11765 Aug  7 14:41 xamref.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 18181 Aug  7 14:41 xamrpt.ksh
+drwx------. 2 svc-nas-dev@staging.int      domain users@staging.int  4096 Aug  7 14:43 rollback
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  5442 Aug  7 14:43 xam001.ksh
+
+
+race_altp.ksh
+ xam200.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 11765 Aug  7 14:41 xamref.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 18181 Aug  7 14:41 xamrpt.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  5442 Aug  7 14:43 xam001.ksh
+
+
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 16596 Aug  7 14:41 xam200.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 11765 Aug  7 14:41 xamref.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 18181 Aug  7 14:41 xamrpt.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int  5442 Aug  7 14:43 xam001.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 10088 Aug  7 15:34 xam069.ksh
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 12367 Aug  7 15:35 xamupd.ksh
+drwx------. 2 svc-nas-dev@staging.int      domain users@staging.int  4096 Aug  7 15:35 rollback
+-rwx------. 1 svc-apd-race-dev@staging.int domain users@staging.int 34583 Aug  7 15:35 conv_txt_excel.pl
+
+
+rcheck_out  race_altp.ksh     share/bin  &&
+rcheck_out  xam010.ksh        altp/bin  &&
+rcheck_out  xam030.ksh        altp/bin  
