@@ -1,0 +1,14 @@
+# Generated Sat Aug 15 16:00:00 PDT 2020
+#######
+## This file is specific to UNIX
+## Edit the section indicated below for WINDOWS!!!
+##
+## Date       By            Mod
+## 4/4/2024  mc97371	  Created
+################################################
+
+##SQLNET.AUTHENTICATION_SERVICES= (NTS)
+NAMES.DIRECTORY_PATH= (TNSNAMES,EZCONNECT)
+
+
+

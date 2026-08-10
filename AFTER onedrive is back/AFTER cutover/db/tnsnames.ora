@@ -1,0 +1,1040 @@
+# Generated Sun Nov 24 00:00:00 PST 2019 ########################################## # # # Master TNSNAMES.ORA Configuration File # # # ########################################## # # Revision History ################## # # By Date Modification # ------ -------- ------------------------------------------------ # mc97371 20061016 Created a master tnsnames.ora file from all known instances # mc97371 20070530 Added RDWT # dg2640 20140325 Added missing databases, removed obsolete entries and corrected service name for consistency # dg2640 20140405 Added omrp and faromrp linux servers as host= for linux server must be hard-coded unless dns entries are created. # dg2640 20140405 Removed RCATA (obsolete RMAN DB as of 11g upgrade) # mc97371 20151019 Added eubilld, eudocd, eudssd, euepdd # dg2640 20160721 Removed duplicate EPDM # rs010882 20170227 Removed duplicate CABILLP. Added all EU database entries. Added CANMADM # dg2640 20180219 Removed EUxxxD databases to ensure they do not show up on DBAWEB page. Sunset Jan, 2018. # rs010882 20190619 Removed ifwlid, ifwlit # rs010882 20190719 Removed ifwliu # rs010882 20190823 Removed ifwlip ################################################################# # NAMES.DIRECTORY_PATH= (TNSNAMES) # # 8.0 and below - USE (SID = {sid}) # 8i and above - USE (SERVICE_NAME = {sid}.mitchell.com) # ################################################################## 
+LSNR_MTS.MITCHELL.COM = (DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=localhost)(PORT=1522))) 
+extproc_connection_data.mitchell.com = (DESCRIPTION = (ADDRESS=(PROTOCOL=IPC)(KEY=extproc_key)) (CONNECT_DATA=(SID=extproc_agent)) ) 
+RADP_SSH =
+
+  (DESCRIPTION =
+
+    (SOURCE_ROUTE = OFF)
+
+    (ADDRESS_LIST =
+
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5176))
+
+    )
+
+    (CONNECT_DATA =
+
+      (SERVICE_NAME = radp.awscloud.prod.int)
+
+    )
+
+  )
+BCSD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = bcsd)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = bcsd.mitchell.com) ) ) 
+BCST.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = bcst)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = bcst.mitchell.com) ) ) 
+BCSU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = bcsu)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = bcsu.mitchell.com) ) )
+BILLD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = billd)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = billd.mitchell.com) ) ) 
+BILLP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = billp)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = billp.mitchell.com) ) ) 
+BILLT.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = billt)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = billt.mitchell.com) ) ) 
+BILLU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = billu)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = billu.mitchell.com) ) ) 
+BILLDM.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = billdm)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = billdm.mitchell.com) ) ) 
+CATAD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = catad)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = catad.mitchell.com) ) ) 
+CATAP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = catap)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = catap.mitchell.com) ) ) 
+CVDD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cvdd)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cvdd.mitchell.com) ) ) 
+CVDP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cvdp)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cvdp.mitchell.com) ) ) 
+CVDU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cvdu)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cvdu.mitchell.com) ) ) 
+CVDDINT.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cvddint)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cvddint.mitchell.com) ) ) 
+DEPOT.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = depot)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = depot.mitchell.com) ) ) 
+DOCD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = docd)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = docd.mitchell.com) ) ) 
+DOCP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = docp)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = docp.mitchell.com) ) ) 
+DOCT.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = doct)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = doct.mitchell.com) ) ) 
+DOCU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = docu)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = docu.mitchell.com) ) ) 
+DSSD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = dssd)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = dssd.mitchell.com) ) ) 
+DSSDM.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = dssdm)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = dssdm.mitchell.com) ) ) 
+CADSSDM.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cadssdm)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cadssdm.mitchell.com) ) ) 
+DSSP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = dssp)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = dssp.mitchell.com) ) ) 
+DSST.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = dsst)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = dsst.mitchell.com) ) ) 
+DSSU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = dssu)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = dssu.mitchell.com) ) ) 
+EPDD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = epdd)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = epdd.mitchell.com) ) ) 
+EPDM.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = epdm)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = epdm.mitchell.com) ) ) 
+EPDT.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = epdt)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = epdt.mitchell.com) ) ) 
+EPDU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = epdu)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = epdu.mitchell.com) ) ) 
+EPFP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = epfp)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = epfp.mitchell.com) ) ) 
+FAROMRP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = farpdba03lxv.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = faromrp.mitchell.com) ) ) 
+IFDEV.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = ifdev)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = ifdev.mitchell.com) ) ) 
+IFNMAD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = ifnmad)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = ifnmad.mitchell.com) ) ) 
+IFNMADM.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = ifnmadm)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = ifnmadm.mitchell.com) ) ) 
+IFNMAT.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = ifnmat)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = ifnmat.mitchell.com) ) ) 
+IFNMAU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = ifnmau)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = ifnmau.mitchell.com) ) ) 
+IFNMAP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = ifnmap)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = ifnmap.mitchell.com) ) ) 
+IFQA.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = ifqa)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = ifqa.mitchell.com) ) ) 
+IFUAT.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = ifuat)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = ifuat.mitchell.com) ) ) 
+IFPROD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = ifprod)(PORT = 1523)) ) (CONNECT_DATA = (SERVICE_NAME = ifprod.mitchell.com) ) ) 
+MAPPD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = mappd)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = mappd.mitchell.com) ) ) 
+MAPPP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = mapp)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = mappp.mitchell.com) ) ) 
+MAPPQ.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = mappq)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = mappq.mitchell.com) ) ) 
+NAGSD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = nagsd)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = nagsd.mitchell.com) ) ) 
+NAGSP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = nagsp)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = nagsp.mitchell.com) ) ) 
+NMAD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = nmad)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = nmad.mitchell.com) ) ) 
+NMADM.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = nmadm)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = nmadm.mitchell.com) ) ) 
+NMAP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = nmap)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = nmap.mitchell.com) ) ) 
+NMAT.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = nmat)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = nmat.mitchell.com) ) ) 
+NMAU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = nmau)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = nmau.mitchell.com) ) ) 
+OMRP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = pdba03lxv.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = omrp.mitchell.com) ) ) 
+QRPD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = qrpd)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = qrpd.mitchell.com) ) ) 
+QRPT.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = qrpt)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = qrpt.mitchell.com) ) ) 
+QRPP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = qrpp)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = qrpp.mitchell.com) ) ) 
+RADD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = radd)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = radd.mitchell.com) ) ) 
+RADP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = radp)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = radp.mitchell.com) ) ) 
+RCATB.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = rcatb)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = rcatb.mitchell.com) ) ) 
+RCATC.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = rcatc)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = rcatc.mitchell.com) ) ) 
+RDWD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = rdwd)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = rdwd.mitchell.com) ) ) 
+RDWT.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = rdwt)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = rdwt.mitchell.com) ) ) 
+RDWP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = rdwp)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = rdwp.mitchell.com) ) ) 
+RDWU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = rdwu)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = rdwu.mitchell.com) ) ) 
+WLIDEV.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = wlidev)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = wlidev.mitchell.com) ) ) 
+WLIPROD.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = wliprod)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = wliprod.mitchell.com) ) ) 
+WLIQA.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = wliqa)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = wliqa.mitchell.com) ) ) 
+WLIUAT.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = wliuat)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = wliuat.mitchell.com) ) ) 
+CABILLP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cabillp.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cabillp.mitchell.com) ) ) 
+CABILLU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cabillu.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cabillu.mitchell.com) ) ) 
+CACVDP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cacvdp.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cacvdp.mitchell.com) ) ) 
+CACVDU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cacvdu.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cacvdu.mitchell.com) ) ) 
+CADOCP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cadocp.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cadocp.mitchell.com) ) ) 
+CADOCU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cadocu.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cadocu.mitchell.com) ) ) 
+CADSSP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cadssp.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cadssp.mitchell.com) ) ) 
+CADSSU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cadssu.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cadssu.mitchell.com) ) ) 
+CAEPFP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = caepfp.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = caepfp.mitchell.com) ) ) 
+CAEPDU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = caepdu.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = caepdu.mitchell.com) ) ) 
+CAJBCP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cajbcp.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cajbcp.mitchell.com) ) ) 
+CAJBCU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cajbcu.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cajbcu.mitchell.com) ) ) 
+CANMAP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = canmap.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = canmap.mitchell.com) ) ) 
+CANMAU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = canmau.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = canmau.mitchell.com) ) ) 
+CANMADM.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = canmadm.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = canmadm.mitchell.com) ) ) 
+CARCATA.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = carcata.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = carcata.mitchell.com) ) ) 
+CARCATB.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = carcatb.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = carcatb.mitchell.com) ) ) 
+CARDWP.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cardwp.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cardwp.mitchell.com) ) ) 
+CARDWU.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cardwu.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cardwu.mitchell.com) ) ) 
+CARDWDM.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cardwdm.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cardwdm.mitchell.com) ) ) 
+CATOR.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cator.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cator.mitchell.com) ) ) 
+CAVAN.MITCHELL.COM = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cavan.mitchell.com)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = cavan.mitchell.com) ) ) 
+CVDM.MITCHELL.COM =  (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = cvdm)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = cvdm.mitchell.com)))
+EUBILLP.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eubillp.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eubillp.dcwc.ams5.net) ) ) 
+EUBILLU.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eubillu.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eubillu.dcwc.ams5.net) ) ) 
+EUDOCP.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eudocp.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eudocp.dcwc.ams5.net) ) ) 
+EUDOCU.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eudocu.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eudocu.dcwc.ams5.net) ) ) 
+EUDSSP.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eudssp.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eudssp.dcwc.ams5.net) ) ) 
+EUDSSU.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eudssu.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eudssu.dcwc.ams5.net) ) ) 
+EUEPFP.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = euepfp.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = euepfp.dcwc.ams5.net) ) ) 
+EUEPDU.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = euepdu.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = euepdu.dcwc.ams5.net) ) ) 
+EUJBCP.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eujbcp.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eujbcp.dcwc.ams5.net) ) ) 
+EUJBCU.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eujbcu.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eujbcu.dcwc.ams5.net) ) ) 
+EUNMAP.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eunmap.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eunmap.dcwc.ams5.net) ) ) 
+EUNMAU.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eunmau.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eunmau.dcwc.ams5.net) ) ) 
+EURCATA.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eurcata.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eurcata.dcwc.ams5.net) ) ) 
+EURCATB.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eurcatb.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eurcatb.dcwc.ams5.net) ) ) 
+EURDWP.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eurdwp.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eurdwp.dcwc.ams5.net) ) ) 
+EURDWU.DCWC.AMS5.NET = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = eurdwu.dcwc.ams5.net)(PORT = 1521)) ) (CONNECT_DATA = (SERVICE_NAME = eurdwu.dcwc.ams5.net) ) )
+earth =(DESCRIPTION =(ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP)(HOST = 10.241.2.240)(PORT = 8129)) )(CONNECT_DATA =(SERVICE_NAME = earth.mitchell.com))  )
+BCSD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2150))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = bcsd.staging.int)
+    )
+  )
+
+BCST_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 3150))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = bcst.staging.int)
+    )
+  )
+
+BCSU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5150))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = bcsu.production.int)
+    )
+  )
+
+
+BILLD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2152))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = billd.staging.int)
+    )
+  )
+  
+
+
+
+BILLP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5152))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = billp.production.int)
+    )
+  )
+
+
+BILLT_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 3152))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = billt.staging.int)
+    )
+  )
+
+BILLU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 4150))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = billu.production.int)
+    )
+  )
+
+
+
+CVDD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2154))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cvdd.staging.int)
+    )
+  )
+
+
+
+
+CVDP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5154))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cvdp.production.int)
+    )
+  )
+
+
+CVDU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 4152))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cvdu.production.int)
+    )
+  )
+
+
+
+DOCD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2156))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = docd.staging.int)
+    )
+  )
+
+DOCP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5156))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = docp.production.int)
+    )
+  )
+
+
+DOCT_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 3154))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = doct.staging.int)
+    )
+  )
+
+DOCU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 4154))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = docu.production.int)
+    )
+  )
+
+DSSD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2158))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = dssd.staging.int)
+    )
+  )
+
+
+
+DSSP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5158))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = dssp.production.int)
+    )
+  )
+
+
+DSST_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 3156))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = dsst.staging.int)
+    )
+  )
+
+
+
+DSSU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 4156))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = dssu.production.int)
+    )
+  )
+
+
+
+EPDD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2160))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = epdd.staging.int)
+    )
+  )
+
+
+
+EPDT_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 3158))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = epdt.staging.int)
+    )
+  )
+
+EPDU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 4158))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = epdu.production.int)
+    )
+  )
+
+
+
+
+
+
+EPFP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5160))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = epfp.production.int)
+    )
+  )
+
+IFDEV_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2162))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = ifdev.staging.int)
+    )
+  )
+
+IFNMAD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2164))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = ifnmad.staging.int)
+    )
+  )
+
+
+IFNMAP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5164))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = ifnmap.production.int)
+    )
+  )
+
+
+IFNMAT_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 3162))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = ifnmat.staging.int)
+    )
+  )
+
+IFNMAU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 4162))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = ifnmau.production.int)
+    )
+  )
+
+IFPROD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5162))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = ifprod.production.int)
+    )
+  )
+
+
+IFQA_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 3160))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = ifqa.staging.int)
+    )
+  )
+
+IFUAT_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 4160))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = ifuat.production.int)
+    )
+  )
+
+
+
+MAPPD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2166))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = mappd.staging.int)
+    )
+  )
+
+MAPPP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5166))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = mappp.production.int)
+    )
+  )
+
+
+MAPPQ_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5168))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = mappq.production.int)
+    )
+  )
+
+
+NAGSD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2168))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = nagsd.staging.int)
+    )
+  )
+
+NAGSP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5170))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = nagsp.production.int)
+    )
+  )
+
+
+NMAD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2170))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = nmad.staging.int)
+    )
+  )
+
+
+NMAP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5172))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = nmap.production.int)
+    )
+  )
+
+
+
+
+
+
+
+NMAT_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 3164))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = nmat.staging.int)
+    )
+  )
+
+
+
+NMAU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 4164))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = nmau.production.int)
+    )
+  )
+
+
+
+
+QRPD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2172))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = qrpd.staging.int)
+    )
+  )
+
+
+
+QRPP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5174))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = qrpp.production.int)
+    )
+  )
+
+
+QRPU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 4166))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = qrpu.production.int)
+    )
+  )
+
+QRPT_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 3166))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = qrpt.staging.int)
+    )
+  )
+
+RADD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2174))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = radd.staging.int)
+    )
+  )
+
+RADP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5176))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = radp.production.int)
+    )
+  )
+
+
+
+
+RDWD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2176))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = rdwd.staging.int)
+    )
+  )
+
+
+
+RDWP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5178))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = rdwp.production.int)
+    )
+  )
+
+
+RDWT_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 3168))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = rdwt.staging.int)
+    )
+  )
+
+RDWU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 4168))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = rdwu.production.int)
+    )
+  )
+
+
+
+
+WLIDEV_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 2178))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = wlidev.staging.int)
+    )
+  )
+
+WLIPROD_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5180))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = wliprod.production.int)
+    )
+  )
+
+
+WLIQA_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 3170))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = wliqa.staging.int)
+    )
+  )
+
+WLIUAT_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 4170))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = wliuat.production.int)
+    )
+  )
+
+
+
+
+
+CABILLP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 7150))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cabillp.production.int)
+    )
+  )
+
+CABILLU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 6150))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cabillu.production.int)
+    )
+  )
+
+
+CACVDP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 7152))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cacvdp.production.int)
+    )
+  )
+
+
+CACVDU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 6152))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cacvdu.production.int)
+    )
+  )
+
+CADOCP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 7154))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cadocp.production.int)
+    )
+  )
+
+
+
+
+CADOCU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 6154))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cadocu.production.int)
+    )
+  )
+
+
+CADSSP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 7154))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cadssp.production.int)
+    )
+  )
+
+
+CADSSU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 6156))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cadssu.production.int)
+    )
+  )
+
+
+CAEPFP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 7158))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = caepfp.production.int)
+    )
+  )
+
+
+  
+CAEPDU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 6158))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = caepdu.production.int)
+    )
+  )
+
+
+  
+CAJBCP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 7160))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cajbcp.production.int)
+    )
+  )
+
+
+CAJBCU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 6160))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cajbcu.production.int)
+    )
+  )
+
+
+CANMAP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 7162))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = canmap.production.int)
+    )
+  )
+
+  
+
+  
+CANMAU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 6162))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = canmau.production.int)
+    )
+  )
+
+
+
+  
+CAQRPP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 7164))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = caqrpp.production.int)
+    )
+  )
+
+CAQRPU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 6164))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = caqrpu.production.int)
+    )
+  )
+
+CARDWP_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 7166))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cardwp.production.int)
+    )
+  )
+
+
+
+
+
+CARDWU_SSM =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 6166))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cardwu.production.int)
+    )
+  )
+
+RADEDS.MITCHELL.COM =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = RADEDS)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = RADEDS.mitchell.com)
+    )
+  )
+  
+QRPP_CLONE =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5574))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = qrpp.production.int)
+    )
+  )
+ 
+CVDP_CLONE =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5554))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = cvdp.production.int)
+    )
+  )
+ 
+RADP_CLONE =
+  (DESCRIPTION =
+    (SOURCE_ROUTE = OFF)
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 5576))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = radp.production.int)
+    )
+  )
