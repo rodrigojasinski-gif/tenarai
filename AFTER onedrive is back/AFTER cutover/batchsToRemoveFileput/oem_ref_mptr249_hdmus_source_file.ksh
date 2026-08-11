@@ -88,7 +88,7 @@ SOURCE_FILE=${RACE}/dat/${BACKUP_SOURCE_FILE_NAME}
   PRICE_UX=${SOURCE_FILE}
   PRICE_NT=${BACKUP_SOURCE_FILE_NAME}
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_${STEPNAME}_transfer_log.tmp
-  NT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming  # rj132422 prod3nt sunset: Mitchell SFTP incoming (was: ${NOVELL}oem)
+  NT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/outgoing  # rj132422 prod3nt sunset: Mitchell SFTP outgoing (was: ${NOVELL}oem)
 
   if [ -e ${PRICE_UX} ]
   then
