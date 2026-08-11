@@ -28,11 +28,11 @@ SOURCE_FILE=${RACE}/dat/${BACKUP_SOURCE_FILE_NAME}
   echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
   oem_job_status_update.ksh "R" "${STEPNAME} oem_ref_mptr249_ftp_hdmus_source_file"
 
-  export NT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming  # rj132422 prod3nt sunset: Mitchell SFTP incoming (was: NOVELL_DIR=${NOVELL}oem)
+  export NOVELL_DIR=${NOVELL}oem
   export STDOUT=${RACE}/tmp/${JOBNAME}_${INPUT_FILE_NAME}_log.tmp
 
-  scp ${FTP_SFTP_USER}${FTP_SITE}:${NT_DIR}/${INPUT_FILE_NAME} ${SOURCE_FILE} | tee ${STDOUT}  # rj132422 scp get from Mitchell (was: fileget.exp ${INPUT_FILE_NAME} ${SOURCE_FILE} ${NOVELL_DIR})
-
+  fileget.exp ${INPUT_FILE_NAME} ${SOURCE_FILE} ${NOVELL_DIR} | tee ${STDOUT}
+                
 
   #Check that SOURCE_FILE exists and is not Null:
   if [ ! -s $SOURCE_FILE ]
@@ -41,7 +41,7 @@ SOURCE_FILE=${RACE}/dat/${BACKUP_SOURCE_FILE_NAME}
 		abndalrt.ksh ftp_null_file
   fi
 
-  novelcount="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${NT_DIR}/${INPUT_FILE_NAME}")"  # rj132422 remote byte-count via ssh (was: grep 'Information returned by' $STDOUT)
+  novelcount="$(grep 'Information returned by' $STDOUT | awk '{print $1}')"
   unixcount="$(wc -c $SOURCE_FILE | awk ' {print $1}')"
 
   if [ novelcount -eq unixcount ]
@@ -88,20 +88,20 @@ SOURCE_FILE=${RACE}/dat/${BACKUP_SOURCE_FILE_NAME}
   PRICE_UX=${SOURCE_FILE}
   PRICE_NT=${BACKUP_SOURCE_FILE_NAME}
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_${STEPNAME}_transfer_log.tmp
-  NT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming  # rj132422 prod3nt sunset: Mitchell SFTP incoming (was: ${NOVELL}oem)
-
+  NT_DIR=${NOVELL}oem
+  
   if [ -e ${PRICE_UX} ]
   then
     ########################################################################################
-    # Copy the price file to the Network
+    # Copy the price file to the Network      
     ########################################################################################
-    scp ${PRICE_UX} ${FTP_SFTP_USER}${FTP_SITE}:${NT_DIR}/${PRICE_NT} | tee ${FTP_LOGFILE}  # rj132422 scp put to Mitchell (was: fileput.exp ${PRICE_UX} ${PRICE_NT} ${NT_DIR})
-
+    fileput.exp ${PRICE_UX} ${PRICE_NT} ${NT_DIR} | tee ${FTP_LOGFILE}
+    
     ########################################################################################
-    # Verify the copy is good
+    # Verify the copy is good       
     ########################################################################################
     GOODBYTECOUNT="$(wc -c ${PRICE_UX} | awk '{print $1}')"
-    FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${NT_DIR}/${PRICE_NT}")"  # rj132422 remote byte-count via ssh (was: grep 'Information returned by' ${FTP_LOGFILE})
+    FTPBYTECOUNT="$(cat ${FTP_LOGFILE} | grep 'Information returned by' | awk '{print $1}')"    
     if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
     then
       echo "File transfer to NT ${NT_DIR} successful. ${PRICE_UX} ftp count = ${GOODBYTECOUNT}"    
