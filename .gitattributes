@@ -1,0 +1,27 @@
+# Force LF line endings on checkout and commit for all text files.
+# Prevents CRLF creeping into shell/Perl scripts, which breaks them on RHEL/AIX.
+* text=auto eol=lf
+
+# Explicit LF for scripts (must never be CRLF)
+*.ksh   text eol=lf
+*.sh    text eol=lf
+*.pl    text eol=lf
+*.exp   text eol=lf
+*.pck   text eol=lf
+*.spc   text eol=lf
+*.bdy   text eol=lf
+*.prm   text eol=lf
+*.sql   text eol=lf
+
+# Windows-only files that SHOULD keep CRLF
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Treat these as binary (never touch EOL)
+*.zip   binary
+*.gz    binary
+*.xlsx  binary
+*.pdf   binary
+*.png   binary
+*.jpg   binary
