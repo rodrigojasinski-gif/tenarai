@@ -57,10 +57,12 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   if [ -e ${SOURCE_FILE} ]
   then
     # Copy the source file to the Network      
-    fileput.exp ${SOURCE_FILE} ${BACKUP_SOURCE_FILE_NAME} ${NOVELL}oem_research | tee ${FTP_LOGFILE}
+    # rj132422 - prod3nt sunset: deliver to Mitchell oem_research via scp (was: fileput.exp ${BACKUP_SOURCE_FILE_NAME} to ${NOVELL}oem_research)
+    RESEARCH_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem_research
+    scp ${SOURCE_FILE} ${FTP_SFTP_USER}${FTP_SITE}:${RESEARCH_DIR}/${BACKUP_SOURCE_FILE_NAME} | tee ${FTP_LOGFILE}
     # Verify the copy is good       
     GOODBYTECOUNT="$(wc -c ${SOURCE_FILE} | awk '{print $1}')"
-    FTPBYTECOUNT="$(cat ${FTP_LOGFILE} | grep 'Information returned by' | awk '{print $1}')"    
+    FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${RESEARCH_DIR}/${BACKUP_SOURCE_FILE_NAME}")"  # rj132422 remote byte-count via ssh
     if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
     then
       echo "Successful ftp ${SOURCE_FILE}: ftp count = ${GOODBYTECOUNT}"
@@ -113,20 +115,21 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   PRICE_UX=${RACE}/tmp/${JOBNAME}/iminf008.dat
   PRICE_NT=mptr289_raw_kaw_us_price.dat
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_${STEPNAME}_transfer_log.tmp
-  NT_DIR=${NOVELL}oem
+  NT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/outgoing  # rj132422 prod3nt sunset: Mitchell outgoing (was: ${NOVELL}oem)
   
   if [ -e ${PRICE_UX} ]
   then
     ########################################################################################
     # Copy the price file to the Network      
     ########################################################################################
-    fileput.exp ${PRICE_UX} ${PRICE_NT} ${NT_DIR} | tee ${FTP_LOGFILE}
+    # rj132422 - prod3nt sunset: scp to Mitchell outgoing (was: fileput.exp ${PRICE_UX} ${PRICE_NT} ${NT_DIR})
+    scp ${PRICE_UX} ${FTP_SFTP_USER}${FTP_SITE}:${NT_DIR}/${PRICE_NT} | tee ${FTP_LOGFILE}
     
     ########################################################################################
     # Verify the copy is good       
     ########################################################################################
     GOODBYTECOUNT="$(wc -c ${PRICE_UX} | awk '{print $1}')"
-    FTPBYTECOUNT="$(cat ${FTP_LOGFILE} | grep 'Information returned by' | awk '{print $1}')"    
+    FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${NT_DIR}/${PRICE_NT}")"  # rj132422 remote byte-count via ssh
     if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
     then
       echo "File transfer to NT ${NT_DIR} successful. ${PRICE_UX} ftp count = ${GOODBYTECOUNT}"    

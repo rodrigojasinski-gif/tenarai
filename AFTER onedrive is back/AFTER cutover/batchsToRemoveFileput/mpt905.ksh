@@ -46,20 +46,21 @@ CODE_BLOCK
   REPORT_UX=${RACE}/rpt/${JOBNAME}a_setup.rpt
   REPORT_NT=${JOBNAME}a_setup.rpt
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_${STEPNAME}_transfer_log.tmp
-  NT_DIR=${NOVELL}oem
+  NT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/outgoing  # rj132422 prod3nt sunset: Mitchell outgoing (was: ${NOVELL}oem)
   
   if [ -e ${REPORT_UX} ]
   then
     ########################################################################################
     # Copy the report file to the Network      
     ########################################################################################
-    fileput.exp ${REPORT_UX} ${REPORT_NT} ${NT_DIR} | tee ${FTP_LOGFILE}
+    # rj132422 - prod3nt sunset: scp to Mitchell outgoing (was: fileput.exp ${REPORT_UX} ${REPORT_NT} ${NT_DIR})
+    scp ${REPORT_UX} ${FTP_SFTP_USER}${FTP_SITE}:${NT_DIR}/${REPORT_NT} | tee ${FTP_LOGFILE}
     
     ########################################################################################
     # Verify the copy is good       
     ########################################################################################
     GOODBYTECOUNT="$(wc -c ${REPORT_UX} | awk '{print $1}')"
-    FTPBYTECOUNT="$(cat ${FTP_LOGFILE} | grep 'Information returned by' | awk '{print $1}')"    
+    FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${NT_DIR}/${REPORT_NT}")"  # rj132422 remote byte-count via ssh
     if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
     then
       echo "Successful File transfer to NT ${NT_DIR}. ${REPORT_UX} ftp count = ${GOODBYTECOUNT}" 
