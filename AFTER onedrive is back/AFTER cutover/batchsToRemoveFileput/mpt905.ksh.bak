@@ -64,8 +64,8 @@ CODE_BLOCK
     then
       echo "Successful File transfer to NT ${NT_DIR}. ${REPORT_UX} ftp count = ${GOODBYTECOUNT}" 
       # Send email notification that the file was transferred to the Network
-      PROD_MAIL_RECIP="Rpt.OEM.Developers@Mitchell.com, RACEDataOps@Mitchell.com"  # rj132422 s-nail: comma, not ; between addresses
-      TEST_MAIL_RECIP="Penny.Genovese@Mitchell.com, Sarika.Gupta@Mitchell.com"  # rj132422 s-nail: comma, not ; between addresses
+      PROD_MAIL_RECIP="Rpt.OEM.Developers@Mitchell.com; RACEDataOps@Mitchell.com"
+      TEST_MAIL_RECIP="Penny.Genovese@Mitchell.com; Sarika.Gupta@Mitchell.com"
       MAIL_SUBJECT="${JOBNAME}: OEM Batch Setup Information Report has been generated." 
       export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp    
       echo "\nThe OEM Batch Setup Information Report has been generated and transferred to the Network \n" > ${MAIL_TEXT}
