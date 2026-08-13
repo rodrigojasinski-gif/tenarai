@@ -28,11 +28,11 @@ then
     echo "Using Fixed Folder for Novell/NT to Mitchell FTP."
 
     export FTP_BUSINESS_PATH=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming
-    # rj132422 - mptr250 reads its input (staged by the mptr249 pre-processor) from outgoing, not incoming
-    if [ "${JOBNAME}" = "mptr250" ]
-    then
-       export FTP_BUSINESS_PATH=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/outgoing
-    fi
+    # rj132422 - these jobs read input staged by a pre-processor from outgoing, not incoming (mptr250<-mptr249, mptr840<-mptr839)
+    case ${JOBNAME} in
+       mptr250|mptr840)
+          export FTP_BUSINESS_PATH=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/outgoing ;;
+    esac
 
     FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}
 	FILE_ACTION="GETIT"

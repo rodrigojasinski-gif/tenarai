@@ -57,10 +57,12 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   if [ -e ${SOURCE_FILE} ]
   then
     # Copy the source file to the Network      
-    fileput.exp ${SOURCE_FILE} ${BACKUP_SOURCE_FILE_NAME} ${NOVELL}oem_research | tee ${FTP_LOGFILE}
+    # rj132422 - prod3nt sunset: deliver to Mitchell oem_research via scp (was: fileput.exp ${BACKUP_SOURCE_FILE_NAME} to ${NOVELL}oem_research)
+    RESEARCH_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem_research
+    scp ${SOURCE_FILE} ${FTP_SFTP_USER}${FTP_SITE}:${RESEARCH_DIR}/${BACKUP_SOURCE_FILE_NAME} | tee ${FTP_LOGFILE}
     # Verify the copy is good       
     GOODBYTECOUNT="$(wc -c ${SOURCE_FILE} | awk '{print $1}')"
-    FTPBYTECOUNT="$(cat ${FTP_LOGFILE} | grep 'Information returned by' | awk '{print $1}')"    
+    FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${RESEARCH_DIR}/${BACKUP_SOURCE_FILE_NAME}")"  # rj132422 remote byte-count via ssh
     if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
     then
       echo "Successful ftp ${SOURCE_FILE}: ftp count = ${GOODBYTECOUNT}"
