@@ -1,0 +1,1074 @@
+#!/bin/ksh
+echo "RCS $Id: oem_upd.ksh,v 1.11 2010/04/10 20:35:06 jw97143 Exp $"
+set -xv
+print ProcessId = $$
+#*************************************************************************************************
+# PROCNAME oem_upd.ksh   OEM Update Job Script
+#*************************************************************************************************
+trap 'oem_abndalrt.ksh $?' err
+export PROCNAME=$(basename $0 .ksh_run)
+export MPTUSERID=`cat ${RACE}/prm/zmptpass.prm`
+export LOGFILE=$(basename ${JOBLOGNAME})
+#*************************************************************************************************
+#  Build environment variables for the job (based on jobname)
+#*************************************************************************************************
+. oem_job.ksh
+. oem_job_notify.ksh
+#*************************************************************************************************
+
+#STEP Step010R
+  export STEPNAME=Step010R
+  echo "    Start " ${STEPNAME} "    "$(date)
+  oem_job_status_update.ksh "R" "${STEPNAME} Delete datasets"
+  #***************************************************************************************
+  #  Step010R - Delete datasets that will be created in future steps
+  #***************************************************************************************
+  rm -f ${RACE}/dat/${JOBNAME}*.tmp*
+  rm -f ${RACE}/tmp/${JOBNAME}*
+  
+  # Temporary while running parallel processing for Reverse Supersession Analysis
+  rm -f ${RACE}/rpt/${JOBNAME}*new*
+  rm -f ${RACE}/rpt/${JOBNAME}*old*
+  #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  
+
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#
+#  Steps 020 thru 090 are ONLY run for jobs 
+#  which require "Reverse Analysis" processing
+#
+#STEP Step020R
+  export STEPNAME=Step020R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} Delete datasets"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} Delete datasets"
+    #*********************************************************************************************
+    #  Step020R - Delete datasets
+    #*********************************************************************************************
+    rm -f ${RACE}/dat/${JOBNAME}_htrans_1_generate.tmp
+    rm -f ${RACE}/dat/${JOBNAME}_rtrans_1_generate.tmp
+  fi
+
+
+#STEP Step030R
+  export STEPNAME=Step030R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} Sort NTRANS by trans, old part, and new part"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} Sort NTRANS by trans, old part, and new part"
+    #*********************************************************************************************
+    #  Step030R - Sort NTRANS by trans, old part, and new part prior to Supersession Analysis 
+    #             Program use.                             
+    #*********************************************************************************************
+    SORTIN_FILE=${RACE}/dat/${REFORMATJOB}_ntrans.tmp
+    SORTOUT_FILE=${RACE}/dat/${JOBNAME}_ntrans_sort.tmp
+    #      +---------|----------|-----------|
+    #      |TRANSCODE| OLD PART | NEW PART  |
+    #      +---------|----------|-----------|
+    sort -u -k1.1,1.1 -k1.7,1.31 -k1.32,1.56 -o ${SORTOUT_FILE} ${SORTIN_FILE}
+  fi
+
+
+#STEP Step040R - COBOL
+  export STEPNAME=Step040R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} Executes mptz012 - Supersession Analysis Program"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz012 - Supersession Analysis Program"
+    #*********************************************************************************************
+    #  Step040R - Executes mptz012 - Supersession Analysis Program
+    #             Note:  The HTRANS file doesn't go anywhere.
+    #*********************************************************************************************
+    export DD_PARMIN1=${RACE}/prm/${JOBPARM}.prm
+    export DD_PARMIN2=${RACE}/prm/zmpt032.prm
+    export DD_TRANSIN=${RACE}/dat/${JOBNAME}_ntrans_sort.tmp
+    export DD_RTRANOUT=${RACE}/dat/${JOBNAME}_rtrans_1_generate.tmp
+    export DD_HTRANOUT=${RACE}/dat/${JOBNAME}_htrans_1_generate.tmp
+    export DD_AUDITRPT=${RACE}/rpt/${JOBNAME}b_sana${REPORTSUFFIX}.pip
+          printpipe -o ${RACE}/rpt/${JOBNAME}b_sana${REPORTSUFFIX}
+          printpipe -r ${RACE}/rpt/${JOBNAME}b_sana${REPORTSUFFIX} rpt   
+    mptz012 2>&1 
+          printpipe -c ${RACE}/rpt/${JOBNAME}b_sana${REPORTSUFFIX}
+  fi
+
+
+#STEP Step041R - PL/SQL
+  export STEPNAME=Step041R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} Executes pkg_oem_upd_rtrans_1_generate - Supersession Analysis Program"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} Executes pkg_oem_upd_rtrans_1_generate - Supersession Analysis Program"
+    #*********************************************************************************************
+    #  Step041R - Executes pkg_oem_upd_rtrans_1_generate
+    #             Note:  The HTRANS file doesn't go anywhere.
+    #*********************************************************************************************    
+    NTRANSIN=${REFORMATJOB}_ntrans.tmp
+    RTRANSOUT=${JOBNAME}_rtrans_1_generate.new.tmp
+    HTRANSOUT=${JOBNAME}_htrans_1_generate.new.tmp  
+             REPORT_FILENAME=${JOBNAME}b_sana${REPORTSUFFIX}.new.pip
+    printpipe -o ${RACE}/rpt/${JOBNAME}b_sana${REPORTSUFFIX}.new
+    printpipe -r ${RACE}/rpt/${JOBNAME}b_sana${REPORTSUFFIX}.new rpt
+#----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_upd_rtrans_1_generate.p_main_procedure(p_update_job           => '${JOBNAME}',          \
+                                                        p_log_directory        => '${OBJ_LOGDIR}',       \
+                                                        p_log_filename         => '${LOGFILE}',          \
+                                                        p_ntrans_in_directory  => '${OBJ_DATDIR}',       \
+                                                        p_ntrans_in_filename   => '${NTRANSIN}',         \
+                                                        p_rtrans_out_directory => '${OBJ_DATDIR}',       \
+                                                        p_rtrans_out_filename  => '${RTRANSOUT}',        \
+                                                        p_htrans_out_directory => '${OBJ_DATDIR}',       \
+                                                        p_htrans_out_filename  => '${HTRANSOUT}',        \
+                                                        p_report_directory     => '${OBJ_RPTDIR}',       \
+                                                        p_report_filename      => '${REPORT_FILENAME}',  \
+                                                        p_debug_level          => '1',                   \
+                                                        p_dbms_profiler_flag   => '${RACE_DBMS_PROFILER_FLAG}');
+QUIT;
+%
+#----------------------------------------------------------------------------------------
+    printpipe -c ${RACE}/rpt/${JOBNAME}b_sana${REPORTSUFFIX}.new
+  fi
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#STEP Step042
+  export STEPNAME=Step042
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "Skipping ${STEPNAME} Comparing Report Counters"
+  else
+    #----------------------------------------------------------------------
+    COBOL_REPORT=`ls -r1 ${RACE}/rpt/${JOBNAME}b_sana*.rpt | head -1`
+    PLSQL_REPORT=`ls -r1 ${RACE}/rpt/${JOBNAME}b_sana*new*.rpt | head -1`
+    #----------------------------------------------------------------------
+    COBOL_COUNT=$(grep '** TOTAL - NEW TRANSACTIONS' ${COBOL_REPORT} | tr -d ',' | awk -F: '/:/ { print $2 }' )
+    PLSQL_COUNT=$(grep '** Total - New Transactions' ${PLSQL_REPORT} | tr -d ',' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ]
+    then
+      echo "OK ** Total New Transactions Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "Total New Transactions Count Different\n"  > ${MAIL_TEXT}
+      echo " "                                        >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT}             >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT}             >> ${MAIL_TEXT}
+      echo " "                                        >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** Total New Transactions Count Different!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** Total New Transactions Count Different!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    fi
+    #----------------------------------------------------------------------
+    COBOL_COUNT=$(grep '** TOTAL TRANSACTIONS WITH MATCHING SUPER' ${COBOL_REPORT} | tr -d ',' | awk -F: '/:/ { print $2 }'  )
+    PLSQL_COUNT=$(grep '** Total Transactions With Matching Super' ${PLSQL_REPORT} | tr -d ',' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ]
+    then
+      echo "OK Total Transactions With Matching Supersessions Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "Total Transactions With Matching Supersessions Count Different!\n" > ${MAIL_TEXT}
+      echo " "                                                                >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT}                                     >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT}                                     >> ${MAIL_TEXT}
+      echo " "                                                                >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** Total Transactions With Matching Supersessions Count Different!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** Total Transactions With Matching Supersessions Count Different!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    fi
+    #----------------------------------------------------------------------
+    COBOL_COUNT=$(grep '** TOTAL SUPERSESSIONS WITHOUT MATCHING TRANS' ${COBOL_REPORT} | tr -d ',' | awk -F: '/:/ { print $2 }' )
+    PLSQL_COUNT=$(grep '** Total Supersessions Without Matching Trans' ${PLSQL_REPORT} | tr -d ',' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ]
+    then
+      echo "OK Total Supersessions Without Matching Trans Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "Total Supersessions Without Matching Trans Count Different!\n" > ${MAIL_TEXT}
+      echo " "                                                            >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT}                                 >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT}                                 >> ${MAIL_TEXT}
+      echo " "                                                            >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** Total Supersessions Without Matching Trans Count Different!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** Total Supersessions Without Matching Trans Count Different!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    fi
+    #----------------------------------------------------------------------
+    COBOL_COUNT=$(grep '** TOTAL REVERSE SUPERSESSION TRANS WRITTEN' ${COBOL_REPORT} | tr -d ',' | awk -F: '/:/ { print $2 }' )
+    PLSQL_COUNT=$(grep '** Total Reverse Supersession Trans Written' ${PLSQL_REPORT} | tr -d ',' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ] 
+    then
+      echo "OK ** Total Reverse Supersession Trans Written Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "** Total Reverse Supersession Trans Written Count Different!\n" > ${MAIL_TEXT}
+      echo " "                                                             >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT}                                  >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT}                                  >> ${MAIL_TEXT}
+      echo " "                                                             >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** Total Reverse Supersession Trans Written Count Different!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** Total Reverse Supersession Trans Written Count Different!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    fi
+    #----------------------------------------------------------------------
+    COBOL_COUNT=$(grep '** TOTAL HISTORICAL SUPERSESSION TRANS WRITTEN' ${COBOL_REPORT} | tr -d ',' | awk -F: '/:/ { print $2 }' )
+    PLSQL_COUNT=$(grep '** Total Historical Supersession Trans Written' ${PLSQL_REPORT} | tr -d ',' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ]
+    then
+      echo "OK ** Total Historical Supersession Trans Written Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "** Total Historical Supersession Trans Written Count Different!\n" > ${MAIL_TEXT}
+      echo " "                                                                >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT}                                     >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT}                                     >> ${MAIL_TEXT}
+      echo " "                                                                >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** Total Historical Supersession Trans Written!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** Total Historical Supersession Trans Written!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi     
+    fi
+    ###################################################################################################################################
+    # COMPARE RTrans Files
+    OLD_FILE=${RACE}/dat/${JOBNAME}_rtrans_1_generate.tmp
+    OLD_FILE_SORTED=${RACE}/dat/${JOBNAME}_rtrans_1_generate.old.sort.tmp
+    sort -o ${OLD_FILE_SORTED} ${OLD_FILE}
+    NEW_FILE=${RACE}/dat/${JOBNAME}_rtrans_1_generate.new.tmp
+    NEW_FILE_SORTED=${RACE}/dat/${JOBNAME}_rtrans_1_generate.new.sort.tmp
+    sort -o ${NEW_FILE_SORTED} ${NEW_FILE}    
+    #DIFF_FILE_RTRANS=${RACE}/dat/${JOBNAME}_rtrans_1_generate.diff.tmp
+    DIFF_FILE_RTRANS=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_rtrans_1_generate_diff.dat(+1)" NEW 1)
+    # Turn trap off since "diff" will return a 1 if files are different
+    # The trap is turned back on after the "if"
+    trap - err        
+    diff -wb ${OLD_FILE_SORTED} ${NEW_FILE_SORTED} > ${DIFF_FILE_RTRANS}         
+    if [ -s ${DIFF_FILE_RTRANS} ]
+    then
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "${JOBNAME} mptz012 Reverse Files Different\n"  > ${MAIL_TEXT}
+      echo ${DIFF_FILE_RTRANS}                            >> ${MAIL_TEXT} 
+      echo " "                                            >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: mptz012r Reverse Files Different!" ${MAIL_TO} < ${MAIL_TEXT}
+        trap 'oem_abndalrt.ksh $?' err
+        exit 777
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: mptz012r Reverse Files Different!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    else
+      # Cleanup Files used to compare RTrans 
+      rm -f ${NEW_FILE}
+      rm -f ${OLD_FILE_SORTED}
+      rm -f ${NEW_FILE_SORTED}
+    fi
+    trap 'oem_abndalrt.ksh $?' err
+    ###################################################################################################################################
+    ###################################################################################################################################
+    # COMPARE HTrans Files
+    OLD_FILE=${RACE}/dat/${JOBNAME}_htrans_1_generate.tmp
+    OLD_FILE_SORTED=${RACE}/dat/${JOBNAME}_htrans_1_generate.old.sort.tmp
+    sort -o ${OLD_FILE_SORTED} ${OLD_FILE}
+    NEW_FILE=${RACE}/dat/${JOBNAME}_htrans_1_generate.new.tmp
+    NEW_FILE_SORTED=${RACE}/dat/${JOBNAME}_htrans_1_generate.new.sort.tmp
+    sort -o ${NEW_FILE_SORTED} ${NEW_FILE}    
+    #DIFF_FILE_HTRANS=${RACE}/dat/${JOBNAME}_htrans_1_generate.diff.tmp
+    DIFF_FILE_HTRANS=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_htrans_1_generate_diff.dat(+1)" NEW 1)
+    # Turn trap off since "diff" will return a 1 if files are different
+    # The trap is turned back on after the "if"
+    trap - err        
+    diff -wb ${OLD_FILE_SORTED} ${NEW_FILE_SORTED} > ${DIFF_FILE_HTRANS}         
+    if [ -s ${DIFF_FILE_HTRANS} ]
+    then
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "mptz012 History Files Different\n"  > ${MAIL_TEXT}
+      echo ${DIFF_FILE_HTRANS}                 >> ${MAIL_TEXT} 
+      echo " "                                 >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: mptz012 History Files Different!" ${MAIL_TO} < ${MAIL_TEXT}
+        trap 'oem_abndalrt.ksh $?' err
+        exit 777
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: mptz012 History Files Different!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    else
+      # Cleanup Files used to compare HTrans 
+      rm -f ${NEW_FILE}
+      rm -f ${OLD_FILE_SORTED}
+      rm -f ${NEW_FILE_SORTED}
+    fi
+    trap 'oem_abndalrt.ksh $?' err
+    ###################################################################################################################################
+  fi  
+#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+#STEP Step050R
+  export STEPNAME=Step050R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} Sort RTRANS by old part number and new part number"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} Sort RTRANS by old part number and new part number"
+    #*********************************************************************************************
+    #  Step050R - Sort RTRANS by old part number, new part number, reason
+    #             and create backup files
+    #*********************************************************************************************
+    SORTIN_FILE=${RACE}/dat/${JOBNAME}_rtrans_1_generate.tmp
+    SORTOUT_FILE=${RACE}/dat/${JOBNAME}_rtrans_1_generate_sort.tmp
+    #   +----------|-----------|-----------|
+    #   | OLD PART | NEW PART  | REASON    |
+    #   +----------|-----------|-----------|
+    sort -k1.7,1.31 -k1.32,1.56 -k1.67,1.91r -o ${SORTOUT_FILE} ${SORTIN_FILE}
+    mv               ${RACE}/dat/${JOBNAME}_rtrans_1_generate_sort.tmp \
+       $(setgdg.ksh "${RACE}/dat/${JOBNAME}_rtrans_1_generate_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
+    
+  fi
+
+
+#STEP Step060R
+  export STEPNAME=Step060R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo " Skipping ${STEPNAME} Builds Combo File for loading Global Temp Table"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} Builds Combo File for loading Global Temp Table"
+    #*********************************************************************************************
+    #  Step060R -                              Builds Combo File for loading Global Temp Table
+    #             mpt_elim_dup_tran.awk keeps ONE transaction per old part number in the above order
+    #*********************************************************************************************
+    SORTIN_FILE="${RACE}/dat/${REFORMATJOB}_atrans.tmp \
+                 ${RACE}/dat/${REFORMATJOB}_ctrans.tmp \
+                 ${RACE}/dat/${REFORMATJOB}_ntrans.tmp \
+                 ${RACE}/dat/${REFORMATJOB}_ptrans.tmp "
+    SORTOUT_FILE=${RACE}/dat/${JOBNAME}_trans_comb.tmp
+    #   +----------+               +------------------------------------------------------------+
+    #   | OLD PART |               |Keep ONE Transaction per OLD Part                           |
+    #   +----------+               +------------------------------------------------------------+
+    sort -k1.7,1.31 ${SORTIN_FILE} | awk -f ${RACE}/bin/mpt_elim_dup_tran.awk > ${SORTOUT_FILE}
+  fi
+
+
+#STEP Step070R
+  export STEPNAME=Step070R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} Delete and define VSAM cluster - Parts List File"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} Delete and define VSAM cluster - Parts List File"
+    #*********************************************************************************************
+    #  Step060R - Delete and define VSAM cluster - Parts List File
+    #             Create it from price transactions (For compare against reverse supers)
+    #*********************************************************************************************
+    rm -f ${RACE}/dat/${JOBNAME}_partlist_ksds.tmp
+    rm -f ${RACE}/dat/${JOBNAME}_partlist_ksds.tmp.idx
+    rm -f ${RACE}/tmp/${JOBNAME}In
+    cp ${RACE}/dat/${JOBNAME}_trans_comb.tmp ${RACE}/tmp/${JOBNAME}In
+    rebuild ${RACE}/tmp/${JOBNAME}In, ${RACE}/tmp/${JOBNAME}Out -k:7+25 -o:lseq,ind -t:c-isam -r:F187
+    # -k:7+25          # Define primary Key (Starting position + Length)
+    # -o:leseq,ind     # (organization of input, indexed)
+    # -t:c-isam        # Specifies index format of output file
+    # -r:F187          # Specifies record type(F = Fixed, V = Variable) and record length
+    mv ${RACE}/tmp/${JOBNAME}Out     ${RACE}/dat/${JOBNAME}_partlist_ksds.tmp
+    mv ${RACE}/tmp/${JOBNAME}Out.idx ${RACE}/dat/${JOBNAME}_partlist_ksds.tmp.idx
+  fi
+
+
+#STEP Step080R
+  export STEPNAME=Step080R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} Delete datasets"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} Delete datasets"
+    rm -f ${RACE}/dat/${JOBNAME}_rtrans_2_adjust.tmp
+  fi
+
+
+#STEP Step085R - PL/SQL
+  export STEPNAME=Step085R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} - pkg_oem_upd_rtrans_2_adjust"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} - pkg_oem_upd_rtrans_2_adjust"
+    #*********************************************************************************************
+    #  Step085R - Executes pkg_oem_upd_rtrans_2_adjust - Reverse Super Pre-Processor Program
+    #*********************************************************************************************
+    RTRANS_FILEPATH=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_rtrans_1_generate_${JOBFILE_OEMCTRY}.dat(0)")    
+    RTRANSIN=$( basename ${RTRANS_FILEPATH} )     
+    NON_RTRANSIN=${JOBNAME}_trans_comb.tmp
+    RTRANSOUT=${JOBNAME}_rtrans_2_adjust.new.tmp   
+             REPORT_FILENAME=${JOBNAME}r_spre${REPORTSUFFIX}.new.pip
+    printpipe -o ${RACE}/rpt/${JOBNAME}r_spre${REPORTSUFFIX}.new
+    printpipe -r ${RACE}/rpt/${JOBNAME}r_spre${REPORTSUFFIX}.new rpt
+#----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_upd_rtrans_2_adjust.p_main_procedure(p_update_job              => '${JOBNAME}',          \
+                                                      p_log_directory           => '${OBJ_LOGDIR}',       \
+                                                      p_log_filename            => '${LOGFILE}',          \
+                                                      p_rtrans_in_directory     => '${OBJ_DATDIR}',       \
+                                                      p_rtrans_in_filename      => '${RTRANSIN}',         \
+                                                      p_non_rtrans_in_directory => '${OBJ_DATDIR}',       \
+                                                      p_non_rtrans_in_filename  => '${NON_RTRANSIN}',     \
+                                                      p_rtrans_out_directory    => '${OBJ_DATDIR}',       \
+                                                      p_rtrans_out_filename     => '${RTRANSOUT}',        \
+                                                      p_report_directory        => '${OBJ_RPTDIR}',       \
+                                                      p_report_filename         => '${REPORT_FILENAME}',  \
+                                                      p_debug_level             => '9', \
+                                                      p_dbms_profiler_flag      => '${RACE_DBMS_PROFILER_FLAG}');                            
+QUIT;
+%
+#----------------------------------------------------------------------------------------
+    printpipe -c ${RACE}/rpt/${JOBNAME}r_spre${REPORTSUFFIX}.new
+  fi
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#STEP Step086 - COBOL RPTONLY HARDCODED
+  export STEPNAME=Step086
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} mptz016r - RPTONLY Reverse Super Pre-Processor Program"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} mptz016r - RPTONLY Reverse Super Pre-Processor Program"
+    #*********************************************************************************************
+    #  Step086 - Executes mptz016r - RPTONLY Reverse Super Pre-Processor Program
+    #*********************************************************************************************
+    export DD_PARMIN=${RACE}/prm/${REVERSE_SUPER_JOBPARM}.prm
+    export DD_TRANSIN=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_rtrans_1_generate_${JOBFILE_OEMCTRY}.dat(0)")
+    export DD_TRANSOUT=${RACE}/dat/${JOBNAME}_rtrans_2_adjust.old.tmp
+    export DD_PARTFILE=${RACE}/dat/${JOBNAME}_partlist_ksds.tmp
+    export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}r_spre${REPORTSUFFIX}.old.pip
+         printpipe -o ${RACE}/rpt/${JOBNAME}r_spre${REPORTSUFFIX}.old
+         printpipe -r ${RACE}/rpt/${JOBNAME}r_spre${REPORTSUFFIX}.old rpt
+         
+    mptz016r 2>&1
+    
+         printpipe -c ${RACE}/rpt/${JOBNAME}r_spre${REPORTSUFFIX}.old
+  fi
+ 
+  
+#STEP Step087
+  export STEPNAME=Step087
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "Skipping ${STEPNAME} Comparing Report Counters"
+  else
+    #--------------------------------------------------------------------
+    COBOL_REPORT=`ls -r1 ${RACE}/rpt/${JOBNAME}r_spre*old*.rpt | head -1`
+    PLSQL_REPORT=`ls -r1 ${RACE}/rpt/${JOBNAME}r_spre*new*.rpt | head -1`
+    #--------------------------------------------------------------------
+    # Old Part Only Priced
+    COBOL_COUNT=$(grep 'OLD PART ONLY PRICED' ${COBOL_REPORT} | tr -d ',A-Z' | awk -F: '/:/ { print $2 }' )
+    PLSQL_COUNT=$(grep 'Old Part Only Priced' ${PLSQL_REPORT} | tr -d ',A-Z' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ]
+    then
+      echo "OK ** Total New Transactions Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "Old Part Only Priced\n"  > ${MAIL_TEXT}
+      echo " "                                        >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT}             >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT}             >> ${MAIL_TEXT}
+      echo " "                                        >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** Old Part Only Priced Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** Old Part Only Priced Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    fi
+    #----------------------------------------------------------------------
+    COBOL_COUNT=$(grep 'OLD PART SUPERSEDED' ${COBOL_REPORT} | tr -d ',A-Z' | awk -F: '/:/ { print $2 }' )
+    PLSQL_COUNT=$(grep 'Old Part Superseded' ${PLSQL_REPORT} | tr -d ',A-Z' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ]
+    then
+      echo "OK Old Part Superseded Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "Old Part Superseded\n"          > ${MAIL_TEXT}
+      echo " "                             >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT}  >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT}  >> ${MAIL_TEXT}
+      echo " "                             >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** Old Part Superseded Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** Old Part Superseded Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    fi
+    #----------------------------------------------------------------------
+    COBOL_COUNT=$(grep 'NEW PART PRICED' ${COBOL_REPORT} | tr -d ',A-Z' | awk -F: '/:/ { print $2 }' )
+    PLSQL_COUNT=$(grep 'New Part Priced' ${PLSQL_REPORT} | tr -d ',A-Z' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ]
+    then
+      echo "OK New Part Priced Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "New Part Priced\n"             > ${MAIL_TEXT}
+      echo " "                            >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT} >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT} >> ${MAIL_TEXT}
+      echo " "                            >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** New Part Priced Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** New Part Priced Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    fi
+    #----------------------------------------------------------------------
+    COBOL_COUNT=$(grep 'BOTH PARTS PRICED' ${COBOL_REPORT} | tr -d ',A-Z' | awk -F: '/:/ { print $2 }' )
+    PLSQL_COUNT=$(grep 'Both Parts Priced' ${PLSQL_REPORT} | tr -d ',A-Z' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ]
+    then
+      echo "OK Both Parts Priced Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "Both Parts Priced\n"           > ${MAIL_TEXT}
+      echo " "                            >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT} >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT} >> ${MAIL_TEXT}
+      echo " "                            >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** Both Parts Priced Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** Both Parts Priced Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    fi
+    #----------------------------------------------------------------------
+    COBOL_COUNT=$(grep 'NEITHER PART IS PRICED' ${COBOL_REPORT} | tr -d ',A-Z' | awk -F: '/:/ { print $2 }' )
+    PLSQL_COUNT=$(grep 'Neither Part is Priced' ${PLSQL_REPORT} | tr -d ',A-Z' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ]
+    then
+      echo "OK Neither Part is Priced Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "Neither Part is Priced\n"      > ${MAIL_TEXT}
+      echo " "                            >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT} >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT} >> ${MAIL_TEXT}
+      echo " "                            >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** Neither Part is Priced Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** Neither Part is Priced Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    fi
+    #----------------------------------------------------------------------
+    COBOL_COUNT=$(grep 'OPPOSITE SUPERSESSIONS' ${COBOL_REPORT} | tr -d ',A-Za-z' | awk -F: '/:/ { print $2 }' )
+    PLSQL_COUNT=$(grep 'Opposite Supersessions' ${PLSQL_REPORT} | tr -d ',A-Za-z' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ]
+    then
+      echo "OK Opposite Supersessions Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "Opposite Supersessions\n"      > ${MAIL_TEXT}
+      echo " "                            >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT} >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT} >> ${MAIL_TEXT}
+      echo " "                            >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** Opposite Supersessions Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** Opposite Supersessions Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    fi
+    #----------------------------------------------------------------------
+    COBOL_COUNT=$(grep 'DUPL REVERSE READ' ${COBOL_REPORT} | tr -d ',A-Za-z' | awk -F: '/:/ { print $2 }' )
+    PLSQL_COUNT=$(grep 'Dupl Reverse Read' ${PLSQL_REPORT} | tr -d ',A-Za-z' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ]
+    then
+      echo "OK Dupl Reverse Read Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "Dupl Reverse Read\n"           > ${MAIL_TEXT}
+      echo " "                            >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT} >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT} >> ${MAIL_TEXT}
+      echo " "                            >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** Dupl Reverse Read Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** Dupl Reverse Read Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    fi
+    #----------------------------------------------------------------------
+    COBOL_COUNT=$(grep 'RTRANS WRITTEN' ${COBOL_REPORT} | tr -d ',A-Z' | awk -F: '/:/ { print $2 }' )
+    PLSQL_COUNT=$(grep 'RTrans Written' ${PLSQL_REPORT} | tr -d ',A-Z' | awk -F: '/:/ { print $2 }' )
+    if [ "${COBOL_COUNT}" -eq "${PLSQL_COUNT}" ]
+    then
+      echo "OK RTrans Written Count: ${PLSQL_COUNT}"
+    else
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "RTrans Written\n"              > ${MAIL_TEXT}
+      echo " "                            >> ${MAIL_TEXT}
+      echo "COBOL_COUNT: " ${COBOL_COUNT} >> ${MAIL_TEXT} 
+      echo "PLSQL_COUNT: " ${PLSQL_COUNT} >> ${MAIL_TEXT}
+      echo " "                            >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: ** RTrans Written Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: ** RTrans Written Count!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    fi
+    #####################################################################################################################
+    # COMPARE RTrans
+    OLD_FILE=${RACE}/dat/${JOBNAME}_rtrans_2_adjust.old.tmp
+    OLD_FILE_SORTED=${RACE}/dat/${JOBNAME}_rtrans.old.sort.tmp
+    sort -o ${OLD_FILE_SORTED} ${OLD_FILE}
+    NEW_FILE=${RACE}/dat/${JOBNAME}_rtrans_2_adjust.new.tmp
+    NEW_FILE_SORTED=${RACE}/dat/${JOBNAME}_rtrans.new.sort.tmp
+    sort -o ${NEW_FILE_SORTED} ${NEW_FILE}    
+    #DIFF_FILE=${RACE}/dat/${JOBNAME}_rtrans.diff.tmp
+    DIFF_FILE=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_rtrans_diff.dat(+1)" NEW 1)
+    # Turn trap off since "diff" will return a 1 if files are different
+    # The trap is turned back on after the "if"
+    trap - err
+    diff -wb ${OLD_FILE_SORTED} ${NEW_FILE_SORTED} > ${DIFF_FILE}         
+    if [ -s ${DIFF_FILE} ]
+    then
+      export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp
+      echo "mptz016r Reverse Files Different\n"  > ${MAIL_TEXT}
+      echo ${DIFF_FILE}                         >> ${MAIL_TEXT} 
+      echo " "                                  >> ${MAIL_TEXT}
+      if [ ${THISHOST} = ${TESTHOST} ]
+      then
+        MAIL_TO="Janet.Wilson@Mitchell.com"
+        mailx -s "Test system warning! ${JOBNAME} ${STEPNAME}: mptz016r Reverse Files Different!" ${MAIL_TO} < ${MAIL_TEXT}
+        trap 'oem_abndalrt.ksh $?' err
+        exit 777        
+      else
+        MAIL_TO="rpt.oem.fixit@mitchell.com"
+        mailx -s         "oem_upd.ksh  ${JOBNAME} ${STEPNAME}: mptz016r Reverse Files Different!" ${MAIL_TO} < ${MAIL_TEXT}
+      fi 
+    else 
+      # Cleanup Files used to compare RTrans 
+      rm -f ${OLD_FILE}
+      rm -f ${OLD_FILE_SORTED}
+      rm -f ${NEW_FILE}
+      rm -f ${NEW_FILE_SORTED}
+    fi
+    trap 'oem_abndalrt.ksh $?' err
+    #####################################################################################################################
+  fi  
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+#STEP Step090R - COBOL
+  export STEPNAME=Step090R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} mptz016 - Reverse Super Pre-Processor Program"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} mptz016 - Reverse Super Pre-Processor Program"
+    #*********************************************************************************************
+    #  Step090R- Executes mptz016 - Reverse Super Pre-Processor Program
+    #*********************************************************************************************
+    export DD_PARMIN=${RACE}/prm/${REVERSE_SUPER_JOBPARM}.prm
+    export DD_TRANSIN=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_rtrans_1_generate_${JOBFILE_OEMCTRY}.dat(0)")
+    export DD_TRANSOUT=${RACE}/dat/${JOBNAME}_rtrans_2_adjust.tmp
+    export DD_PARTFILE=${RACE}/dat/${JOBNAME}_partlist_ksds.tmp
+    export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}r_spre${REPORTSUFFIX}.pip
+         printpipe -o ${RACE}/rpt/${JOBNAME}r_spre${REPORTSUFFIX}
+         printpipe -r ${RACE}/rpt/${JOBNAME}r_spre${REPORTSUFFIX} rpt
+
+    mptz016 2>&1
+
+         printpipe -c ${RACE}/rpt/${JOBNAME}r_spre${REPORTSUFFIX}
+  fi
+#
+#  Steps 020 thru 090 are ONLY run for jobs 
+#  which require "Reverse Analysis" processing
+#
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+#STEP Step105R
+  export STEPNAME=Step105R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Check for rtrans file"
+  #*********************************************************************************************
+  #  Step105R - Check for rtrans file
+  #             If not found, create it (there are some OEMs which do not send rtrans
+  #             and do not run the Reverse Analysis steps which would created rtrans)
+  #*********************************************************************************************
+  REFORMAT_RTRANS_FILE=${RACE}/dat/${REFORMATJOB}_rtrans.tmp
+  UPDATE_RTRANS_FILE=${RACE}/dat/${JOBNAME}_rtrans_2_adjust.tmp
+  ##############################################################################################
+  #
+  #  Hey, something is wrong if an rtrans was created by
+  #  BOTH the Reformat Program AND the Supersession Analysis progrm.
+  ##############################################################################################
+  if [ -e ${REFORMAT_RTRANS_FILE} ]
+  then
+    if [ -e ${UPDATE_RTRANS_FILE} ]
+    then
+      oem_abndalrt.ksh oem_upd_TWO_rtrans_files_found
+    fi
+  fi
+  ##############################################################################################
+  #
+  #  Use the Reformat RTRANS if found -- copy it to the Update Job's JOBNAME
+  #  Use the Update RTRANS if found, otherwise, create one.
+  ###############################################################################################
+  if [ -e ${REFORMAT_RTRANS_FILE} ]
+  then
+    echo "Using RTRANS created by Reformat Program(s): ${PACKAGE_NAME_1}  ${PACKAGE_NAME_2}"
+    mv ${REFORMAT_RTRANS_FILE} ${UPDATE_RTRANS_FILE}
+  else
+    if [ -e ${UPDATE_RTRANS_FILE} ]
+    then
+      echo "Using RTRANS created by Supersession Analysis/Reverse Super Pre-Processor"
+    else
+      echo "Creating an empty RTRANS file"
+      touch ${UPDATE_RTRANS_FILE}
+    fi
+  fi
+  ##############################################################################################
+
+
+#STEP Step110R
+  export STEPNAME=Step110R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Sorts R TRANS by: SUPR-EFF-DT Descend and OLD PART NUMBER Ascend"
+  #*********************************************************************************************
+  #                                          Sorts R TRANS by: SUPR-EFF-DT Descend and OLD PART NUMBER Ascend
+  #   Save 3 generations reformat RTRANS
+  #*********************************************************************************************
+  SORT_FILEIN=${RACE}/dat/${JOBNAME}_rtrans_2_adjust.tmp
+  SORT_FILEOUT=${RACE}/dat/${JOBNAME}_rtrans_2_adjust_sort.tmp
+  #   +------------+------------+------------+----------+
+  #   |            |    YYYY    |   MMDD     | OLD PART |
+  #   +------------+------------+------------+----------+
+  sort -k1.67,1.74r -k1.63,1.66r -k1.57,1.61r -k1.7,1.31 -o ${SORT_FILEOUT} ${SORT_FILEIN}
+  mv               ${RACE}/dat/${JOBNAME}_rtrans_2_adjust_sort.tmp \
+     $(setgdg.ksh "${RACE}/dat/${JOBNAME}_rtrans_2_adjust_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
+
+
+#STEP Step120R
+  export STEPNAME=Step120R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} mptz013 - Reverse Supersession Update Program"
+  #*********************************************************************************************
+  #                                          mptz013 - Reverse Supersession Update Program
+  #*********************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
+  export DD_TRANSIN=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_rtrans_2_adjust_${JOBFILE_OEMCTRY}.dat(0)")
+  export DD_PARTSFL=${RACE}/tmp/${JOBNAME}_parts_file.tmp
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}d_rupd${REPORTSUFFIX}.pip
+       printpipe -o ${RACE}/rpt/${JOBNAME}d_rupd${REPORTSUFFIX}
+       printpipe -r ${RACE}/rpt/${JOBNAME}d_rupd${REPORTSUFFIX} rpt
+
+  mptz013 2>&1
+
+       printpipe -c ${RACE}/rpt/${JOBNAME}d_rupd${REPORTSUFFIX}
+
+
+#STEP Step125R
+  export STEPNAME=Step125R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Sorts N TRANS by: SUPR-EFF-DT (YYYY, MM/DD) Ascend"
+  #*********************************************************************************************
+  #                                          Sorts N TRANS by: SUPR-EFF-DT (YYYY, MM/DD) Ascend
+  #*********************************************************************************************
+  SORT_FILEIN=${RACE}/dat/${REFORMATJOB}_ntrans.tmp
+  SORT_FILEOUT=${RACE}/dat/${JOBNAME}_ntrans_sort.tmp
+  #   +-----------|-----------|
+  #   |    YYYY   |   MMDD    |
+  #   +-----------|-----------|
+  sort -k1.63,1.66 -k1.57,1.61 -o ${SORT_FILEOUT} ${SORT_FILEIN}
+
+
+#STEP Step130R
+  export STEPNAME=Step130R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz024 - Supersession Update Program"
+  #*********************************************************************************************
+  #                                          Executes mptz024 - Supersession Update Program
+  #*********************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
+  export DD_TRANSIN=${RACE}/dat/${JOBNAME}_ntrans_sort.tmp
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}f_supd${REPORTSUFFIX}.pip
+       printpipe -o ${RACE}/rpt/${JOBNAME}f_supd${REPORTSUFFIX}
+       printpipe -r ${RACE}/rpt/${JOBNAME}f_supd${REPORTSUFFIX} rpt
+
+  mptz024 2>&1
+
+       printpipe -c ${RACE}/rpt/${JOBNAME}f_supd${REPORTSUFFIX}
+
+
+#STEP Step140R
+  export STEPNAME=Step140R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz026 - Pricing update program"
+  #*********************************************************************************************
+  #                                          Executes mptz026 - Pricing update program
+  #*********************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
+  export DD_TRANSIN=${RACE}/dat/${REFORMATJOB}_ptrans.tmp
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}h_pupd${REPORTSUFFIX}.pip
+       printpipe -o ${RACE}/rpt/${JOBNAME}h_pupd${REPORTSUFFIX}
+       printpipe -r ${RACE}/rpt/${JOBNAME}h_pupd${REPORTSUFFIX} rpt
+
+  mptz026 2>&1
+
+       printpipe -c ${RACE}/rpt/${JOBNAME}h_pupd${REPORTSUFFIX}
+
+
+#STEP Step150R
+  export STEPNAME=Step150R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}"  $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz025 - Discontinue Update Program"
+  #*********************************************************************************************
+  #                                          Executes mptz025 - Discontinue Update Program
+  #*********************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
+  export DD_TRANSIN=${RACE}/dat/${REFORMATJOB}_dtrans.tmp
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}g_dupd${REPORTSUFFIX}.pip
+       printpipe -o ${RACE}/rpt/${JOBNAME}g_dupd${REPORTSUFFIX}
+       printpipe -r ${RACE}/rpt/${JOBNAME}g_dupd${REPORTSUFFIX} rpt
+
+  mptz025 2>&1
+
+       printpipe -c ${RACE}/rpt/${JOBNAME}g_dupd${REPORTSUFFIX}
+
+
+#STEP Step160R
+  export STEPNAME=Step160R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes SORT - Sorts A TRANS by: OLD PART NUMBER"
+  #*********************************************************************************************
+  #                                          Executes SORT - Sorts A TRANS by: OLD PART NUMBER
+  #*********************************************************************************************
+  SORT_FILEIN=${RACE}/dat/${REFORMATJOB}_atrans.tmp
+  SORT_FILEOUT=${RACE}/dat/${JOBNAME}_atrans_sort.tmp
+  #   +----------+
+  #   | OLD PART |
+  #   +----------+
+  sort -k1.7,1.31 -o ${SORT_FILEOUT} ${SORT_FILEIN}
+
+
+#STEP Step170R
+  export STEPNAME=Step170R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz022 - Assembly-to-Component Update Program"
+  #*********************************************************************************************
+  #                                          Executes mptz022 - Assembly-to-Component Update Program
+  #*********************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
+  export DD_TRANSIN=${RACE}/dat/${JOBNAME}_atrans_sort.tmp
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}c_aupd${REPORTSUFFIX}.pip
+       printpipe -o ${RACE}/rpt/${JOBNAME}c_aupd${REPORTSUFFIX}
+       printpipe -r ${RACE}/rpt/${JOBNAME}c_aupd${REPORTSUFFIX} rpt
+
+  mptz022 2>&1
+
+       printpipe -c ${RACE}/rpt/${JOBNAME}c_aupd${REPORTSUFFIX}
+
+
+#STEP Step180R
+  export STEPNAME=Step180R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes SORT - Sorts C Trans by: NEW PART NUMBER"
+  #*********************************************************************************************
+  #                                          Executes SORT - Sorts C Trans by: NEW PART NUMBER
+  #*********************************************************************************************
+  SORT_FILEIN=${RACE}/dat/${REFORMATJOB}_ctrans.tmp
+  SORT_FILEOUT=${RACE}/dat/${JOBNAME}_ctrans_sort.tmp
+  #   +-----------|
+  #   | NEW PART  |
+  #   +-----------|
+  sort -k1.32,1.56 -o ${SORT_FILEOUT} ${SORT_FILEIN}
+
+
+#STEP Step190R
+  export STEPNAME=Step190R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz023 - Component-to-Assembly Update Program"
+  #*********************************************************************************************
+  #                                          Executes mptz023 - Component-to-Assembly Update Program
+  #***********************O*********************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
+  export DD_TRANSIN=${RACE}/dat/${JOBNAME}_ctrans_sort.tmp
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}e_cupd${REPORTSUFFIX}.pip
+       printpipe -o ${RACE}/rpt/${JOBNAME}e_cupd${REPORTSUFFIX}
+       printpipe -r ${RACE}/rpt/${JOBNAME}e_cupd${REPORTSUFFIX} rpt
+
+  mptz023 2>&1
+
+       printpipe -c ${RACE}/rpt/${JOBNAME}e_cupd${REPORTSUFFIX}
+
+
+#STEP Step200R
+  export STEPNAME=Step200R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz007 - Update Report Program"
+  #*********************************************************************************************
+  #                                          Executes mptz007 - Update Report Program
+  #*********************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
+
+  export DD_RPT01=${RACE}/rpt/${JOBNAME}i_err${REPORTSUFFIX}.pip
+     printpipe -o ${RACE}/rpt/${JOBNAME}i_err${REPORTSUFFIX}
+     printpipe -r ${RACE}/rpt/${JOBNAME}i_err${REPORTSUFFIX} rpt
+
+  export DD_RPT02A=${RACE}/rpt/${JOBNAME}j_cmlt${REPORTSUFFIX}.pip
+      printpipe -o ${RACE}/rpt/${JOBNAME}j_cmlt${REPORTSUFFIX}
+      printpipe -r ${RACE}/rpt/${JOBNAME}j_cmlt${REPORTSUFFIX} rpt
+
+  export DD_RPT02B=${RACE}/rpt/${JOBNAME}p_wmlt${REPORTSUFFIX}.pip
+      printpipe -o ${RACE}/rpt/${JOBNAME}p_wmlt${REPORTSUFFIX}
+      printpipe -r ${RACE}/rpt/${JOBNAME}p_wmlt${REPORTSUFFIX} rpt
+
+  export DD_RPT03=${RACE}/rpt/${JOBNAME}k_pvar${REPORTSUFFIX}.pip
+      printpipe -o ${RACE}/rpt/${JOBNAME}k_pvar${REPORTSUFFIX}
+      printpipe -r ${RACE}/rpt/${JOBNAME}k_pvar${REPORTSUFFIX} rpt
+
+  export DD_RPT04A=${RACE}/rpt/${JOBNAME}n_act${REPORTSUFFIX}.pip
+      printpipe -o ${RACE}/rpt/${JOBNAME}n_act${REPORTSUFFIX}
+      printpipe -r ${RACE}/rpt/${JOBNAME}n_act${REPORTSUFFIX} rpt
+
+  export DD_RPT04B=${RACE}/rpt/${JOBNAME}l_ctl${REPORTSUFFIX}.pip
+      printpipe -o ${RACE}/rpt/${JOBNAME}l_ctl${REPORTSUFFIX}
+      printpipe -r ${RACE}/rpt/${JOBNAME}l_ctl${REPORTSUFFIX} rpt
+
+  export DD_RPT05A=${RACE}/rpt/${JOBNAME}m_czpr${REPORTSUFFIX}.pip
+      printpipe -o ${RACE}/rpt/${JOBNAME}m_czpr${REPORTSUFFIX}
+      printpipe -r ${RACE}/rpt/${JOBNAME}m_czpr${REPORTSUFFIX} rpt
+
+  export DD_RPT05B=${RACE}/rpt/${JOBNAME}o_wzpr${REPORTSUFFIX}.pip
+      printpipe -o ${RACE}/rpt/${JOBNAME}o_wzpr${REPORTSUFFIX}
+      printpipe -r ${RACE}/rpt/${JOBNAME}o_wzpr${REPORTSUFFIX} rpt
+
+  mptz007 2>&1
+
+      printpipe -c ${RACE}/rpt/${JOBNAME}o_wzpr${REPORTSUFFIX}
+      printpipe -c ${RACE}/rpt/${JOBNAME}m_czpr${REPORTSUFFIX}
+      printpipe -c ${RACE}/rpt/${JOBNAME}l_ctl${REPORTSUFFIX}
+      printpipe -c ${RACE}/rpt/${JOBNAME}n_act${REPORTSUFFIX}
+      printpipe -c ${RACE}/rpt/${JOBNAME}k_pvar${REPORTSUFFIX}
+      printpipe -c ${RACE}/rpt/${JOBNAME}p_wmlt${REPORTSUFFIX}
+      printpipe -c ${RACE}/rpt/${JOBNAME}j_cmlt${REPORTSUFFIX}
+      printpipe -c ${RACE}/rpt/${JOBNAME}i_err${REPORTSUFFIX}
+
+#STEP Step205R
+   export STEPNAME=Step205R
+   echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+   oem_job_status_update.ksh "R" "${STEPNAME} cat ATRANS and CTRANS to GDG disk"
+   #*********************************************************************************************
+   #                                          cat ATRANS and CTRANS to GDG disk
+   #*********************************************************************************************
+   ATRANS_IN=${RACE}/dat/${JOBNAME}_atrans_sort.tmp
+   CTRANS_IN=${RACE}/dat/${JOBNAME}_ctrans_sort.tmp
+   ACTRANS_OUT=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_actrans_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
+   cat ${ATRANS_IN} ${CTRANS_IN} > ${ACTRANS_OUT}
+
+
+#STEP Step210R
+  export STEPNAME=Step210R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
+  oem_job_status_update.ksh "R" "${STEPNAME} Delete transaction work datasets"
+  #*********************************************************************************************
+  #                                          Delete transaction work datasets
+  #*********************************************************************************************
+  rm -f ${RACE}/dat/${JOBNAME}*.tmp* &
+  rm -f ${RACE}/tmp/${JOBNAME}*      &
+  rm -f ${RACE}/dat/${REFORMATJOB}_atrans.tmp
+  rm -f ${RACE}/dat/${REFORMATJOB}_ctrans.tmp
+  rm -f ${RACE}/dat/${REFORMATJOB}_ntrans.tmp
+  rm -f ${RACE}/dat/${REFORMATJOB}_dtrans.tmp
+  rm -f ${RACE}/dat/${REFORMATJOB}_ptrans.tmp
+  rm -f ${RACE}/dat/${REFORMATJOB}_rtrans.tmp
+  rm -f ${RACE}/tmp/${REFORMATJOB}*.tmp*
+
+
+#*********************************************************************************************
+# END oem_upd.ksh
+#*********************************************************************************************

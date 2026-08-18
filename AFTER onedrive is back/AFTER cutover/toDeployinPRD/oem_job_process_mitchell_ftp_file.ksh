@@ -204,7 +204,7 @@ then
   echo "FTP_XFR_FILE_NAME= ${FTP_XFR_FILE_NAME}"
   #P. Becotted end of change
   cp ${FTP_XFR_FILE_NAME} ${NEW_XFR_FTP_FILE}
-  # rj132422 - prod3nt backup re-enabled -> Mitchell incoming/backup via scp (was: if false -> fileput.exp ${NOVELL}oem)
+  # rj132422 - Mitchell incoming/backup via scp (was: if false -> fileput.exp ${NOVELL}oem)
   BACKUP_DIR=${FTPSITE_DIRECTORY}/backup
   BACKUP_NAME=${WORK_FTP_FILE_NAME}_$(date +%Y%m%d%H%M%S)
   FTP_LOGFILE=$RACE/tmp/${JOBNAME}_ftp_transfer_log_new.tmp

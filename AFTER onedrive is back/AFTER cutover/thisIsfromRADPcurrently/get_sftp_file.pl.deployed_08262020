@@ -1,0 +1,191 @@
+#!/usr/local/bin/perl -w
+
+#******************************************************************************#
+# GetSftpFile.pl 
+#
+#   Retrieves a file from the sftp server indicated in the parm file
+#
+#   Three Input Parameters
+#         1) sftp account file
+#               - space delimited file containing
+#                       - user id
+#                       - password
+#                       - server name
+#                       - target directory (or DefaultDir)
+#                       - file type (binary or ascii)
+#                       - port (optional)
+#         2) filename to be retrieved  (remote filename)
+#         3) output file name and path (local filename)
+#
+#******************************************************************************#
+
+use strict;
+use Net::SFTP::Foreign;
+use Net::SMTP;
+
+my $NumArgs    = 3;
+my $PrmFile    = $ARGV[0];
+my $FileToPull = $ARGV[1];
+my $OutputFile = $ARGV[2];
+
+my $Usage = "Usage: $0 [ ftpAcctFile fileToPull outputFile ]\n\n";
+my $sftp;
+my $pull_file;
+my $Date;
+
+#-- main program starts here --#
+
+# Verify script was called w/ correct # args
+    if ( @ARGV ne $NumArgs ) {
+       print "\n\nGetSftpFile.pl *** ERROR Invalid Arguments Passed ***\n"; 
+       print $Usage;
+       exit 1;
+    }
+
+# Log in to ftp server
+    SftpLogin();
+
+# Check if file exists
+    CheckAndGetSftpFile();
+
+    exit 0;
+
+#-- main program ends here --#
+
+
+#-- subprocesses follow --#
+
+sub CalculateDate {
+
+       $Date = `date +%Y/%m/%d" "%H:%M:%S`;
+       chomp $Date;
+}
+
+
+sub SftpLogin {
+
+       CalculateDate;
+       print "\n\nGetSftpFile.pl - $Date - Connecting to SFTP server";
+
+       #* Retrieve 1) user id
+       #*          2) password
+       #*          3) sftp server name
+       #*          4) remote directory (DefaultDir if no change required)
+       #*          5) file type (defaults to binary) from parm file
+       #*          6) port
+       open(FH,"$PrmFile");
+       my ($User,$Pass,$SftpServer,$RemoteDir,$FileType,$Port) = split /\s+/, <FH>;
+       close(FH);
+
+       #* If prm file doesn't contain port (at end of record), default it to 22		
+	   if (not $Port)
+        {
+         $Port=22;
+        }
+
+       #* Log in to ftp server
+
+  #***Uncomment for testing in debug***   $Net::SFTP::Foreign::debug = -1;
+  #*print "\nGetSftpFile.pl - $User - $Pass - $SftpServer - $RemoteDir - $FileType - $Port \n";
+
+
+        $sftp = Net::SFTP::Foreign->new($SftpServer, user=>$User, port=>$Port, password=>$Pass)
+          or die "*** ERROR connecting to $SftpServer\n", $sftp->message;
+
+       #* Change directory if specified 
+       if ( $RemoteDir ne "DefaultDir" ) {
+         print "\nGetSftpFile.pl - $Date - Changing to [ $RemoteDir ]";
+         $sftp->setcwd("$RemoteDir")
+            or die "Cannot change working directory ", $sftp->message;
+       }
+
+}
+
+sub CheckAndGetSftpFile {
+
+       CalculateDate;
+
+       print "\nGetSftpFile.pl - $Date - Checking if file $FileToPull exists";
+       
+       $pull_file = $sftp->ls( wanted => qr/$FileToPull/);
+       
+       if ( defined @$pull_file[0] )
+         {
+             $FileToPull=@$pull_file[0] -> {filename};  
+             GetSftpFile();
+         }
+      else 
+         {
+             print "\nGetSftpFile.pl - $Date - File $FileToPull doesn't exist on FTP server";
+         }
+         
+
+}
+
+sub GetSftpFile {
+
+       my $FileSizeCurr;
+       my $FileSizeNow;
+       my @LocalFileSize;
+
+       CalculateDate;
+
+       # remote file exists; is it ready to be pulled?
+       print "\nGetSftpFile.pl - $Date - File $FileToPull found - waiting to confirm file transfer is complete";
+
+       # try at least 10 mins before giving up
+       for ( my $i=0; $i<=10; $i++ ) {
+           #################################################################################################
+           # Get current file size on the SFTP site
+           # Note: The following "size" statements do NOT work on all of the SFTP sites; therefore,  
+           #       FileSizeCurr and FileSizeNow will be compromised.
+           #       Then when these variables are used in this statement: if ( $FileSizeCurr eq $FileSizeNow )
+           #       this message will be returned: "Use of uninitialized value in string ... "
+           #       So changed command used to get sizes.
+           #################################################################################################
+           $pull_file = $sftp->ls( wanted => qr/$FileToPull/);
+           $FileSizeCurr = @$pull_file[0]-> {a}-> {size}; 
+           # $FileSizeCurr = $sftp->size("$FileToPull");
+           sleep 60; 
+          
+           $pull_file = $sftp->ls( wanted => qr/$FileToPull/);
+           $FileSizeNow = @$pull_file[0]-> {a}-> {size}; 
+           #$FileSizeNow = $sftp->size("$FileToPull");
+           # Waited one minute... Now determine if the source file size has changed.
+           # If the file size has NOT changed, start the transfer... otherwise try again!
+           if ( $FileSizeCurr eq $FileSizeNow ) {
+              
+              CalculateDate;
+              print "\nGetSftpFile.pl - $Date - Retrieving $FileToPull - output to $OutputFile";
+              print "\nGetSftpFile.pl -         Remote file size $FileSizeNow";
+
+              # file xfer complete; pull file
+              $sftp->get("$FileToPull","$OutputFile")
+                 or die "*** ERROR retrieving $FileToPull\n", $sftp->message;
+
+              CalculateDate;
+              print "\nGetSftpFile.pl - $Date - File Transfer Complete";
+
+              @LocalFileSize = (split /\s+/,`ls -l $OutputFile`);
+              print "\nGetSftpFile.pl -        Local file size: $LocalFileSize[4]";
+
+              print "\n\nGetSftpFile.pl - *NOTE: File sizes may differ depending on how the remote and";
+              print " local servers define EndOfLine\n\n";
+
+              last;
+           }
+           else {
+              CalculateDate;
+              print "\nGetSftpFile.pl - $Date - File sizes NOT equal - waiting...";
+           }
+           
+           if ( $i == 10 ) {
+              CalculateDate;
+              print "\nGetSftpFile.pl - $Date - File Not Transferred."; 
+           }
+       }
+
+  $sftp->disconnect;
+  CalculateDate;
+  print "\nGetSftpFile.pl - $Date - Disconnected from SFTP server\n";
+}
