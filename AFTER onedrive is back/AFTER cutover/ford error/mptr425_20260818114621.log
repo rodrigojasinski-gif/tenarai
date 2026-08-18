@@ -1,0 +1,437 @@
+    Start  mptr425   Tue Aug 18 11:46:21 AM PDT 2026
+\n\n**********************************************************************************
+Restart Step was NOT included in the job execution. Job will run from the beginning.
+**********************************************************************************\n\n
+\n\n**************************************************************************************************************
+Calling:  oem_ref_mptr425_ftp_clean_files.ksh    Datetime: 08/18/26 11:46:21   Script: /tmp/mptr425_oem_ref_mptr425_ftp_clean_files.ksh_run
+**************************************************************************************************************\n\n
+RCS : oem_ref_mptr425_ftp_clean_files.ksh,v 1.4 2022/10/20 18:49:07 pg2697 Exp $
+#*****************************************************************************************
+#  Build environment variables for the job (based on jobname)
+#*****************************************************************************************
+. oem_job.ksh         
++ . oem_job.ksh
+#!/bin/ksh
+echo "RCS $Id: oem_job.ksh,v 1.9 2026/08/07 19:34:48 rj132422 Exp $"
+#*****************************************************************************************
+# PROCNAME oem_job.ksh
+# PURPOSE  Retreive and build UNIX Environment Variables from Oracle Tables
+#          Used by RACE OEM Parts Reformat and Update jobs
+#*****************************************************************************************
+trap 'oem_abndalrt.ksh $?' err
+MPTUSERID=`cat ${RACE}/prm/zmptpass.prm`
+LOGFILE=$(basename ${JOBLOGNAME})
+#*****************************************************************************************
+#  Build UNIX environment variables for the job (based on jobname)
+#*****************************************************************************************
+REFORMATJOB=${JOBNAME}
+UPDATEJOB=${JOBNAME}
+WORKFILE=${JOBNAME}_oem_job.tmp
+#-----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => '${JOBNAME}',    \
+                                      p_tmp_directory => '${OBJ_TMPDIR}', \
+                                      p_tmp_filename  => '${WORKFILE}',   \
+                                      p_log_directory => '${OBJ_TMPDIR}', \
+                                      p_log_filename  => '${LOGFILE%.log}.db.log');
+QUIT;
+%
+
+# rj132422 - This code was added to avoid race condition between db and shell due the nfs
+DB_LOG=${RACE}/tmp/${LOGFILE%.log}.db.log
+if [ -s "$DB_LOG" ]; then
+    cat "$DB_LOG" >> "${LOGDIR}/${LOGFILE}"
+    rm  "$DB_LOG"
+fi
+
+#-----------------------------------------------------------------------------------------
+export WORKFILE=${RACE}/tmp/${WORKFILE}
+
+#If the ReformatJob Environment variable isn't defined, abend the process
+export REFORMATJOB=`cat ${WORKFILE}                   | cut -f1  -d","`
+if [ -z "${REFORMATJOB}" ]
+then
+   abndalrt.ksh environment_not_found_in_oem_job_table.tmp
+fi
+export UPDATEJOB=`cat ${WORKFILE}                     | cut -f2  -d","`
+export JOBOEM=`cat ${WORKFILE}                        | cut -f3  -d","`
+export JOBCTRY=`cat ${WORKFILE}                       | cut -f4  -d","`
+export JOBOEMNAME=`cat ${WORKFILE}                    | cut -f5  -d","`
+export OEMABBRLOWER=`cat ${WORKFILE}                  | cut -f6  -d","`
+export JOBPARM=`cat ${WORKFILE}                       | cut -f7  -d","`
+export FORMATOEM=`cat ${WORKFILE}                     | cut -f8  -d","`
+export FORMATCTRY=`cat ${WORKFILE}                    | cut -f9  -d","`
+export JOBFILE_OEMCTRY=`cat ${WORKFILE}               | cut -f10 -d","`
+export REPORTSUFFIX=`cat ${WORKFILE}                  | cut -f11 -d","`
+export REVERSE_SUPER_JOBPARM=`cat ${WORKFILE}         | cut -f12 -d","`
+export PACKAGE_NAME_1=`cat ${WORKFILE}                | cut -f13 -d","`
+export PACKAGE_NAME_2=`cat ${WORKFILE}                | cut -f14 -d","`
+export DUPLICATE_PARTS_EXPECTED_FLAG=`cat ${WORKFILE} | cut -f15 -d","`
+export REFORMAT_BUILDS_RTRANS_FLAG=`cat ${WORKFILE}   | cut -f16 -d","`
+export OBSOLETE_JOB_FLAG=`cat ${WORKFILE}             | cut -f17 -d","`
+export PREPROCESS_SCRIPT_NAME=`cat ${WORKFILE}        | cut -f18 -d","`
+
+
+##########################################################################################
+# The various Oracle Package call by the OEM system use Global Temporary Tables.
+# For some reason (only in the test system at this point in time), the indexes on these
+# Global Tempoary Tables are missing.
+# The missing indexes result in slooooow processing and often aren't discovered missing
+# right away.  To curtail this problem, run a quick check to see if the indexes exist.
+# When an index for a Global Temporary Table is not found, it will be created.
+##########################################################################################
+#-----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+SET SERVEROUTPUT ON SIZE 1000000
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => '${JOBNAME}',       \
+                                                    p_log_directory => '${OBJ_TMPDIR}',    \
+                                                    p_log_filename  => '${LOGFILE%.log}.db.log',       \
+                                                    p_debug_level   => '${RACE_DEBUG_LEVEL}');
+QUIT;
+%
+
+# rj132422 - This code was added to avoid race condition between db and shell due the nfs
+DB_LOG=${RACE}/tmp/${LOGFILE%.log}.db.log
+if [ -s "$DB_LOG" ]; then
+    cat "$DB_LOG" >> "${LOGDIR}/${LOGFILE}"
+    rm  "$DB_LOG"
+fi
+#-----------------------------------------------------------------------------------------
+
+#*****************************************************************************************
+# END oem_job.ksh
+#*****************************************************************************************+ echo 'RCS : oem_job.ksh,v 1.9 2026/08/07 19:34:48 rj132422 Exp $'
+RCS : oem_job.ksh,v 1.9 2026/08/07 19:34:48 rj132422 Exp $
++ trap 'oem_abndalrt.ksh $?' err
+cat ${RACE}/prm/zmptpass.prm
++ cat /prod/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /prod/race/oem/log/mptr425_20260818114621.log
++ LOGFILE=mptr425_20260818114621.log
++ REFORMATJOB=mptr425
++ UPDATEJOB=mptr425
++ WORKFILE=mptr425_oem_job.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr425',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr425_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_TMP_DIR',                                       p_log_filename  => 'mptr425_20260818114621.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=/prod/race/oem/tmp/mptr425_20260818114621.db.log
++ [ -s /prod/race/oem/tmp/mptr425_20260818114621.db.log ]
++ cat /prod/race/oem/tmp/mptr425_20260818114621.db.log
++ 1>> /prod/race/oem/log/mptr425_20260818114621.log
+
+mptr425,mptr426,002,CA,FOR,for,zmpt426a,002,US,for_ca,forca,mpt426e,pkg_oem_ref_010,,Y,N,N,,U,N,
+
++ rm /prod/race/oem/tmp/mptr425_20260818114621.db.log
++ WORKFILE=/prod/race/oem/tmp/mptr425_oem_job.tmp
++ export WORKFILE
+cat ${WORKFILE}                   | cut -f1  -d","
++ cut -f1 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ REFORMATJOB=mptr425
++ export REFORMATJOB
++ [ -z mptr425 ]
+cat ${WORKFILE}                     | cut -f2  -d","
++ cut -f2 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ UPDATEJOB=mptr426
++ export UPDATEJOB
+cat ${WORKFILE}                        | cut -f3  -d","
++ cut -f3 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ JOBOEM=002
++ export JOBOEM
+cat ${WORKFILE}                       | cut -f4  -d","
++ cut -f4 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ JOBCTRY=CA
++ export JOBCTRY
+cat ${WORKFILE}                    | cut -f5  -d","
++ cut -f5 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ JOBOEMNAME=FOR
++ export JOBOEMNAME
+cat ${WORKFILE}                  | cut -f6  -d","
++ cut -f6 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ OEMABBRLOWER=for
++ export OEMABBRLOWER
+cat ${WORKFILE}                       | cut -f7  -d","
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ cut -f7 -d,
++ JOBPARM=zmpt426a
++ export JOBPARM
+cat ${WORKFILE}                     | cut -f8  -d","
++ cut -f8 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ FORMATOEM=002
++ export FORMATOEM
+cat ${WORKFILE}                    | cut -f9  -d","
++ cut -f9 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ FORMATCTRY=US
++ export FORMATCTRY
+cat ${WORKFILE}               | cut -f10 -d","
++ cut -f10 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ JOBFILE_OEMCTRY=for_ca
++ export JOBFILE_OEMCTRY
+cat ${WORKFILE}                  | cut -f11 -d","
++ cut -f11 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ REPORTSUFFIX=forca
++ export REPORTSUFFIX
+cat ${WORKFILE}         | cut -f12 -d","
++ cut -f12 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ REVERSE_SUPER_JOBPARM=mpt426e
++ export REVERSE_SUPER_JOBPARM
+cat ${WORKFILE}                | cut -f13 -d","
++ cut -f13 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ PACKAGE_NAME_1=pkg_oem_ref_010
++ export PACKAGE_NAME_1
+cat ${WORKFILE}                | cut -f14 -d","
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ cut -f14 -d,
++ PACKAGE_NAME_2=''
++ export PACKAGE_NAME_2
+cat ${WORKFILE} | cut -f15 -d","
++ cut -f15 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ DUPLICATE_PARTS_EXPECTED_FLAG=Y
++ export DUPLICATE_PARTS_EXPECTED_FLAG
+cat ${WORKFILE}   | cut -f16 -d","
++ cut -f16 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ REFORMAT_BUILDS_RTRANS_FLAG=N
++ export REFORMAT_BUILDS_RTRANS_FLAG
+cat ${WORKFILE}             | cut -f17 -d","
++ cut -f17 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ OBSOLETE_JOB_FLAG=N
++ export OBSOLETE_JOB_FLAG
+cat ${WORKFILE}        | cut -f18 -d","
++ cut -f18 -d,
++ cat /prod/race/oem/tmp/mptr425_oem_job.tmp
++ PREPROCESS_SCRIPT_NAME=''
++ export PREPROCESS_SCRIPT_NAME
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+SET SERVEROUTPUT ON SIZE 1000000
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr425',                                                           p_log_directory => 'RACE_OEM_TMP_DIR',                                                        p_log_filename  => 'mptr425_20260818114621.db.log',                                                           p_debug_level   => '0');
+QUIT;
+%
+2>& 1
++ DB_LOG=/prod/race/oem/tmp/mptr425_20260818114621.db.log
++ [ -s /prod/race/oem/tmp/mptr425_20260818114621.db.log ]
++ cat /prod/race/oem/tmp/mptr425_20260818114621.db.log
++ 1>> /prod/race/oem/log/mptr425_20260818114621.log
+
+Start mptr425 pkg_oem_ref_utilities.p_check_gtmp_indexes
+
+
+ End  mptr425 pkg_oem_ref_utilities.p_check_gtmp_indexes
++ rm /prod/race/oem/tmp/mptr425_20260818114621.db.log
+. oem_job_datafile.ksh
+
++ . oem_job_datafile.ksh
+#!/bin/ksh
+echo "RCS $Id: oem_job_datafile.ksh,v 1.9 2026/08/07 19:35:00 rj132422 Exp $"
+#*****************************************************************************************
+# PROCNAME oem_job_datafile.ksh
+# PURPOSE  Retreive and build UNIX Environment Variables from Oracle Tables
+#*****************************************************************************************
+trap 'oem_abndalrt.ksh $?' err
+MPTUSERID=`cat ${RACE}/prm/zmptpass.prm`
+LOGFILE=$(basename ${JOBLOGNAME})
+#*****************************************************************************************
+WORKFILE=${JOBNAME}_oem_job_datafile.tmp
+#-----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_datafile.p_oem_job_datafile_sel_04(p_reformat_job  => '${REFORMATJOB}', \
+                                                        p_tmp_directory => '${OBJ_TMPDIR}',  \
+                                                        p_tmp_filename  => '${WORKFILE}',    \
+                                                        p_log_directory => '${OBJ_TMPDIR}',  \
+                                                        p_log_filename  => '${LOGFILE%.log}.db.log');
+QUIT;
+%
+
+# rj132422 - This code was added to avoid race condition between db and shell due the nfs
+DB_LOG=${OBJ_TMPDIR}/${LOGFILE%.log}.db.log
+if [ -s "$DB_LOG" ]; then
+    cat "$DB_LOG" >> "${OBJ_TMPDIR}/${LOGFILE}"
+    rm  "$DB_LOG"
+fi
+
+#-----------------------------------------------------------------------------------------
+export WORKFILE=${RACE}/tmp/${WORKFILE}
+#*****************************************************************************************
+# END oem_job_datafile.ksh
+#*****************************************************************************************
++ echo 'RCS : oem_job_datafile.ksh,v 1.9 2026/08/07 19:35:00 rj132422 Exp $'
+RCS : oem_job_datafile.ksh,v 1.9 2026/08/07 19:35:00 rj132422 Exp $
++ trap 'oem_abndalrt.ksh $?' err
+cat ${RACE}/prm/zmptpass.prm
++ cat /prod/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /prod/race/oem/log/mptr425_20260818114621.log
++ LOGFILE=mptr425_20260818114621.log
++ WORKFILE=mptr425_oem_job_datafile.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_datafile.p_oem_job_datafile_sel_04(p_reformat_job  => 'mptr425',                                                         p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                          p_tmp_filename  => 'mptr425_oem_job_datafile.tmp',                                                            p_log_directory => 'RACE_OEM_TMP_DIR',                                                          p_log_filename  => 'mptr425_20260818114621.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=RACE_OEM_TMP_DIR/mptr425_20260818114621.db.log
++ [ -s RACE_OEM_TMP_DIR/mptr425_20260818114621.db.log ]
++ WORKFILE=/prod/race/oem/tmp/mptr425_oem_job_datafile.tmp
++ export WORKFILE
+#*****************************************************************************************
+
+PROCNAME=oem_ref_mptr425_ftp_clean_files.ksh
++ PROCNAME=oem_ref_mptr425_ftp_clean_files.ksh
+echo "\n\nSTART ---> ${PROCNAME} " $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n" 
+
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> oem_ref_mptr425_ftp_clean_files.ksh ' 08/18/26 11:46:22 ' <--- START\n\n'
+\n\nSTART ---> oem_ref_mptr425_ftp_clean_files.ksh  08/18/26 11:46:22  <--- START\n\n
+#**********************************************************************************************
+# ???
+#**********************************************************************************************
+  
+  # get the complete and incremental file prefixes
+  while IFS= read -r line; do
+   
+     POSITION=`echo $line|cut -f1  -d"^"`
+   
+     # When group ID is 1, it represents CANCOMPRICE file that is a complete load
+     # and is received only once in a month
+     if [ "${POSITION}" = 1 ]
+     then
+	    COMPLETE_LOAD_FILE=`echo $line|cut -f2  -d"^"i|cut -f1 -d '*'`
+     fi
+   
+     # When group ID is 2, it represents CANOBS file that is received at least 4 times in a month and
+     # is incremental
+     if [ "${POSITION}" = 2 ]
+     then
+        INCREMENTAL_LOAD_FILE=`echo $line| cut -f2  -d"^"|cut -f1 -d '*'`  
+
+     fi
+  done < ${WORKFILE}
+
++ 0< /prod/race/oem/tmp/mptr425_oem_job_datafile.tmp
++ read -r line
++ IFS=''
+echo $line|cut -f1  -d"^"
++ echo '1^CANCOMPPRICE*.ZIP^mptr425_xtab_oem_ref_mptr425_for_raw.dat^xtab_oem_ref_mptr425_for_price^^M^A^^^mptr425_araw_for_ca.dat^^1^07/06/2026^^^^'
++ cut -f1 -d^
++ POSITION=1
++ [ 1 '=' 1 ]
+echo $line|cut -f2  -d"^"i|cut -f1 -d '*'
++ echo '1^CANCOMPPRICE*.ZIP^mptr425_xtab_oem_ref_mptr425_for_raw.dat^xtab_oem_ref_mptr425_for_price^^M^A^^^mptr425_araw_for_ca.dat^^1^07/06/2026^^^^'
++ cut -f1 -d '*'
++ cut -f2 -d^i
+cut: the delimiter must be a single character
+Try 'cut --help' for more information.
++ COMPLETE_LOAD_FILE=''
++ [ 1 '=' 2 ]
++ read -r line
++ IFS=''
+echo $line|cut -f1  -d"^"
++ echo '2^CANOBS*.ZIP^mptr425_xtab_oem_ref_mptr425_for_raw_super.dat^xtab_oem_ref_mptr425_for_super^^M^A^^^mptr425_araw_for_ca_super.dat^^1^07/06/2026^^^^'
++ cut -f1 -d^
++ POSITION=2
++ [ 2 '=' 1 ]
++ [ 2 '=' 2 ]
+echo $line| cut -f2  -d"^"|cut -f1 -d '*'
++ echo '2^CANOBS*.ZIP^mptr425_xtab_oem_ref_mptr425_for_raw_super.dat^xtab_oem_ref_mptr425_for_super^^M^A^^^mptr425_araw_for_ca_super.dat^^1^07/06/2026^^^^'
++ cut -f1 -d '*'
++ cut -f2 -d^
++ INCREMENTAL_LOAD_FILE=CANOBS
++ read -r line
++ IFS=''
+  echo "*** Complete Load File ${COMPLETE_LOAD_FILE}"
++ echo '*** Complete Load File '
+*** Complete Load File 
+  echo "*** Incremental Load File ${INCREMENTAL_LOAD_FILE}"
+
++ echo '*** Incremental Load File CANOBS'
+*** Incremental Load File CANOBS
+  # set temporary FTP files that will be created duribg this process
+  FTP_FILELIST=${RACE}/tmp/${JOBNAME}_ftplist.tmp
++ FTP_FILELIST=/prod/race/oem/tmp/mptr425_ftplist.tmp
+  FTP_FILELIST_STAGE=${RACE}/tmp/${JOBNAME}_ftpliststage.tmp
++ FTP_FILELIST_STAGE=/prod/race/oem/tmp/mptr425_ftpliststage.tmp
+  FTP_DELETE_FILELIST=${RACE}/tmp/${JOBNAME}_ftpdeletelist.tmp
++ FTP_DELETE_FILELIST=/prod/race/oem/tmp/mptr425_ftpdeletelist.tmp
+   
+  # get FTP Directory
+  if [ "${JOBCTRY}" = "PR" ]
+  then
+     FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}/puerto_rico/${ACT_LVL}/incoming
+  else
+     FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}/${JOBFILE_OEMCTRY}/${ACT_LVL}/incoming
+  fi
+
++ [ CA '=' PR ]
++ FTPSITE_DIRECTORY=/ftp1/Business_Partners/for_ca/prod/incoming
+  # Get list of all files from SFTP Ford site
+  FILES_COUNT=`ssh -nq ${FTP_SITE} ls -lt ${FTPSITE_DIRECTORY}/${COMPLETE_LOAD_FILE}* ${FTPSITE_DIRECTORY}/${INCREMENTAL_LOAD_FILE}* |grep -v '^total' > ${FTP_FILELIST}; wc -l ${FTP_FILELIST}|awk '{print $1}'`
+
+ssh -nq ${FTP_SITE} ls -lt ${FTPSITE_DIRECTORY}/${COMPLETE_LOAD_FILE}* ${FTPSITE_DIRECTORY}/${INCREMENTAL_LOAD_FILE}* |grep -v '^total' > ${FTP_FILELIST}; wc -l ${FTP_FILELIST}|awk '{print $1}'
++ grep -v ^total
++ ssh -nq ftp-ssh.mitchell.com ls -lt '/ftp1/Business_Partners/for_ca/prod/incoming/*' '/ftp1/Business_Partners/for_ca/prod/incoming/CANOBS*'
++ 1> /prod/race/oem/tmp/mptr425_ftplist.tmp
