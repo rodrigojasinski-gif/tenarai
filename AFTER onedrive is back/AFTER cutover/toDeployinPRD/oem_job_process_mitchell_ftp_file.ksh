@@ -18,8 +18,8 @@ if [ "${JOBCTRY}" = "PR" ]
 then
    FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}/puerto_rico/${ACT_LVL}/incoming
 else
-   # rj132422 - single shared OEM incoming folder (was: ${FTP_BUSINESS_PATH}/${JOBFILE_OEMCTRY}/${ACT_LVL}/incoming)
-   FTPSITE_DIRECTORY=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming
+   # rj132422 - per-OEM path for LOC=M (GETIT); GETMIT overrides FTPSITE_DIRECTORY in its own block below
+   FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}/${JOBFILE_OEMCTRY}/${ACT_LVL}/incoming
 fi
 
 #**************************************************************************************************

@@ -59,7 +59,12 @@ export RACE_HOST=race
 #newsid radp # not necessary to setup DB anymore
 umask 002
 
-# rj132422 - raceprofile.ksh NOT sourced here (its interactive subsystem menu breaks ActiveBatch; batches get env from race_oem.ksh)
+# rj132422 - interactive only: RACE subsystem menu (raceprofile.ksh). Under ActiveBatch (no TTY)
+# it is skipped, so it never prompts/hangs; batch jobs get their subsystem env from race_oem.ksh.
+if [ -t 0 ]
+then
+   . /$ACT_LVL/race/share/bin/raceprofile.ksh
+fi
 
 alias dr='ls -l|grep drw'
 alias l='ls -l |pg'
