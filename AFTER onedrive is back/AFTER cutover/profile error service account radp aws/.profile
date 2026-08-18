@@ -59,8 +59,7 @@ export RACE_HOST=race
 #newsid radp # not necessary to setup DB anymore
 umask 002
 
-# RACE env + raceftp (sets FTP_SFTP_USER / FTP_SITE / FTP_MITCHELL_BUSINESS_PATH)
-. /$ACT_LVL/race/share/bin/raceprofile.ksh
+# rj132422 - raceprofile.ksh NOT sourced here (its interactive subsystem menu breaks ActiveBatch; batches get env from race_oem.ksh)
 
 alias dr='ls -l|grep drw'
 alias l='ls -l |pg'
