@@ -18,8 +18,7 @@ if [ "${JOBCTRY}" = "PR" ]
 then
    FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}/puerto_rico/${ACT_LVL}/incoming
 else
-   # rj132422 - single shared OEM incoming folder (was: ${FTP_BUSINESS_PATH}/${JOBFILE_OEMCTRY}/${ACT_LVL}/incoming)
-   FTPSITE_DIRECTORY=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming
+   FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}/${JOBFILE_OEMCTRY}/${ACT_LVL}/incoming
 fi
 
 #**************************************************************************************************
@@ -29,11 +28,11 @@ then
     echo "Using Fixed Folder for Novell/NT to Mitchell FTP."
 
     export FTP_BUSINESS_PATH=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming
-    # rj132422 - these jobs read input staged by a pre-processor from outgoing, not incoming (mptr250<-249, 840<-839, 290<-289, 810/860<-809)
-    case ${JOBNAME} in
-       mptr250|mptr840|mptr290|mptr810|mptr860)
-          export FTP_BUSINESS_PATH=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/outgoing ;;
-    esac
+    # rj132422 - mptr250 reads its input (staged by the mptr249 pre-processor) from outgoing, not incoming
+    if [ "${JOBNAME}" = "mptr250" ]
+    then
+       export FTP_BUSINESS_PATH=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/outgoing
+    fi
 
     FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}
 	FILE_ACTION="GETIT"
