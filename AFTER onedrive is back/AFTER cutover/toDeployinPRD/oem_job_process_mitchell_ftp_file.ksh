@@ -187,19 +187,24 @@ then
   echo "FTP_XFR_FILE_NAME= ${FTP_XFR_FILE_NAME}"
   #P. Becotted end of change
   cp ${FTP_XFR_FILE_NAME} ${NEW_XFR_FTP_FILE}
-  # rj132422 - prod3nt backup re-enabled -> Mitchell incoming/backup via scp (was: if false -> fileput.exp ${NOVELL}oem)
-  BACKUP_DIR=${FTPSITE_DIRECTORY}/backup
-  BACKUP_NAME=${WORK_FTP_FILE_NAME}_$(date +%Y%m%d%H%M%S)
-  FTP_LOGFILE=$RACE/tmp/${JOBNAME}_ftp_transfer_log_new.tmp
-  scp ${NEW_XFR_FTP_FILE} ${FTP_SFTP_USER}${FTP_SITE}:${BACKUP_DIR}/${BACKUP_NAME} | tee ${FTP_LOGFILE}
-  GOODBYTECOUNT="$(wc -c ${NEW_XFR_FTP_FILE} | awk '{print $1}')"
-  FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${BACKUP_DIR}/${BACKUP_NAME}")"
-  if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
+  # rj132422 - backup only for general mitchell/oem/incoming (GETMIT); skip per-OEM paths (for_ca, for_us, etc.)
+  if echo "${FTPSITE_DIRECTORY}" | grep -q "mitchell"
   then
-    echo "Successful backup ${NEW_XFR_FTP_FILE} to ${BACKUP_DIR}/${BACKUP_NAME}: count = ${GOODBYTECOUNT}"
+    BACKUP_DIR=${FTPSITE_DIRECTORY}/backup
+    BACKUP_NAME=${WORK_FTP_FILE_NAME}_$(date +%Y%m%d%H%M%S)
+    FTP_LOGFILE=$RACE/tmp/${JOBNAME}_ftp_transfer_log_new.tmp
+    scp ${NEW_XFR_FTP_FILE} ${FTP_SFTP_USER}${FTP_SITE}:${BACKUP_DIR}/${BACKUP_NAME} | tee ${FTP_LOGFILE}
+    GOODBYTECOUNT="$(wc -c ${NEW_XFR_FTP_FILE} | awk '{print $1}')"
+    FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${BACKUP_DIR}/${BACKUP_NAME}")"
+    if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
+    then
+      echo "Successful backup ${NEW_XFR_FTP_FILE} to ${BACKUP_DIR}/${BACKUP_NAME}: count = ${GOODBYTECOUNT}"
+    else
+      echo "backup of ${NEW_XFR_FTP_FILE} to ${BACKUP_DIR} failed: remote ${FTPBYTECOUNT}, local ${GOODBYTECOUNT}"
+      oem_abndalrt.ksh ftp_put
+    fi
   else
-    echo "backup of ${NEW_XFR_FTP_FILE} to ${BACKUP_DIR} failed: remote ${FTPBYTECOUNT}, local ${GOODBYTECOUNT}"
-    oem_abndalrt.ksh ftp_put
+    echo "Backup skipped: per-OEM path, not mitchell/oem/incoming (${FTPSITE_DIRECTORY})"
   fi
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   
 fi
