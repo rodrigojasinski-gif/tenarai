@@ -1,12 +1,18 @@
 #############################################################################################
 #
-# race_b1 .profile   (RADP AWS / RHEL) - based on the on-prem race_b1
+# race_b1 .profile   (RADP AWS / RHEL - based on the on-prem race_b1)
+#
+# History
+#    2006/09/28 JLW      IBM 10g Migration Project
+#    rj132422            AIX -> RHEL/AWS: Oracle env + ORACLE_SID (was newsid), MAIL path
 #
 #############################################################################################
 
-# Required by COS/Batch RACE suites
-export act_lvl=prod
+#----------------------------------------------------------------------------
+# The following statement is required by COS/Batch Race Suites
 export ACT_LVL=prod
+export act_lvl=$ACT_LVL
+#----------------------------------------------------------------------------
 
 #MAIL=/usr/spool/mail/$USER
 export MAIL=/var/spool/mail/$USER
@@ -22,10 +28,18 @@ export TWO_TASK=RADP.MITCHELL.COM
 export ORACLE_SID=RADP.MITCHELL.COM
 export PATH=$ORACLE_HOME/bin:/usr/lib/oracle/23/client64/bin:/opt/microfocus/cobol/bin:$PATH
 
+#--------------------------------------------------------------------------------------------
+# Determine if .profile has been invoked by a terminal (interactively)
+#        OR from batch / ActiveBatch (no controlling terminal)
+#--------------------------------------------------------------------------------------------
+#############################################################################################
+# NOTE: This "if [ -t 0 ]" also used as a compare string in /usr/local/bin/run_remote_command
+#       IF this string changes it must also be changed in run_remote_command!!
+#############################################################################################
 if [ -t 0 ]
 then
    echo $(date) " - Setting terminal related environment variables."
-   #stty dec
+   stty dec
    stty -crterase
    stty -tabs
    stty crt
