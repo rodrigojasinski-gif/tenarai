@@ -18,8 +18,7 @@ if [ "${JOBCTRY}" = "PR" ]
 then
    FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}/puerto_rico/${ACT_LVL}/incoming
 else
-   # rj132422 - single shared OEM incoming folder (was: ${FTP_BUSINESS_PATH}/${JOBFILE_OEMCTRY}/${ACT_LVL}/incoming)
-   FTPSITE_DIRECTORY=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming
+   FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}/${JOBFILE_OEMCTRY}/${ACT_LVL}/incoming
 fi
 
 #**************************************************************************************************
@@ -29,11 +28,6 @@ then
     echo "Using Fixed Folder for Novell/NT to Mitchell FTP."
 
     export FTP_BUSINESS_PATH=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/incoming
-    # rj132422 - these jobs read input staged by a pre-processor from outgoing, not incoming (mptr250<-249, 840<-839, 290<-289, 810/860<-809)
-    case ${JOBNAME} in
-       mptr250|mptr840|mptr290|mptr810|mptr860)
-          export FTP_BUSINESS_PATH=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/outgoing ;;
-    esac
 
     FTPSITE_DIRECTORY=${FTP_BUSINESS_PATH}
 	FILE_ACTION="GETIT"
@@ -204,19 +198,20 @@ then
   echo "FTP_XFR_FILE_NAME= ${FTP_XFR_FILE_NAME}"
   #P. Becotted end of change
   cp ${FTP_XFR_FILE_NAME} ${NEW_XFR_FTP_FILE}
-  # rj132422 - prod3nt backup re-enabled -> Mitchell incoming/backup via scp (was: if false -> fileput.exp ${NOVELL}oem)
-  BACKUP_DIR=${FTPSITE_DIRECTORY}/backup
-  BACKUP_NAME=${WORK_FTP_FILE_NAME}_$(date +%Y%m%d%H%M%S)
-  FTP_LOGFILE=$RACE/tmp/${JOBNAME}_ftp_transfer_log_new.tmp
-  scp ${NEW_XFR_FTP_FILE} ${FTP_SFTP_USER}${FTP_SITE}:${BACKUP_DIR}/${BACKUP_NAME} | tee ${FTP_LOGFILE}
+  # rj132422 - prod3nt backup disabled (prod3nt decommissioned); the local /dat backup above already covers it
+  if false; then
+  # Copy to ftp_data on 'Prod3nt\Cdprod02' bkup directory 
+  FTP_LOGFILE=$RACE/tmp/${JOBNAME}_ftp_transfer_log_new.tmp   
+  fileput.exp ${NEW_XFR_FTP_FILE} ${WORK_FTP_FILE_NAME} ${NOVELL}oem | tee ${FTP_LOGFILE}
   GOODBYTECOUNT="$(wc -c ${NEW_XFR_FTP_FILE} | awk '{print $1}')"
-  FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${BACKUP_DIR}/${BACKUP_NAME}")"
+  FTPBYTECOUNT="$(cat ${FTP_LOGFILE} | grep 'Information returned by' | awk '{print $1}')" 
   if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
   then
-    echo "Successful backup ${NEW_XFR_FTP_FILE} to ${BACKUP_DIR}/${BACKUP_NAME}: count = ${GOODBYTECOUNT}"
+    echo "Successful ftp ${NEW_XFR_FTP_FILE}: ftp count = ${GOODBYTECOUNT}"
   else
-    echo "backup of ${NEW_XFR_FTP_FILE} to ${BACKUP_DIR} failed: remote ${FTPBYTECOUNT}, local ${GOODBYTECOUNT}"
+    echo "ftp ${NEW_XFR_FTP_FILE} failed: ftp says ${FTPBYTECOUNT}, real count is ${GOODBYTECOUNT}"
     oem_abndalrt.ksh ftp_put
+  fi
   fi
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   
 fi
