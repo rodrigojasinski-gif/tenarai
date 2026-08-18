@@ -176,24 +176,7 @@ then
   NEW_XFR_FTP_FILE=$( setgdg.ksh "${BACKUP_FTP_FILE}(+1)" NEW 2)
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # Backup the existing FTP'd file
-  # rj132422 - prod3nt backup disabled (prod3nt decommissioned); local /dat GDG backup already covers it
-  if false   # was: if [ -e ${EXISTING_FTP_FILE} ]
-  then
-    # Copy to ftp_data on 'Prod3nt\Cdprod02' bkup directory 
-    FTP_LOGFILE=$RACE/tmp/${JOBNAME}_ftp_transfer_log.tmp
-    fileput.exp ${EXISTING_FTP_FILE} ${WORK_FTP_FILE_NAME} ${NOVELL}oem/bkup | tee ${FTP_LOGFILE}
-    # Verify the copy      
-    GOODBYTECOUNT="$(wc -c ${EXISTING_FTP_FILE} | awk '{print $1}')"
-    FTPBYTECOUNT="$(cat ${FTP_LOGFILE} | grep 'Information returned by' | awk '{print $1}')"   
-    if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
-    then
-      echo "Successful ftp ${EXISTING_FTP_FILE}: ftp count = ${GOODBYTECOUNT}"
-    else
-      echo "ftp ${EXISTING_FTP_FILE} failed: ftp says ${FTPBYTECOUNT}, real count is ${GOODBYTECOUNT}"
-      oem_abndalrt.ksh ftp_put
-    fi
-  fi
+  # rj132422 - removed dead prod3nt previous-generation backup (was fileput.exp to ${NOVELL}oem/bkup; covered by /dat GDG + incoming/backup)
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Backup the newly transferred file from /tmp to /dat
@@ -204,7 +187,7 @@ then
   echo "FTP_XFR_FILE_NAME= ${FTP_XFR_FILE_NAME}"
   #P. Becotted end of change
   cp ${FTP_XFR_FILE_NAME} ${NEW_XFR_FTP_FILE}
-  # rj132422 - Mitchell incoming/backup via scp (was: if false -> fileput.exp ${NOVELL}oem)
+  # rj132422 - prod3nt backup re-enabled -> Mitchell incoming/backup via scp (was: if false -> fileput.exp ${NOVELL}oem)
   BACKUP_DIR=${FTPSITE_DIRECTORY}/backup
   BACKUP_NAME=${WORK_FTP_FILE_NAME}_$(date +%Y%m%d%H%M%S)
   FTP_LOGFILE=$RACE/tmp/${JOBNAME}_ftp_transfer_log_new.tmp
