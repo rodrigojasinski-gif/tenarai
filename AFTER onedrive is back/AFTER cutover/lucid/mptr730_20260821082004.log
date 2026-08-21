@@ -1,0 +1,1036 @@
+    Start  mptr730   Fri Aug 21 08:20:04 AM PDT 2026
+\n\n**********************************************************************************
+Restart Step was NOT included in the job execution. Job will run from the beginning.
+**********************************************************************************\n\n
+\n\n**************************************************************************************************************
+Calling:  oem_ref.ksh    Datetime: 08/21/26 08:20:04   Script: /tmp/mptr730_oem_ref.ksh_run
+**************************************************************************************************************\n\n
+RCS : oem_ref.ksh,v 1.39 2024/01/17 23:23:23 pg2697 Exp $
++ print ProcessId '=' 1750919
+ProcessId = 1750919
++ trap 'oem_abndalrt.ksh $?' err
++ basename /tmp/mptr730_oem_ref.ksh_run .ksh_run
++ PROCNAME=mptr730_oem_ref
++ export PROCNAME
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ export MPTUSERID
++ basename /mdev/race/oem/log/mptr730_20260821082004.log
++ LOGFILE=mptr730_20260821082004.log
++ export LOGFILE
++ echo '\n\n Build environment variables'
+\n\n Build environment variables
++ . oem_job.ksh
++ echo 'RCS : oem_job.ksh,v 1.9 2026/08/07 19:34:48 rj132422 Exp $'
+RCS : oem_job.ksh,v 1.9 2026/08/07 19:34:48 rj132422 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /mdev/race/oem/log/mptr730_20260821082004.log
++ LOGFILE=mptr730_20260821082004.log
++ REFORMATJOB=mptr730
++ UPDATEJOB=mptr730
++ WORKFILE=mptr730_oem_job.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr730',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr730_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_TMP_DIR',                                       p_log_filename  => 'mptr730_20260821082004.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=/mdev/race/oem/tmp/mptr730_20260821082004.db.log
++ [ -s /mdev/race/oem/tmp/mptr730_20260821082004.db.log ]
++ cat /mdev/race/oem/tmp/mptr730_20260821082004.db.log
++ 1>> /mdev/race/oem/log/mptr730_20260821082004.log
+
+mptr730,mptr731,085,CA,LUC,luc,zmpt731a,085,CA,luc_ca,lucca,,pkg_oem_ref_048,,Y,N,N,,,N,
+
++ rm /mdev/race/oem/tmp/mptr730_20260821082004.db.log
++ WORKFILE=/mdev/race/oem/tmp/mptr730_oem_job.tmp
++ export WORKFILE
++ cut -f1 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ REFORMATJOB=mptr730
++ export REFORMATJOB
++ [ -z mptr730 ]
++ cut -f2 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ UPDATEJOB=mptr731
++ export UPDATEJOB
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ cut -f3 -d,
++ JOBOEM=085
++ export JOBOEM
++ cut -f4 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ JOBCTRY=CA
++ export JOBCTRY
++ cut -f5 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ JOBOEMNAME=LUC
++ export JOBOEMNAME
++ cut -f6 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ OEMABBRLOWER=luc
++ export OEMABBRLOWER
++ cut -f7 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ JOBPARM=zmpt731a
++ export JOBPARM
++ cut -f8 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ FORMATOEM=085
++ export FORMATOEM
++ cut -f9 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ FORMATCTRY=CA
++ export FORMATCTRY
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ cut -f10 -d,
++ JOBFILE_OEMCTRY=luc_ca
++ export JOBFILE_OEMCTRY
++ cut -f11 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ REPORTSUFFIX=lucca
++ export REPORTSUFFIX
++ cut -f12 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ REVERSE_SUPER_JOBPARM=''
++ export REVERSE_SUPER_JOBPARM
++ cut -f13 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ PACKAGE_NAME_1=pkg_oem_ref_048
++ export PACKAGE_NAME_1
++ cut -f14 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ PACKAGE_NAME_2=''
++ export PACKAGE_NAME_2
++ cut -f15 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ DUPLICATE_PARTS_EXPECTED_FLAG=Y
++ export DUPLICATE_PARTS_EXPECTED_FLAG
++ cut -f16 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ REFORMAT_BUILDS_RTRANS_FLAG=N
++ export REFORMAT_BUILDS_RTRANS_FLAG
++ cut -f17 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ OBSOLETE_JOB_FLAG=N
++ export OBSOLETE_JOB_FLAG
++ cut -f18 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ PREPROCESS_SCRIPT_NAME=''
++ export PREPROCESS_SCRIPT_NAME
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+SET SERVEROUTPUT ON SIZE 1000000
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr730',                                                           p_log_directory => 'RACE_OEM_TMP_DIR',                                                        p_log_filename  => 'mptr730_20260821082004.db.log',                                                           p_debug_level   => '0');
+QUIT;
+%
+2>& 1
++ DB_LOG=/mdev/race/oem/tmp/mptr730_20260821082004.db.log
++ [ -s /mdev/race/oem/tmp/mptr730_20260821082004.db.log ]
++ cat /mdev/race/oem/tmp/mptr730_20260821082004.db.log
++ 1>> /mdev/race/oem/log/mptr730_20260821082004.log
+
+Start mptr730 pkg_oem_ref_utilities.p_check_gtmp_indexes
+
+
+ End  mptr730 pkg_oem_ref_utilities.p_check_gtmp_indexes
++ rm /mdev/race/oem/tmp/mptr730_20260821082004.db.log
++ . oem_job_notify.ksh
++ echo 'RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $'
+RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /mdev/race/oem/log/mptr730_20260821082004.log
++ LOGFILE=mptr730_20260821082004.log
++ WORKFILE=mptr730_oem_job_notify.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_notify.p_oem_job_notify_sel_01(p_job  =>          'mptr730',                                                        p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                     p_tmp_filename  => 'mptr730_oem_job_notify.tmp',                                                       p_log_directory => 'RACE_OEM_LOG_DIR',                                                     p_log_filename  => 'mptr730_20260821082004.log');
+QUIT;
+%
+2>& 1
++ WORKFILE=/mdev/race/oem/tmp/mptr730_oem_job_notify.tmp
++ cut -f2 -d^
++ cat /mdev/race/oem/tmp/mptr730_oem_job_notify.tmp
++ SEND_EMAIL_FLAG=''
++ cut -f3 -d^
++ cat /mdev/race/oem/tmp/mptr730_oem_job_notify.tmp
++ EMAIL_ADDRESS_LIST=''
++ cat /mdev/race/oem/tmp/mptr730_oem_job_notify.tmp
++ cut -f4 -d^
++ EMAIL_BODY=''
++ cut -f5 -d^
++ cat /mdev/race/oem/tmp/mptr730_oem_job_notify.tmp
++ RESET_SEND_EMAIL_FLAG=''
++ [ -z '' ]
++ echo 'Notification NOT Required'
+Notification NOT Required
++ echo ' '
+ 
++ . oem_job_datafile.ksh
++ echo 'RCS : oem_job_datafile.ksh,v 1.9 2026/08/07 19:35:00 rj132422 Exp $'
+RCS : oem_job_datafile.ksh,v 1.9 2026/08/07 19:35:00 rj132422 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /mdev/race/oem/log/mptr730_20260821082004.log
++ LOGFILE=mptr730_20260821082004.log
++ WORKFILE=mptr730_oem_job_datafile.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_datafile.p_oem_job_datafile_sel_04(p_reformat_job  => 'mptr730',                                                         p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                          p_tmp_filename  => 'mptr730_oem_job_datafile.tmp',                                                            p_log_directory => 'RACE_OEM_TMP_DIR',                                                          p_log_filename  => 'mptr730_20260821082004.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=RACE_OEM_TMP_DIR/mptr730_20260821082004.db.log
++ [ -s RACE_OEM_TMP_DIR/mptr730_20260821082004.db.log ]
++ WORKFILE=/mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ export WORKFILE
++ STEPNAME=Step010R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\n START ---> mptr730_oem_ref Step010R - Locate and transfer ALL Input Files - ' 08/21/26 08:20:05 ' <--- START\n\n'
+\n\n START ---> mptr730_oem_ref Step010R - Locate and transfer ALL Input Files -  08/21/26 08:20:05  <--- START\n\n
++ oem_job_status_update.ksh R 'Step010R oem_job_datafile_prep.ksh'
++ FILE_SEQUENCE=1
++ export FILE_SEQUENCE
++ [ '' '=' Step010R ]
++ true
++ sed -n -e 1p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr730_raw_lucid_price.dat
++ export INPUT_FILE_NAME
++ [ -z mptr730_raw_lucid_price.dat ]
++ sed -n -e 1p
++ cut -f3 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr730_xtab_oem_ref_mptr730_luc_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 1p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr730_luc
++ export XTAB_TABLE_NAME
++ sed -n -e 1p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 1p
++ cut -f6 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 1p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 1p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 1p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 1p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr730_araw_luc_ca.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 1p
++ cut -f11 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ FTP_SOURCE_FILE_NAME=''
++ export FTP_SOURCE_FILE_NAME
++ eval FTP_SOURCE_FILE_NAME=
++ FTP_SOURCE_FILE_NAME=''
++ sed -n -e 1p
++ cut -f14 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ FTP_PARM_FILE_NAME=''
++ export FTP_PARM_FILE_NAME
++ sed -n -e 1p
++ cut -f16 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ ENCODING_CHARSET=''
++ export ENCODING_CHARSET
++ . oem_job_datafile_prep.ksh
++ echo '\n*** Begin oem_job_datafile_prep.ksh mptr730_raw_lucid_price.dat ***\n'
+\n*** Begin oem_job_datafile_prep.ksh mptr730_raw_lucid_price.dat ***\n
++ trap 'oem_abndalrt.ksh $?' err
++ STEP010_FILEOUT=/mdev/race/oem/dat/mptr730_araw_luc_ca.dat
++ [ ! -z '' ]
++ echo mptr730_raw_lucid_price.dat
++ awk -F . '{ print $NF }'
++ [[ dat = 'dat(0)' ]]
++ INPUT_FILE_NAME_EXPANDED=/mdev/race/oem/dat/mptr730_raw_lucid_price.dat
++ export INPUT_FILE_NAME_EXPANDED
++ [ -s /mdev/race/oem/dat/mptr730_raw_lucid_price.dat ]
++ [ N '=' M ]
++ echo '\n*** Option 4 None of the above?  Then Input File /mdev/race/oem/dat/mptr730_raw_lucid_price.dat HAS TO BE on the Novell directory.'
+\n*** Option 4 None of the above?  Then Input File /mdev/race/oem/dat/mptr730_raw_lucid_price.dat HAS TO BE on the Novell directory.
++ . oem_job_process_mitchell_ftp_file.ksh GETMIT
++ echo '\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh mptr730_raw_lucid_price.dat ***\n\n'
+\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh mptr730_raw_lucid_price.dat ***\n\n
++ trap 'oem_abndalrt.ksh $?' err
++ FILE_ACTION=GETMIT
++ [ 1 -lt 1 ]
++ [ CA '=' PR ]
++ FTPSITE_DIRECTORY=/ftp1/Business_Partners/luc_ca/mdev/incoming
++ [ GETMIT '=' GETMIT ]
++ echo 'Using Fixed Folder for Novell/NT to Mitchell FTP.'
+Using Fixed Folder for Novell/NT to Mitchell FTP.
++ FTP_BUSINESS_PATH=/mdev/data/ftp/Business_Partners/mitchel/mdev/oem/incoming
++ export FTP_BUSINESS_PATH
++ FTPSITE_DIRECTORY=/mdev/data/ftp/Business_Partners/mitchel/mdev/oem/incoming
++ FILE_ACTION=GETIT
++ echo '\nDoes the input file name contain a wildcard?\n'
+\nDoes the input file name contain a wildcard?\n
++ expr mptr730_raw_lucid_price.dat : '.*[?*]'
+0
++ FTP_FILELIST=/mdev/race/oem/tmp/mptr730_mptr730_raw_lucid_price.dat_ftplist.tmp
++ ssh -nq ftp-ssh.mitchell.com 'ls -1 /mdev/data/ftp/Business_Partners/mitchel/mdev/oem/incoming/*.*'
++ 1> /mdev/race/oem/tmp/mptr730_mptr730_raw_lucid_price.dat_ftplist.tmp
++ oem_abndalrt.ksh 255
+\n\n*** Begin oem_abndalrt.ksh ***\n\n
+}
+_=*1751731*/bin/env
+abin=/mdev/race/altp/bin
+ACT_LVL=mdev
+adat=/mdev/race/altp/dat
+adoc=/mdev/race/altp/doc
+alog=/mdev/race/altp/log
+APPSYS=oem
+aprm=/mdev/race/altp/prm
+arpt=/mdev/race/altp/rpt
+asrc=/mdev/race/altp/src
+_AST_FEATURES=UNIVERSE - ucb
+atmp=/mdev/race/altp/tmp
+A__z="*SHLVL="*TMOUT
+BACKUP_SOURCE_FILE_NAME=mptr730_araw_luc_ca.dat
+BASH_FUNC_which%%=() {  ( alias;
+cbin=/mdev/race/ceg/bin
+cdat=/mdev/race/ceg/dat
+cdoc=/mdev/race/ceg/doc
+CLASSPATH=.:/opt/rocketsoftware/VisualCOBOL/lib/mfcobolrts.jar:/opt/rocketsoftware/VisualCOBOL/lib/mfcobol.jar:/opt/rocketsoftware/VisualCOBOL/lib/mfsqljvm.jar:/opt/rocketsoftware/VisualCOBOL/lib/mfidmr.jar
+clog=/mdev/race/ceg/log
+COBCPY=/mdev/race/share/inc:/mdev/race/share/inc/rollback:/mdev/race/oem/inc:/mdev/race/oem/../share/inc:/opt/rocketsoftware/VisualCOBOL/cpylib
+COBDIR=/opt/microfocus/cobol
+cprm=/mdev/race/ceg/prm
+crpt=/mdev/race/ceg/rpt
+csrc=/mdev/race/ceg/src
+ctmp=/mdev/race/ceg/tmp
+DEBUGINFOD_IMA_CERT_PATH=/etc/keys/ima:
+DUPLICATE_PARTS_EXPECTED_FLAG=Y
+ebin=/mdev/race/ext/bin
+edat=/mdev/race/ext/dat
+edoc=/mdev/race/ext/doc
+elog=/mdev/race/ext/log
+ENCODING_CHARSET=
+ENV=/mdev/race/share/bin/racekshrc.ksh
+eprm=/mdev/race/ext/prm
+erpt=/mdev/race/ext/rpt
+esrc=/mdev/race/ext/src
+etmp=/mdev/race/ext/tmp
+ eval ${which_declare} ) | /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@
+EXINIT=set ic
+FILE_SEQUENCE=1
+FORMATCTRY=CA
+FORMAT_INDICATOR=A
+FORMATOEM=085
+FTP_BUSINESS_PATH=/mdev/data/ftp/Business_Partners/mitchel/mdev/oem/incoming
+FTP_LOCATION_CODE=N
+FTP_MITCHELL_BUSINESS_PATH=/mdev/data/ftp/Business_Partners/mitchel
+FTP_PARM_FILE_NAME=
+FTP_PROGRAM_NAME=
+FTP_SERVER=prod3nt.production.int
+FTP_SFTP_USER=
+FTP_SITE=ftp-ssh.mitchell.com
+FTP_SOURCE_FILE_NAME=
+HISTCONTROL=ignoredups
+HISTSIZE=1000
+HOME=/home/staging.int/svc-apd-race-dev
+HOSTNAME=dawapp7017l
+INPUT_FILE_NAME_EXPANDED=/mdev/race/oem/dat/mptr730_raw_lucid_price.dat
+INPUT_FILE_NAME=mptr730_raw_lucid_price.dat
+JOBCTRY=CA
+JOBFILE_OEMCTRY=luc_ca
+JOBLOGNAME=/mdev/race/oem/log/mptr730_20260821082004.log
+JOBNAME=mptr730
+JOBOEM=085
+JOBOEMNAME=LUC
+JOBPARM=zmpt731a
+LANG=en_US.UTF-8
+LD_LIBRARY_PATH=/opt/rocketsoftware/VisualCOBOL/lib:/opt/rocketsoftware/VisualCOBOL/lib:/u01/app/oracle/product/19.3.0/client64/lib:
+LESSOPEN=||/usr/bin/lesspipe.sh %s
+LIBPATH=/opt/microfocus/cobol/lib:/opt/rocketsoftware/VisualCOBOL/lib:/opt/rocketsoftware/VisualCOBOL/lib:/u01/app/oracle/product/19.3.0/client64/lib:/opt/ruby241/lib:/opt/freeware/lib
+LOGDIR=/mdev/race/oem/log
+LOGFILE=mptr730_20260821082004.log
+LOG=/mdev/race/oem/tmp/mptr730_1750898.sqlout
+LOGNAME=svc-apd-race-dev@staging.int
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;37;41:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=01;36:*.au=01;36:*.flac=01;36:*.m4a=01;36:*.mid=01;36:*.midi=01;36:*.mka=01;36:*.mp3=01;36:*.mpc=01;36:*.ogg=01;36:*.ra=01;36:*.wav=01;36:*.oga=01;36:*.opus=01;36:*.spx=01;36:*.xspf=01;36:
+MAIL=/var/spool/mail/svc-apd-race-dev@staging.int
+MANPATH=:usr/share/man:/mdev/race/share/doc/man:/opt/freeware/man
+MFConnect=
+MPTUSERID=racejob/q1w2e3r4
+NOVELL=mdev/
+obin=/mdev/race/oem/bin
+OBJ_DATDIR=RACE_OEM_DAT_DIR
+OBJ_LOGDIR=RACE_OEM_LOG_DIR
+OBJ_PRMDIR=RACE_OEM_PRM_DIR
+OBJ_RPTDIR=RACE_OEM_RPT_DIR
+OBJ_TMPDIR=RACE_OEM_TMP_DIR
+OBSOLETE_JOB_FLAG=N
+odat=/mdev/race/oem/dat
+odoc=/mdev/race/oem/doc
+OEMABBRLOWER=luc
+olog=/mdev/race/oem/log
+oprm=/mdev/race/oem/prm
+ORACLE_BASE=/u01/app/oracle
+ORACLE_HOME=/u01/app/oracle/product/19.3.0/client64
+ORACLE_HOSTNAME=dawapp7017l
+ORACLE_SID=RADD.MITCHELL.COM
+ORA_INVENTORY=/u01/app/oraInventory
+orpt=/mdev/race/oem/rpt
+osrc=/mdev/race/oem/src
+otmp=/mdev/race/oem/tmp
+PACKAGE_NAME_1=pkg_oem_ref_048
+PACKAGE_NAME_2=
+PATH=/opt/rocketsoftware/VisualCOBOL/bin:/u01/app/oracle/product/19.3.0/client64/bin:/home/staging.int/svc-apd-race-dev:/mdev/race/share/bin:/mdev/race/bin:/mdev/race/ext/bin:/stage/race/share/bin:/stage/race/ext/bin:/usr/lib/oracle/23/client64/bin:/etc:/root/.local/bin:/root/bin:/sbin:/bin:/usr/sbin:/usr/bin:/mdev/util/share/bin:/opt/microfocus/cobol/bin:/usr/local/bin:/usr/local/sbin:/mdev/util/share/bin:/opt/microfocus/cobol/bin:/usr/bin/X11:/usr/lib/cobol/bin:/usr/local/spfux/decbin:.:/mdev/race/share/bin:/mdev/race/bin:/mdev/race/oem/bin:/stage/race/share/bin:/stage/race/oem/bin:.:/opt/ruby241:/opt/ruby241/bin:/mdev/race/oem/bin:/stage/race/oem/bin
+PREPROCESS_SCRIPT_NAME=
+PROCNAME=mptr730_oem_ref
+PRODHOST=PRODHOSTgoesHERE
+PWD=/home/staging.int/svc-apd-race-dev
+qbin=/mdev/race/qrp/bin
+qdat=/mdev/race/qrp/dat
+qdoc=/mdev/race/qrp/doc
+qlog=/mdev/race/qrp/log
+qprm=/mdev/race/qrp/prm
+qrpt=/mdev/race/qrp/rpt
+qsrc=/mdev/race/qrp/src
+qtmp=/mdev/race/qrp/tmp
+RACE_DBMS_PROFILER_FLAG=N
+RACE_DEBUG_LEVEL=0
+RACE=/mdev/race/oem
+RCSDIR=race:/prod/race
+RCSHOST=race
+REFORMAT_BUILDS_RTRANS_FLAG=N
+REFORMATJOB=mptr730
+REPORTSUFFIX=lucca
+RESTART=
+RESTART_FILE_SEQUENCE=
+REVERSE_SUPER_JOBPARM=
+sbin=/mdev/race/share/bin
+S_COLORS=auto
+sdat=/mdev/race/share/dat
+sdoc=/mdev/race/share/doc
+SERVER_NAME=dawapp7017l
+SHELL=/bin/ksh
+SHLVL=5
+sinc=/mdev/race/share/inc
+slib=/mdev/race/share/lib
+slog=/mdev/race/share/log
+SOURCE_FIELD_DELIMITER=,
+sprm=/mdev/race/share/prm
+srpt=/mdev/race/share/rpt
+SRVR=dawapp7017l
+ssrc=/mdev/race/share/src
+stage_abin=/stage/race/altp/bin
+stage_aprm=/stage/race/altp/prm
+stage_asrc=/stage/race/altp/src
+stage_cbin=/stage/race/ceg/bin
+stage_cprm=/stage/race/ceg/prm
+stage_csrc=/stage/race/ceg/src
+stage_obin=/stage/race/oem/bin
+stage_oprm=/stage/race/oem/prm
+stage_osrc=/stage/race/oem/src
+stage_qbin=/stage/race/qrp/bin
+stage_qprm=/stage/race/qrp/prm
+stage_qsrc=/stage/race/qrp/src
+stage_sbin=/stage/race/share/bin
+stage_sinc=/stage/race/share/inc
+stage_slib=/stage/race/share/lib
+stage_sprm=/stage/race/share/prm
+stage_ssrc=/stage/race/share/src
+STAGE=/stage/race
+STEPNAME=Step010R
+stmp=/mdev/race/share/tmp
+TARGET_FIELD_SIZE=
+TERM=vt100
+TESTHOST=dawapp7017l
+THISHOST=dawapp7017l
+TMOUT=28800
+TNS_ADMIN=/u01/app/oracle/product/19.3.0/client64/network/admin
+TWO_TASK=RADD.MITCHELL.COM
+UPDATEJOB=mptr731
+USER=svc-apd-race-dev@staging.int
+which_declare=
+WORKFILE=/mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
+XTAB_FILE_NAME=mptr730_xtab_oem_ref_mptr730_luc_raw.dat
+XTAB_TABLE_NAME=xtab_oem_ref_mptr730_luc
+
+ !!  PRODUCTION JOB--CONDITION CODE ERROR  !!
+ !!     REPORT TO PRODUCTION CONTROL       !!
+   ** mptr730:mptr730_oem_ref[Step010R] failed, rc = 255 **
+\n\n***  End  oem_abndalrt.ksh ***\n\n
+/stage/race/share/bin/exec_restart.ksh: line 94: 1750919: Killed
+    Start  mptr730   Fri Aug 21 08:44:02 AM PDT 2026
+\n\n**********************************************************************************
+Restart Step Step010R has been included in the job execution.
+**********************************************************************************\n\n
+\n\n**************************************************************************************************************
+Calling:  oem_ref.ksh Step010R   Datetime: 08/21/26 08:44:02   Script: /tmp/mptr730_oem_ref.ksh_run
+**************************************************************************************************************\n\n
+RCS : oem_ref.ksh,v 1.39 2024/01/17 23:23:23 pg2697 Exp $
++ print ProcessId '=' 1752023
+ProcessId = 1752023
++ trap 'oem_abndalrt.ksh $?' err
++ basename /tmp/mptr730_oem_ref.ksh_run .ksh_run
++ PROCNAME=mptr730_oem_ref
++ export PROCNAME
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ export MPTUSERID
++ basename /mdev/race/oem/log/mptr730_20260821082004.log
++ LOGFILE=mptr730_20260821082004.log
++ export LOGFILE
++ echo '\n\n Build environment variables'
+\n\n Build environment variables
++ . oem_job.ksh
++ echo 'RCS : oem_job.ksh,v 1.9 2026/08/07 19:34:48 rj132422 Exp $'
+RCS : oem_job.ksh,v 1.9 2026/08/07 19:34:48 rj132422 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /mdev/race/oem/log/mptr730_20260821082004.log
++ LOGFILE=mptr730_20260821082004.log
++ REFORMATJOB=mptr730
++ UPDATEJOB=mptr730
++ WORKFILE=mptr730_oem_job.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr730',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr730_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_TMP_DIR',                                       p_log_filename  => 'mptr730_20260821082004.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=/mdev/race/oem/tmp/mptr730_20260821082004.db.log
++ [ -s /mdev/race/oem/tmp/mptr730_20260821082004.db.log ]
++ cat /mdev/race/oem/tmp/mptr730_20260821082004.db.log
++ 1>> /mdev/race/oem/log/mptr730_20260821082004.log
+
+1^mptr730_raw_lucid_price.dat^mptr730_xtab_oem_ref_mptr730_luc_raw.dat^xtab_oem_ref_mptr730_luc^^N^A^,^^mptr730_araw_luc_ca.dat^^1^08/20/2026^^^^
+
+
+mptr730,mptr731,085,CA,LUC,luc,zmpt731a,085,CA,luc_ca,lucca,,pkg_oem_ref_048,,Y,N,N,,,N,
+
++ rm /mdev/race/oem/tmp/mptr730_20260821082004.db.log
++ WORKFILE=/mdev/race/oem/tmp/mptr730_oem_job.tmp
++ export WORKFILE
++ cut -f1 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ REFORMATJOB=mptr730
++ export REFORMATJOB
++ [ -z mptr730 ]
++ cut -f2 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ UPDATEJOB=mptr731
++ export UPDATEJOB
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ cut -f3 -d,
++ JOBOEM=085
++ export JOBOEM
++ cut -f4 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ JOBCTRY=CA
++ export JOBCTRY
++ cut -f5 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ JOBOEMNAME=LUC
++ export JOBOEMNAME
++ cut -f6 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ OEMABBRLOWER=luc
++ export OEMABBRLOWER
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ cut -f7 -d,
++ JOBPARM=zmpt731a
++ export JOBPARM
++ cut -f8 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ FORMATOEM=085
++ export FORMATOEM
++ cut -f9 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ FORMATCTRY=CA
++ export FORMATCTRY
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ cut -f10 -d,
++ JOBFILE_OEMCTRY=luc_ca
++ export JOBFILE_OEMCTRY
++ cut -f11 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ REPORTSUFFIX=lucca
++ export REPORTSUFFIX
++ cut -f12 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ REVERSE_SUPER_JOBPARM=''
++ export REVERSE_SUPER_JOBPARM
++ cut -f13 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ PACKAGE_NAME_1=pkg_oem_ref_048
++ export PACKAGE_NAME_1
++ cut -f14 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ PACKAGE_NAME_2=''
++ export PACKAGE_NAME_2
++ cut -f15 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ DUPLICATE_PARTS_EXPECTED_FLAG=Y
++ export DUPLICATE_PARTS_EXPECTED_FLAG
++ cut -f16 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ REFORMAT_BUILDS_RTRANS_FLAG=N
++ export REFORMAT_BUILDS_RTRANS_FLAG
++ cut -f17 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ OBSOLETE_JOB_FLAG=N
++ export OBSOLETE_JOB_FLAG
++ cut -f18 -d,
++ cat /mdev/race/oem/tmp/mptr730_oem_job.tmp
++ PREPROCESS_SCRIPT_NAME=''
++ export PREPROCESS_SCRIPT_NAME
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+SET SERVEROUTPUT ON SIZE 1000000
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr730',                                                           p_log_directory => 'RACE_OEM_TMP_DIR',                                                        p_log_filename  => 'mptr730_20260821082004.db.log',                                                           p_debug_level   => '0');
+QUIT;
+%
+2>& 1
++ DB_LOG=/mdev/race/oem/tmp/mptr730_20260821082004.db.log
++ [ -s /mdev/race/oem/tmp/mptr730_20260821082004.db.log ]
++ cat /mdev/race/oem/tmp/mptr730_20260821082004.db.log
++ 1>> /mdev/race/oem/log/mptr730_20260821082004.log
+
+Start mptr730 pkg_oem_ref_utilities.p_check_gtmp_indexes
+
+
+ End  mptr730 pkg_oem_ref_utilities.p_check_gtmp_indexes
++ rm /mdev/race/oem/tmp/mptr730_20260821082004.db.log
++ . oem_job_notify.ksh
++ echo 'RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $'
+RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /mdev/race/oem/log/mptr730_20260821082004.log
++ LOGFILE=mptr730_20260821082004.log
++ WORKFILE=mptr730_oem_job_notify.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_notify.p_oem_job_notify_sel_01(p_job  =>          'mptr730',                                                        p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                     p_tmp_filename  => 'mptr730_oem_job_notify.tmp',                                                       p_log_directory => 'RACE_OEM_LOG_DIR',                                                     p_log_filename  => 'mptr730_20260821082004.log');
+QUIT;
+%
+2>& 1
++ WORKFILE=/mdev/race/oem/tmp/mptr730_oem_job_notify.tmp
++ cut -f2 -d^
++ cat /mdev/race/oem/tmp/mptr730_oem_job_notify.tmp
++ SEND_EMAIL_FLAG=''
++ cut -f3 -d^
++ cat /mdev/race/oem/tmp/mptr730_oem_job_notify.tmp
++ EMAIL_ADDRESS_LIST=''
++ cut -f4 -d^
++ cat /mdev/race/oem/tmp/mptr730_oem_job_notify.tmp
++ EMAIL_BODY=''
++ cut -f5 -d^
++ cat /mdev/race/oem/tmp/mptr730_oem_job_notify.tmp
++ RESET_SEND_EMAIL_FLAG=''
++ [ -z '' ]
++ echo 'Notification NOT Required'
+Notification NOT Required
++ echo ' '
+ 
++ . oem_job_datafile.ksh
++ echo 'RCS : oem_job_datafile.ksh,v 1.9 2026/08/07 19:35:00 rj132422 Exp $'
+RCS : oem_job_datafile.ksh,v 1.9 2026/08/07 19:35:00 rj132422 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /mdev/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /mdev/race/oem/log/mptr730_20260821082004.log
++ LOGFILE=mptr730_20260821082004.log
++ WORKFILE=mptr730_oem_job_datafile.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_datafile.p_oem_job_datafile_sel_04(p_reformat_job  => 'mptr730',                                                         p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                          p_tmp_filename  => 'mptr730_oem_job_datafile.tmp',                                                            p_log_directory => 'RACE_OEM_TMP_DIR',                                                          p_log_filename  => 'mptr730_20260821082004.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=RACE_OEM_TMP_DIR/mptr730_20260821082004.db.log
++ [ -s RACE_OEM_TMP_DIR/mptr730_20260821082004.db.log ]
++ WORKFILE=/mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ export WORKFILE
++ STEPNAME=Step010R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\n START ---> mptr730_oem_ref Step010R - Locate and transfer ALL Input Files - ' 08/21/26 08:44:03 ' <--- START\n\n'
+\n\n START ---> mptr730_oem_ref Step010R - Locate and transfer ALL Input Files -  08/21/26 08:44:03  <--- START\n\n
++ oem_job_status_update.ksh R 'Step010R oem_job_datafile_prep.ksh'
++ FILE_SEQUENCE=1
++ export FILE_SEQUENCE
++ [ Step010R '=' Step010R ]
++ [ ! -z '' ]
++ true
++ sed -n -e 1p
++ cut -f2 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ INPUT_FILE_NAME=mptr730_raw_lucid_price.dat
++ export INPUT_FILE_NAME
++ [ -z mptr730_raw_lucid_price.dat ]
++ sed -n -e 1p
++ cut -f3 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ XTAB_FILE_NAME=mptr730_xtab_oem_ref_mptr730_luc_raw.dat
++ export XTAB_FILE_NAME
++ sed -n -e 1p
++ cut -f4 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ XTAB_TABLE_NAME=xtab_oem_ref_mptr730_luc
++ export XTAB_TABLE_NAME
++ sed -n -e 1p
++ cut -f5 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ FTP_PROGRAM_NAME=''
++ export FTP_PROGRAM_NAME
++ sed -n -e 1p
++ cut -f6 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ FTP_LOCATION_CODE=N
++ export FTP_LOCATION_CODE
++ sed -n -e 1p
++ cut -f7 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ FORMAT_INDICATOR=A
++ export FORMAT_INDICATOR
++ sed -n -e 1p
++ cut -f8 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ SOURCE_FIELD_DELIMITER=,
++ export SOURCE_FIELD_DELIMITER
++ sed -n -e 1p
++ cut -f9 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ TARGET_FIELD_SIZE=''
++ export TARGET_FIELD_SIZE
++ sed -n -e 1p
++ cut -f10 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ BACKUP_SOURCE_FILE_NAME=mptr730_araw_luc_ca.dat
++ export BACKUP_SOURCE_FILE_NAME
++ sed -n -e 1p
++ cut -f11 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ FTP_SOURCE_FILE_NAME=''
++ export FTP_SOURCE_FILE_NAME
++ eval FTP_SOURCE_FILE_NAME=
++ FTP_SOURCE_FILE_NAME=''
++ sed -n -e 1p
++ cut -f14 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ FTP_PARM_FILE_NAME=''
++ export FTP_PARM_FILE_NAME
++ sed -n -e 1p
++ cut -f16 -d^
++ 0< /mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
++ ENCODING_CHARSET=''
++ export ENCODING_CHARSET
++ . oem_job_datafile_prep.ksh
++ echo '\n*** Begin oem_job_datafile_prep.ksh mptr730_raw_lucid_price.dat ***\n'
+\n*** Begin oem_job_datafile_prep.ksh mptr730_raw_lucid_price.dat ***\n
++ trap 'oem_abndalrt.ksh $?' err
++ STEP010_FILEOUT=/mdev/race/oem/dat/mptr730_araw_luc_ca.dat
++ [ ! -z '' ]
++ echo mptr730_raw_lucid_price.dat
++ awk -F . '{ print $NF }'
++ [[ dat = 'dat(0)' ]]
++ INPUT_FILE_NAME_EXPANDED=/mdev/race/oem/dat/mptr730_raw_lucid_price.dat
++ export INPUT_FILE_NAME_EXPANDED
++ [ -s /mdev/race/oem/dat/mptr730_raw_lucid_price.dat ]
++ [ N '=' M ]
++ echo '\n*** Option 4 None of the above?  Then Input File /mdev/race/oem/dat/mptr730_raw_lucid_price.dat HAS TO BE on the Novell directory.'
+\n*** Option 4 None of the above?  Then Input File /mdev/race/oem/dat/mptr730_raw_lucid_price.dat HAS TO BE on the Novell directory.
++ . oem_job_process_mitchell_ftp_file.ksh GETMIT
++ echo '\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh mptr730_raw_lucid_price.dat ***\n\n'
+\n\n*** Begin oem_job_process_mitchell_ftp_file.ksh mptr730_raw_lucid_price.dat ***\n\n
++ trap 'oem_abndalrt.ksh $?' err
++ FILE_ACTION=GETMIT
++ [ 1 -lt 1 ]
++ [ CA '=' PR ]
++ FTPSITE_DIRECTORY=/ftp1/Business_Partners/luc_ca/mdev/incoming
++ [ GETMIT '=' GETMIT ]
++ echo 'Using Fixed Folder for Novell/NT to Mitchell FTP.'
+Using Fixed Folder for Novell/NT to Mitchell FTP.
++ FTP_BUSINESS_PATH=/mdev/data/ftp/Business_Partners/mitchel/mdev/oem/incoming
++ export FTP_BUSINESS_PATH
++ FTPSITE_DIRECTORY=/mdev/data/ftp/Business_Partners/mitchel/mdev/oem/incoming
++ FILE_ACTION=GETIT
++ echo '\nDoes the input file name contain a wildcard?\n'
+\nDoes the input file name contain a wildcard?\n
++ expr mptr730_raw_lucid_price.dat : '.*[?*]'
+0
++ FTP_FILELIST=/mdev/race/oem/tmp/mptr730_mptr730_raw_lucid_price.dat_ftplist.tmp
++ ssh -nq ftp-ssh.mitchell.com 'ls -1 /mdev/data/ftp/Business_Partners/mitchel/mdev/oem/incoming/*.*'
++ 1> /mdev/race/oem/tmp/mptr730_mptr730_raw_lucid_price.dat_ftplist.tmp
++ oem_abndalrt.ksh 255
+\n\n*** Begin oem_abndalrt.ksh ***\n\n
+}
+_=*1752129*/bin/env
+abin=/mdev/race/altp/bin
+ACT_LVL=mdev
+adat=/mdev/race/altp/dat
+adoc=/mdev/race/altp/doc
+alog=/mdev/race/altp/log
+APPSYS=oem
+aprm=/mdev/race/altp/prm
+arpt=/mdev/race/altp/rpt
+asrc=/mdev/race/altp/src
+_AST_FEATURES=UNIVERSE - ucb
+atmp=/mdev/race/altp/tmp
+A__z="*SHLVL="*TMOUT
+BACKUP_SOURCE_FILE_NAME=mptr730_araw_luc_ca.dat
+BASH_FUNC_which%%=() {  ( alias;
+cbin=/mdev/race/ceg/bin
+cdat=/mdev/race/ceg/dat
+cdoc=/mdev/race/ceg/doc
+CLASSPATH=.:/opt/rocketsoftware/VisualCOBOL/lib/mfcobolrts.jar:/opt/rocketsoftware/VisualCOBOL/lib/mfcobol.jar:/opt/rocketsoftware/VisualCOBOL/lib/mfsqljvm.jar:/opt/rocketsoftware/VisualCOBOL/lib/mfidmr.jar
+clog=/mdev/race/ceg/log
+COBCPY=/mdev/race/share/inc:/mdev/race/share/inc/rollback:/mdev/race/oem/inc:/mdev/race/oem/../share/inc:/opt/rocketsoftware/VisualCOBOL/cpylib
+COBDIR=/opt/microfocus/cobol
+cprm=/mdev/race/ceg/prm
+crpt=/mdev/race/ceg/rpt
+csrc=/mdev/race/ceg/src
+ctmp=/mdev/race/ceg/tmp
+DEBUGINFOD_IMA_CERT_PATH=/etc/keys/ima:
+DUPLICATE_PARTS_EXPECTED_FLAG=Y
+ebin=/mdev/race/ext/bin
+edat=/mdev/race/ext/dat
+edoc=/mdev/race/ext/doc
+elog=/mdev/race/ext/log
+ENCODING_CHARSET=
+ENV=/mdev/race/share/bin/racekshrc.ksh
+eprm=/mdev/race/ext/prm
+erpt=/mdev/race/ext/rpt
+esrc=/mdev/race/ext/src
+etmp=/mdev/race/ext/tmp
+ eval ${which_declare} ) | /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@
+EXINIT=set ic
+FILE_SEQUENCE=1
+FORMATCTRY=CA
+FORMAT_INDICATOR=A
+FORMATOEM=085
+FTP_BUSINESS_PATH=/mdev/data/ftp/Business_Partners/mitchel/mdev/oem/incoming
+FTP_LOCATION_CODE=N
+FTP_MITCHELL_BUSINESS_PATH=/mdev/data/ftp/Business_Partners/mitchel
+FTP_PARM_FILE_NAME=
+FTP_PROGRAM_NAME=
+FTP_SERVER=prod3nt.production.int
+FTP_SFTP_USER=
+FTP_SITE=ftp-ssh.mitchell.com
+FTP_SOURCE_FILE_NAME=
+HISTCONTROL=ignoredups
+HISTSIZE=1000
+HOME=/home/staging.int/svc-apd-race-dev
+HOSTNAME=dawapp7017l
+INPUT_FILE_NAME_EXPANDED=/mdev/race/oem/dat/mptr730_raw_lucid_price.dat
+INPUT_FILE_NAME=mptr730_raw_lucid_price.dat
+JOBCTRY=CA
+JOBFILE_OEMCTRY=luc_ca
+JOBLOGNAME=/mdev/race/oem/log/mptr730_20260821082004.log
+JOBNAME=mptr730
+JOBOEM=085
+JOBOEMNAME=LUC
+JOBPARM=zmpt731a
+LANG=en_US.UTF-8
+LD_LIBRARY_PATH=/opt/rocketsoftware/VisualCOBOL/lib:/opt/rocketsoftware/VisualCOBOL/lib:/u01/app/oracle/product/19.3.0/client64/lib:
+LESSOPEN=||/usr/bin/lesspipe.sh %s
+LIBPATH=/opt/microfocus/cobol/lib:/opt/rocketsoftware/VisualCOBOL/lib:/opt/rocketsoftware/VisualCOBOL/lib:/u01/app/oracle/product/19.3.0/client64/lib:/opt/ruby241/lib:/opt/freeware/lib
+LOGDIR=/mdev/race/oem/log
+LOGFILE=mptr730_20260821082004.log
+LOG=/mdev/race/oem/tmp/mptr730_1751998.sqlout
+LOGNAME=svc-apd-race-dev@staging.int
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;37;41:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=01;36:*.au=01;36:*.flac=01;36:*.m4a=01;36:*.mid=01;36:*.midi=01;36:*.mka=01;36:*.mp3=01;36:*.mpc=01;36:*.ogg=01;36:*.ra=01;36:*.wav=01;36:*.oga=01;36:*.opus=01;36:*.spx=01;36:*.xspf=01;36:
+MAIL=/var/spool/mail/svc-apd-race-dev@staging.int
+MANPATH=:usr/share/man:/mdev/race/share/doc/man:/opt/freeware/man
+MFConnect=
+MPTUSERID=racejob/q1w2e3r4
+NOVELL=mdev/
+obin=/mdev/race/oem/bin
+OBJ_DATDIR=RACE_OEM_DAT_DIR
+OBJ_LOGDIR=RACE_OEM_LOG_DIR
+OBJ_PRMDIR=RACE_OEM_PRM_DIR
+OBJ_RPTDIR=RACE_OEM_RPT_DIR
+OBJ_TMPDIR=RACE_OEM_TMP_DIR
+OBSOLETE_JOB_FLAG=N
+odat=/mdev/race/oem/dat
+odoc=/mdev/race/oem/doc
+OEMABBRLOWER=luc
+olog=/mdev/race/oem/log
+oprm=/mdev/race/oem/prm
+ORACLE_BASE=/u01/app/oracle
+ORACLE_HOME=/u01/app/oracle/product/19.3.0/client64
+ORACLE_HOSTNAME=dawapp7017l
+ORACLE_SID=RADD.MITCHELL.COM
+ORA_INVENTORY=/u01/app/oraInventory
+orpt=/mdev/race/oem/rpt
+osrc=/mdev/race/oem/src
+otmp=/mdev/race/oem/tmp
+PACKAGE_NAME_1=pkg_oem_ref_048
+PACKAGE_NAME_2=
+PATH=/opt/rocketsoftware/VisualCOBOL/bin:/u01/app/oracle/product/19.3.0/client64/bin:/home/staging.int/svc-apd-race-dev:/mdev/race/share/bin:/mdev/race/bin:/mdev/race/ext/bin:/stage/race/share/bin:/stage/race/ext/bin:/usr/lib/oracle/23/client64/bin:/etc:/root/.local/bin:/root/bin:/sbin:/bin:/usr/sbin:/usr/bin:/mdev/util/share/bin:/opt/microfocus/cobol/bin:/usr/local/bin:/usr/local/sbin:/mdev/util/share/bin:/opt/microfocus/cobol/bin:/usr/bin/X11:/usr/lib/cobol/bin:/usr/local/spfux/decbin:.:/mdev/race/share/bin:/mdev/race/bin:/mdev/race/oem/bin:/stage/race/share/bin:/stage/race/oem/bin:.:/opt/ruby241:/opt/ruby241/bin:/mdev/race/oem/bin:/stage/race/oem/bin
+PREPROCESS_SCRIPT_NAME=
+PROCNAME=mptr730_oem_ref
+PRODHOST=PRODHOSTgoesHERE
+PWD=/home/staging.int/svc-apd-race-dev
+qbin=/mdev/race/qrp/bin
+qdat=/mdev/race/qrp/dat
+qdoc=/mdev/race/qrp/doc
+qlog=/mdev/race/qrp/log
+qprm=/mdev/race/qrp/prm
+qrpt=/mdev/race/qrp/rpt
+qsrc=/mdev/race/qrp/src
+qtmp=/mdev/race/qrp/tmp
+RACE_DBMS_PROFILER_FLAG=N
+RACE_DEBUG_LEVEL=0
+RACE=/mdev/race/oem
+RCSDIR=race:/prod/race
+RCSHOST=race
+REFORMAT_BUILDS_RTRANS_FLAG=N
+REFORMATJOB=mptr730
+REPORTSUFFIX=lucca
+RESTART_FILE_SEQUENCE=
+RESTART=Step010R
+REVERSE_SUPER_JOBPARM=
+sbin=/mdev/race/share/bin
+S_COLORS=auto
+sdat=/mdev/race/share/dat
+sdoc=/mdev/race/share/doc
+SERVER_NAME=dawapp7017l
+SHELL=/bin/ksh
+SHLVL=5
+sinc=/mdev/race/share/inc
+slib=/mdev/race/share/lib
+slog=/mdev/race/share/log
+SOURCE_FIELD_DELIMITER=,
+sprm=/mdev/race/share/prm
+srpt=/mdev/race/share/rpt
+SRVR=dawapp7017l
+ssrc=/mdev/race/share/src
+stage_abin=/stage/race/altp/bin
+stage_aprm=/stage/race/altp/prm
+stage_asrc=/stage/race/altp/src
+stage_cbin=/stage/race/ceg/bin
+stage_cprm=/stage/race/ceg/prm
+stage_csrc=/stage/race/ceg/src
+stage_obin=/stage/race/oem/bin
+stage_oprm=/stage/race/oem/prm
+stage_osrc=/stage/race/oem/src
+stage_qbin=/stage/race/qrp/bin
+stage_qprm=/stage/race/qrp/prm
+stage_qsrc=/stage/race/qrp/src
+stage_sbin=/stage/race/share/bin
+stage_sinc=/stage/race/share/inc
+stage_slib=/stage/race/share/lib
+stage_sprm=/stage/race/share/prm
+stage_ssrc=/stage/race/share/src
+STAGE=/stage/race
+STEPNAME=Step010R
+stmp=/mdev/race/share/tmp
+TARGET_FIELD_SIZE=
+TERM=vt100
+TESTHOST=dawapp7017l
+THISHOST=dawapp7017l
+TMOUT=28800
+TNS_ADMIN=/u01/app/oracle/product/19.3.0/client64/network/admin
+TWO_TASK=RADD.MITCHELL.COM
+UPDATEJOB=mptr731
+USER=svc-apd-race-dev@staging.int
+which_declare=
+WORKFILE=/mdev/race/oem/tmp/mptr730_oem_job_datafile.tmp
+XTAB_FILE_NAME=mptr730_xtab_oem_ref_mptr730_luc_raw.dat
+XTAB_TABLE_NAME=xtab_oem_ref_mptr730_luc
+
+ !!  PRODUCTION JOB--CONDITION CODE ERROR  !!
+ !!     REPORT TO PRODUCTION CONTROL       !!
+   ** mptr730:mptr730_oem_ref[Step010R] failed, rc = 255 **
+\n\n***  End  oem_abndalrt.ksh ***\n\n
+/stage/race/share/bin/exec_restart.ksh: line 94: 1752023: Killed
