@@ -1,0 +1,13 @@
+Host ftp-ssh.mitchell.com
+    HostName 10.0.23.119
+    User race_b1
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+    PubkeyAuthentication yes
+    PreferredAuthentications publickey
+    StrictHostKeyChecking accept-new
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+    ControlMaster auto
+    ControlPath ~/.ssh/cm-%r@%h:%p
+    ControlPersist 5m
