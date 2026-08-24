@@ -1,5 +1,5 @@
 #!/bin/ksh
-echo "RCS $Id: oem_ref_mptr839_ftp_tesla_semi_source_file.ksh,v 1.3 2024/02/16 23:03:25 pg2697 Exp $"
+echo "RCS $Id: oem_ref_mptr839_ftp_tesla_semi_source_file.ksh,v 1.3 2024/02/16 23:03:25 pg2697 Exp rj132422 $"
 set -xv
 #***************************************************************************************************
 # PROCNAME oem_ref_mptr839_ftp_tesla_semi_source_file.ksh                                            
@@ -57,22 +57,22 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_transfer_log.tmp
   if [ -e ${SOURCE_FILE} ]
   then
-    # Copy the source file to the Network      
-    # rj132422 - prod3nt sunset: deliver to Mitchell oem_research via scp (was: fileput.exp ${BACKUP_SOURCE_FILE_NAME} to ${NOVELL}oem_research)
-    RESEARCH_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem_research
-    scp ${SOURCE_FILE} ${FTP_SFTP_USER}${FTP_SITE}:${RESEARCH_DIR}/${BACKUP_SOURCE_FILE_NAME} | tee ${FTP_LOGFILE}
-    # Verify the copy is good       
+    # rj132422 - prod3nt sunset: deliver source zip to Mitchell oem_research via scp (was: fileput.exp ${BACKUP_SOURCE_FILE_NAME} to ${NOVELL}oem_research)
+    OEM_RESEARCH_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem_research
+    scp ${SOURCE_FILE} ${FTP_SFTP_USER}${FTP_SITE}:${OEM_RESEARCH_DIR}/${BACKUP_SOURCE_FILE_NAME} | tee ${FTP_LOGFILE}
+    # Verify the copy is good
     GOODBYTECOUNT="$(wc -c ${SOURCE_FILE} | awk '{print $1}')"
-    FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${RESEARCH_DIR}/${BACKUP_SOURCE_FILE_NAME}")"  # rj132422 remote byte-count via ssh
+    FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c ${OEM_RESEARCH_DIR}/${BACKUP_SOURCE_FILE_NAME}" | awk '{print $1}')"  # rj132422 remote byte-count via ssh
     if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
     then
       echo "Successful ftp ${SOURCE_FILE}: ftp count = ${GOODBYTECOUNT}"
       # Send email notification that the file was transferred to the Network
-      MAIL_RECIP="Rpt.OEM.Activ.Comm.Dom@Mitchell.com Susan.Grimes@Mitchell.com"  # rj132422 s-nail: space, not ; between addresses
+      MAIL_RECIP="Rpt.OEM.Activ.Comm.Dom@Mitchell.com; Susan.Grimes@Mitchell.com"
       MAIL_SUBJECT="${JOBNAME} ${JOBOEMNAME} ${JOBOEM} ${JOBCTRY}: Transfer Source File to Network" 
       export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp    
       echo "\nThe Tesla zip file was transferred to the Network \n"               > ${MAIL_TEXT}
-      echo '\\\prod3nt\\cdprod02\\ftp_data\\'${ACT_LVL}'\\oem_research\\' ${BACKUP_SOURCE_FILE_NAME} >> ${MAIL_TEXT}     
+      # rj132422 - prod3nt sunset: point Editorial to the Mitchell ftp-ssh oem_research location (was: prod3nt/cdprod02/ftp_data/<lvl>/oem_research)
+      echo "   ${FTP_SITE}:${OEM_RESEARCH_DIR}/${BACKUP_SOURCE_FILE_NAME}" >> ${MAIL_TEXT}     
       echo "\nWhat to do?"                                                          >> ${MAIL_TEXT}
       echo "   1. MOVE this file into: " '\\\dept01nas\dept\PubTeams\Tesla_Semi\\'       >> ${MAIL_TEXT}
       echo "   2. Unzip File"                                                       >> ${MAIL_TEXT}
@@ -137,7 +137,7 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   PRICE_UX=${RACE}/tmp/${JOBNAME}/partprices*.csv
   PRICE_NT=${JOBNAME}_raw_tsem_price.dat
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_${STEPNAME}_transfer_log.tmp
-  NT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/outgoing  # rj132422 prod3nt sunset: Mitchell outgoing (was: ${NOVELL}oem)
+  NT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/outgoing  # rj132422 prod3nt sunset: Mitchell outgoing (mptr840 reads outgoing) (was: ${NOVELL}oem)
   
   if [ -e ${PRICE_UX} ]
   then
@@ -146,12 +146,12 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
     ########################################################################################
     # rj132422 - prod3nt sunset: scp price to Mitchell outgoing (was: fileput.exp ${PRICE_UX} ${PRICE_NT} ${NT_DIR})
     scp ${PRICE_UX} ${FTP_SFTP_USER}${FTP_SITE}:${NT_DIR}/${PRICE_NT} | tee ${FTP_LOGFILE}
-    
+
     ########################################################################################
-    # Verify the copy is good       
+    # Verify the copy is good
     ########################################################################################
     GOODBYTECOUNT="$(wc -c ${PRICE_UX} | awk '{print $1}')"
-    FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${NT_DIR}/${PRICE_NT}")"  # rj132422 remote byte-count via ssh
+    FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c ${NT_DIR}/${PRICE_NT}" | awk '{print $1}')"  # rj132422 remote byte-count via ssh
     if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
     then
       echo "File transfer to NT ${NT_DIR} successful. ${PRICE_UX} ftp count = ${GOODBYTECOUNT}"    
@@ -183,7 +183,7 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   CATLG_UX=${RACE}/tmp/${JOBNAME}/partscatalog_combined.csv
   CATLG_NT=${JOBNAME}_raw_tsem_catlg.dat
   FTP_LOGFILE=${RACE}/tmp/${JOBNAME}_${STEPNAME}_transfer_log.tmp
-  NT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/outgoing  # rj132422 prod3nt sunset: Mitchell outgoing (was: ${NOVELL}oem)
+  NT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/oem/outgoing  # rj132422 prod3nt sunset: Mitchell outgoing (mptr840 reads outgoing) (was: ${NOVELL}oem)
   
   if [ -e ${CATLG_ZIP} ]
   then
@@ -199,12 +199,12 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
     ########################################################################################
     # rj132422 - prod3nt sunset: scp catalog to Mitchell outgoing (was: fileput.exp ${CATLG_UX} ${CATLG_NT} ${NT_DIR})
     scp ${CATLG_UX} ${FTP_SFTP_USER}${FTP_SITE}:${NT_DIR}/${CATLG_NT} | tee ${FTP_LOGFILE}
-    
+
     ########################################################################################
-    # Verify the copy is good       
+    # Verify the copy is good
     ########################################################################################
     GOODBYTECOUNT="$(wc -c ${CATLG_UX} | awk '{print $1}')"
-    FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${NT_DIR}/${CATLG_NT}")"  # rj132422 remote byte-count via ssh
+    FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c ${NT_DIR}/${CATLG_NT}" | awk '{print $1}')"  # rj132422 remote byte-count via ssh
     if [ ${GOODBYTECOUNT} -eq ${FTPBYTECOUNT} ]
     then
       echo "File transfer to NT ${NT_DIR} successful. ${CATLG_UX} ftp count = ${GOODBYTECOUNT}"    

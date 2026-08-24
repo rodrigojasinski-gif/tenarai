@@ -238,7 +238,7 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
 
   export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp    
   echo '\n 1. The BestFit zip file has been transferred to the Network as: '${BACKUP_SOURCE_FILE_NAME}' ' > ${MAIL_TEXT}
-  echo '      \\\prod3nt\\cdprod02\\ftp_data\\'${ACT_LVL}'\\oem_research\\' >> ${MAIL_TEXT}                                                                
+  echo "      ${FTP_SITE}:${RESEARCH_DIR}/${BACKUP_SOURCE_FILE_NAME}" >> ${MAIL_TEXT}  # rj132422 prod3nt sunset: Mitchell ftp-ssh oem_research (was: prod3nt/cdprod02/ftp_data/<lvl>/oem_research)                                                                
   echo '\n    Editorial Content may now:' >> ${MAIL_TEXT}
   echo '      a. MOVE this file into:  \\\dept01nas\dept\PubTeams\BestFit\\' >> ${MAIL_TEXT}
   echo '      b. Unzip File' >> ${MAIL_TEXT}
@@ -247,7 +247,7 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
   echo '      \\\'${OEMDOC_SERVER}'\\oem_doc_rep_share\\oem_doc_repository\\BestFit\\dat\\' >> ${MAIL_TEXT}
   echo '\n    Editorial Systems may now: Run the BestFit process which loads json data into the RACE database for Editor use.' >> ${MAIL_TEXT}
   echo '\n 3. The BestFit price files have been transferred to the Network as: mptr809_raw_bestfit_price_us.dat and mptr809_raw_bestfit_price_ca.dat in' >> ${MAIL_TEXT}
-  echo '      \\\prod3nt\\cdprod02\\ftp_data\\'${ACT_LVL}'\\oem\\' >> ${MAIL_TEXT}
+  echo "      ${FTP_SITE}:${NT_DIR}/" >> ${MAIL_TEXT}  # rj132422 prod3nt sunset: Mitchell ftp-ssh oem/outgoing (was: prod3nt/cdprod02/ftp_data/<lvl>/oem)
   echo '\n    Editorial Systems may now: Run the US and CA BestFit reformat and update processes to apply pricing to the RACE Database.' >> ${MAIL_TEXT}   
    
   mailx -s "${MAIL_SUBJECT}" "${MAIL_RECIP}" < ${MAIL_TEXT}      
