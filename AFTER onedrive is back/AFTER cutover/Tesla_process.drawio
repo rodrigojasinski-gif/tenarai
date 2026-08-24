@@ -1,0 +1,67 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="tesla-proc" name="Tesla Process">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="hdr" value="Tesla Price Update Process  (weekly — Fri/Mon)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dddddd;strokeColor=#666666;verticalAlign=middle;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="1560" height="30" as="geometry"/></mxCell>
+        <mxCell id="lane0" value="Tesla (OEM)" style="swimlane;horizontal=1;startSize=30;html=1;fillColor=none;strokeColor=#666666;fontStyle=1;fontSize=12;" vertex="1" parent="1"><mxGeometry x="40" y="70" width="260" height="1240" as="geometry"/></mxCell>
+        <mxCell id="lane1" value="Akamai SFTP (external)" style="swimlane;horizontal=1;startSize=30;html=1;fillColor=none;strokeColor=#666666;fontStyle=1;fontSize=12;" vertex="1" parent="1"><mxGeometry x="300" y="70" width="260" height="1240" as="geometry"/></mxCell>
+        <mxCell id="lane2" value="RACE pre-processor — mptr299" style="swimlane;horizontal=1;startSize=30;html=1;fillColor=none;strokeColor=#666666;fontStyle=1;fontSize=12;" vertex="1" parent="1"><mxGeometry x="560" y="70" width="260" height="1240" as="geometry"/></mxCell>
+        <mxCell id="lane3" value="Mitchell SFTP (ftp-ssh)" style="swimlane;horizontal=1;startSize=30;html=1;fillColor=none;strokeColor=#666666;fontStyle=1;fontSize=12;" vertex="1" parent="1"><mxGeometry x="820" y="70" width="260" height="1240" as="geometry"/></mxCell>
+        <mxCell id="lane4" value="RACE reformat / update" style="swimlane;horizontal=1;startSize=30;html=1;fillColor=none;strokeColor=#666666;fontStyle=1;fontSize=12;" vertex="1" parent="1"><mxGeometry x="1080" y="70" width="260" height="1240" as="geometry"/></mxCell>
+        <mxCell id="lane5" value="Oracle DB / Editorial" style="swimlane;horizontal=1;startSize=30;html=1;fillColor=none;strokeColor=#666666;fontStyle=1;fontSize=12;" vertex="1" parent="1"><mxGeometry x="1340" y="70" width="260" height="1240" as="geometry"/></mxCell>
+        <mxCell id="start" value="Weekly Tesla
+price cycle" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="110" y="100" width="120" height="60" as="geometry"/></mxCell>
+        <mxCell id="t_pub" value="Tesla publishes ZIP
+(price + supersession + catalog)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="70" y="210" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="t_aka" value="ZIP available on Akamai SFTP
+tesladata.upload.akamai.com" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="330" y="210" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="s010" value="mptr299 Step010R:
+pull ZIP via get_sftp_file.pl" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="590" y="320" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="s020" value="mptr299 Step020R:
+scp source ZIP → oem_research" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="590" y="430" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="research" value="Mitchell oem_research
+(Editorial handoff)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="850" y="430" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="edit" value="Editorial uses
+ZIP" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1410" y="430" width="120" height="60" as="geometry"/></mxCell>
+        <mxCell id="s030" value="mptr299 Step030R:
+unzip → Price / Super / Catalog" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="590" y="540" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="s040" value="mptr299 Step040-060R:
+scp files → oem/incoming (renamed)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="590" y="650" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="incoming" value="Mitchell oem/incoming
+mptr299_raw_tesla_*.dat" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="850" y="650" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="m300_10" value="mptr300 Step010R (GETMIT):
+pull raw files from oem/incoming" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1110" y="760" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="m300_rf" value="mptr300 reformat:
+xtab selects US recs → N/Atrans" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1110" y="870" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="gw" value="Country?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1150" y="975" width="120" height="80" as="geometry"/></mxCell>
+        <mxCell id="m301" value="mptr301 update:
+apply US pricing" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1110" y="1090" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="m720" value="mptr720 / mptr721:
+CA reformat + update" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1110" y="1190" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="oracle" value="Load pricing into
+RACE Oracle DB" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1370" y="1090" width="200" height="60" as="geometry"/></mxCell>
+        <mxCell id="end" value="Tesla pricing
+live" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1410" y="1190" width="120" height="60" as="geometry"/></mxCell>
+        <mxCell id="e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="start" target="t_pub"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="t_pub" target="t_aka"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="t_aka" target="s010"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="s010" target="s020"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" value="hand-off" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="s020" target="research"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="research" target="edit"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="s020" target="s030"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="s030" target="s040"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="s040" target="incoming"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="incoming" target="m300_10"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="m300_10" target="m300_rf"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="m300_rf" target="gw"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e13" value="US" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="gw" target="m301"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e14" value="CA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="gw" target="m720"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="m301" target="oracle"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="m720" target="oracle"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="oracle" target="end"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
