@@ -67,7 +67,7 @@ FTP_PARM_FILE_NAME=`sed -n -e "1p"      < ${OEM_JOB_DATAFILE_INFO}| cut -f14  -d
     then
       echo "Successful ftp ${SOURCE_FILE}: ftp count = ${GOODBYTECOUNT}"
       # Send email notification that the file was transferred to the Network
-      MAIL_RECIP="Rpt.OEM.Activ.Comm.Dom@Mitchell.com; Susan.Grimes@Mitchell.com"
+      MAIL_RECIP="Rpt.OEM.Activ.Comm.Dom@Mitchell.com Susan.Grimes@Mitchell.com"  # rj132422 - space-separated for RHEL mailx (was: ';' separator)
       MAIL_SUBJECT="${JOBNAME} ${JOBOEMNAME} ${JOBOEM} ${JOBCTRY}: Transfer Source File to Network" 
       export MAIL_TEXT=${RACE}/tmp/${JOBNAME}_email_text.tmp    
       echo "\nThe Tesla zip file was transferred to the Network \n"               > ${MAIL_TEXT}
