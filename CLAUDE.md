@@ -37,3 +37,12 @@
 - Mitchell base path var: `${FTP_MITCHELL_BUSINESS_PATH}` = `/prod/data/ftp/Business_Partners/mitchell`.
 - Folders: `oem/incoming` (arrivals), `oem/outgoing` (RACE-produced / pre-processor output), `oem_research` (Editorial), `oem/incoming/backup` (archive).
 - SFTP user var `${FTP_SFTP_USER}` = `race_b1@` in prod, empty in dev.
+
+## Email recipient separator (always review this)
+- **`mailx` on RHEL does NOT accept `;` between recipients** — it needs **space** (or comma).
+  The old AIX/Novell scripts used `;` (e.g. `MAIL_RECIP="a@x.com; b@x.com"`), which breaks on RHEL.
+- Whenever touching a script that sends mail, **check every `MAIL_RECIP` / recipient list** and
+  convert `;` separators to a single space. Since the call is usually `mailx -s "..." ${MAIL_RECIP}`
+  (unquoted), space-separated values word-split into correct args.
+- Mark the change with `rj132422` and note the old separator, e.g.
+  `# rj132422 - space-separated for RHEL mailx (was: ';' separator)`.
