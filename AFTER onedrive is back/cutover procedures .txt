@@ -373,3 +373,160 @@ drwx------. 2 svc-nas-dev@staging.int      domain users@staging.int  4096 Aug  7
 rcheck_out  race_altp.ksh     share/bin  &&
 rcheck_out  xam010.ksh        altp/bin  &&
 rcheck_out  xam030.ksh        altp/bin  
+
+
+
+
+rcheck_out -l runlock share/bin 
+rcheck_in -d "Aix to rhel adjustment" mpt986.ksh oem/bin 
+/prod/race/share/bin/prod_move runlock share/bin
+
+
+
+rcheck_out -l runlock share/bin 
+rcheck_in -d "Aix to rhel adjustment" mpt986.ksh oem/bin 
+/prod/race/share/bin/prod_move mpt986.ksh oem/bin
+
+
+/prod/race/share/bin/prod_move xexm650.ksh ext/bin &&
+/prod/race/share/bin/prod_move xexr510.ksh ext/bin
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+
+
+rcheck_out -l oem_ref_mptr249_hdmus_source_file.ksh oem/bin 
+rcheck_in -d "Aix to rhel adjustment" oem_ref_mptr249_hdmus_source_file.ksh oem/bin 
+/prod/race/share/bin/prod_move oem_ref_mptr249_hdmus_source_file.ksh oem/bin
+
+
+
+
+rcheck_out -l mptr249.ksh oem/bin 
+rcheck_in -d "Aix to rhel adjustment" oem_ref_mptr249_hdmus_source_file.ksh oem/bin 
+/prod/race/share/bin/prod_move mpt986.ksh oem/bin
+
+
+
+rcheck_out -l oem_job_process_mitchell_ftp_file.ksh oem/bin 
+rcheck_in -d "Aix to rhel adjustment" oem_ref_mptr249_hdmus_source_file.ksh oem/bin 
+/prod/race/share/bin/prod_move mpt986.ksh oem/bin
+
+
+rcheck_out mptr250.ksh oem/bin 
+
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+rcheck_out -l oem_job_process_mitchell_ftp_file.ksh oem/bin 
+
+
+rcheck_out -l oem_ref_mptr249_hdmus_source_file.ksh oem/bin 
+
+
+rcheck_out -l get_sftp_file.pl oem/bin 
+
+
+rcheck_in -d "HDM adjust" oem_job_process_mitchell_ftp_file.ksh oem/bin &&
+rcheck_in -d "HDM adjust" oem_ref_mptr249_hdmus_source_file.ksh oem/bin &&
+rcheck_in -d "Aix to rhel adjustment /user/local/bin" get_sftp_file.pl oem/bin 
+
+
+
+/prod/race/share/bin/prod_move oem_job_process_mitchell_ftp_file.ksh oem/bin &&
+/prod/race/share/bin/prod_move oem_ref_mptr249_hdmus_source_file.ksh oem/bin &&
+/prod/race/share/bin/prod_move get_sftp_file.pl oem/bin
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+rcheck_out -l oem_job_process_mitchell_ftp_file.ksh oem/bin 
+rcheck_in -d "Backup folder adjust" oem_job_process_mitchell_ftp_file.ksh oem/bin 
+/prod/race/share/bin/prod_move oem_job_process_mitchell_ftp_file.ksh oem/bin 
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+oem_ref_mptr425_ftp_clean_files.ksh
+grep -i ^i *425*
+grep -i COMPLETE_LOAD_FILE  oem_ref_mptr*425*
+
+
+rcheck_out -l oem_ref_mptr425_ftp_clean_files.ksh oem/bin 
+rcheck_in -d "Linux cut -f2 i  folder adjust" oem_ref_mptr425_ftp_clean_files.ksh oem/bin 
+/prod/race/share/bin/prod_move oem_ref_mptr425_ftp_clean_files.ksh oem/bin 
+
+
+rcheck_out -l mpt_elim_dup_old_new_part.awk oem/bin 
+rcheck_in -d "Linux cut -f2 i  folder adjust" oem_ref_mptr425_ftp_clean_files.ksh oem/bin 
+/prod/race/share/bin/prod_move oem_ref_mptr425_ftp_clean_files.ksh oem/bin 
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+
+
+   rcheck_out -l dlmt2fxd.pl share/bin 
+rcheck_in -d "AIX to RHEL migration" dlmt2fxd.pl share/bin 
+/prod/race/share/bin/prod_move dlmt2fxd.pl share/bin 
+
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+ls -ltr /stage/race/oem/bin/oem_ref_mptr829_ftp_tshr_source_file.ksh
+
+OK rcheck_out -l oem_ref_mptr829_ftp_tshr_source_file.ksh oem/bin &&
+OK rcheck_out -l oem_ref_mptr799_ftp_trp_source_file.ksh oem/bin 
+
+OK rcheck_in -d "AIX to RHEL migration" oem_ref_mptr829_ftp_tshr_source_file.ksh oem/bin 
+OK rcheck_in -d "AIX to RHEL migration" oem_ref_mptr799_ftp_trp_source_file.ksh oem/bin 
+
+OK /prod/race/share/bin/prod_move oem_ref_mptr829_ftp_tshr_source_file.ksh oem/bin &&
+OK /prod/race/share/bin/prod_move oem_ref_mptr799_ftp_trp_source_file.ksh oem/bin 
+ 
+ ----------------------------------------------------------------
+----------------------------------------------------------------
+ 
+ rcheck_out -l oem_ref_mptr809_ftp_bestfit_source_file.ksh oem/bin  
+ 
+ rcheck_in -d "AIX to RHEL migration" oem_ref_mptr809_ftp_bestfit_source_file.ksh oem/bin 
+ 
+ /prod/race/share/bin/prod_move oem_ref_mptr809_ftp_bestfit_source_file.ksh oem/bin  
+  
+  
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+OK rcheck_out -l oem_ref_mptr839_ftp_tesla_semi_source_file.ksh oem/bin  
+OK rcheck_in -d "AIX to RHEL migration" oem_ref_mptr839_ftp_tesla_semi_source_file.ksh oem/bin 
+  /prod/race/share/bin/prod_move oem_ref_mptr839_ftp_tesla_semi_source_file.ksh oem/bin  
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+OK rcheck_out -l oem_ref_mptr839_ftp_tesla_semi_source_file.ksh oem/bin  
+OK rcheck_in -d "AIX to RHEL migration" oem_ref_mptr839_ftp_tesla_semi_source_file.ksh oem/bin 
+  /prod/race/share/bin/prod_move oem_ref_mptr839_ftp_tesla_semi_source_file.ksh oem/bin  
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+OK rcheck_out -l oem_ref_mptr770_ftp_fntr_to_editorial.ksh oem/bin  
+OK rcheck_in -d "AIX to RHEL migration" oem_ref_mptr770_ftp_fntr_to_editorial.ksh oem/bin 
+OK /prod/race/share/bin/prod_move oem_ref_mptr770_ftp_fntr_to_editorial.ksh oem/bin  
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+OK rcheck_out -l xex010.ksh ext/bin  
+OK rcheck_in -d "AIX to RHEL migration" xex010.ksh ext/bin 
+/prod/race/share/bin/prod_move xex010.ksh ext/bin  
+
