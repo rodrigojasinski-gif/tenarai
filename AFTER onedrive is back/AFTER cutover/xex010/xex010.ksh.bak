@@ -56,12 +56,10 @@ trap 'abndalrt.ksh $?' err
 # Declare Novell, UX  disk file variable & Novell Source Directory:
          export DD_NOVELDSK=$XFER_FILE
          export DD_UNIXDSK=$RACE/tmp/${JOBNAME}_bcswrk.tmp
-         # rj132422 - prod3nt sunset: source parm dir on Mitchell usrdat (was: ${NOVELL}usrdat)
-         export DD_NOVELDIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/usrdat
+         export DD_NOVELDIR=${NOVELL}usrdat
          export DD_FTPLOG=$RACE/tmp/${JOBNAME}_bcsxfr.tmp
 
-         # rj132422 - prod3nt sunset: scp GET from Mitchell usrdat (was: fileget.exp $DD_NOVELDSK $DD_UNIXDSK $DD_NOVELDIR)
-         scp ${FTP_SFTP_USER}${FTP_SITE}:${DD_NOVELDIR}/$DD_NOVELDSK $DD_UNIXDSK \
+         fileget.exp $DD_NOVELDSK $DD_UNIXDSK $DD_NOVELDIR \
          | tee $DD_FTPLOG
 
          echo; date
@@ -73,7 +71,7 @@ trap 'abndalrt.ksh $?' err
               abndalrt.ksh ftp_null_file
          fi
 
-         novelcount="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${DD_NOVELDIR}/$DD_NOVELDSK")"  # rj132422 remote byte-count via ssh (was: fileget 'Information returned by')
+         novelcount="$(grep 'Information returned by' $DD_FTPLOG | awk '{print $1}')"
          unixcount="$(wc -c $DD_UNIXDSK | awk ' {print $1}')"
 
          if [ novelcount -eq unixcount ]
@@ -179,23 +177,10 @@ rpt_log_retention.ksh "${JOBNAME}a"
 rpt_log_retention.ksh "${JOBNAME}b"
 
 # Copy the "ALL" report to the Network      
-# rj132422 - prod3nt sunset: deliver report to Mitchell usrdat via scp; ascii mode -> convert LF to CRLF for Windows/Notepad consumers (was: fileput.exp ${NT_FILE} to ${NOVELL}usrdat ascii)
-USRDAT_DIR=${FTP_MITCHELL_BUSINESS_PATH}/${ACT_LVL}/usrdat
-SOURCE_FILE_CRLF=${RACE}/tmp/${NT_FILE}.crlf
-sed 's/$/\r/' ${SOURCE_FILE} > ${SOURCE_FILE_CRLF}
-scp ${SOURCE_FILE_CRLF} ${FTP_SFTP_USER}${FTP_SITE}:${USRDAT_DIR}/${NT_FILE} | tee ${FTP_LOGFILE}
+fileput.exp ${SOURCE_FILE} ${NT_FILE} ${NOVELL}usrdat ascii | tee ${FTP_LOGFILE}
 
 # With ASCII transfer, you cannot compare unix byte count to FTPBYTECOUNT to determine successful transfer   
-GOODBYTECOUNT="$(wc -c ${SOURCE_FILE_CRLF} | awk '{print $1}')"
-FTPBYTECOUNT="$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} "wc -c < ${USRDAT_DIR}/${NT_FILE}")"  # rj132422 remote byte-count via ssh
-if [ "${GOODBYTECOUNT}" -eq "${FTPBYTECOUNT}" ]
-then
-  echo "Successful transfer ${SOURCE_FILE} to ${USRDAT_DIR}/${NT_FILE}: count = ${GOODBYTECOUNT}"
-else
-  echo "transfer of ${SOURCE_FILE} to ${USRDAT_DIR} failed: remote ${FTPBYTECOUNT}, local ${GOODBYTECOUNT}"
-  abndalrt.ksh ftp_put
-fi
-rm -f ${SOURCE_FILE_CRLF}
+FTPBYTECOUNT="$(cat ${FTP_LOGFILE} | grep 'Information returned by' | awk '{print $1}')"
 
 fi
 
