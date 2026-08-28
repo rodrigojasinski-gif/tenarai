@@ -81,6 +81,24 @@
   ssh does a pubkey partial-auth that derails the module's password expect -> hangs at the prompt.
   Fix per host in `~/.ssh/config`: `PubkeyAuthentication no` + `PreferredAuthentications password`.
 
+## CHAR -> VARCHAR2 regression breaks space-padded DELETE (+100 abend)
+- Symptom: a COBOL update program (e.g. `mptz026`) abends with `SQLCODE +100 / NO ROWS FOUND`
+  in a DELETE paragraph (`R2300-DELETE-PART` -> `PKG_PART.P_PART_DEL_01`), even though the row exists.
+- Cause: a char column (e.g. `PART.PART_NUMBER`) was **CHAR** on AIX (blank-padded compares) and is
+  **VARCHAR2** on the new DB (`DUMP` shows `Typ=1 Len=11`, no trailing spaces). The COBOL passes the
+  part number from a **fixed-width field** (space-padded) into the delete; VARCHAR2 uses non-blank-padded
+  comparison, so `'K1D5-V3-540'` != `'K1D5-V3-540      '` -> 0 rows -> +100.
+- Why only DELETE fails: UPDATE path uses the value read **from the DB** (`RS-DB-PART-NUM`, already
+  trimmed) so it matches; only the DELETE/discontinue/supersession path uses the **transaction** value
+  (padded, `TR-OLD-PART-NUM`). So updates work and only discontinue deletes blow up.
+- Proof (no LogMiner needed): `SELECT COUNT(*) ... WHERE part_number='K1D5-V3-540'` = 1, but
+  `... WHERE part_number=RPAD('K1D5-V3-540',25)` = 0. Records are correctly aligned (price column lines
+  up for short and long part numbers) -> not a merge/CRLF/alignment problem.
+- Fix is DB-side (not `.ksh`): make `P_PART_DEL_01` `RTRIM` the part number in its WHERE (restores
+  pre-migration behavior, fixes all OEMs), or revert the column to CHAR. Do NOT just tolerate +100 —
+  that would skip the discontinue. Likely latent in other procs comparing char columns to COBOL fixed
+  fields if the cutover changed CHAR->VARCHAR2 broadly.
+
 ## Email recipient separator (always review this)
 - **`mailx` on RHEL does NOT accept `;` between recipients** — it needs **space** (or comma).
   The old AIX/Novell scripts used `;` (e.g. `MAIL_RECIP="a@x.com; b@x.com"`), which breaks on RHEL.
