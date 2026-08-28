@@ -1,0 +1,2364 @@
+    Start  mptr451   Wed May 27 23:11:48 PDT 2026
+
+
+**********************************************************************************
+Restart Step was NOT included in the job execution. Job will run from the beginning.
+**********************************************************************************
+
+
+
+
+**************************************************************************************************************
+Calling:  oem_upd_prep.ksh    Datetime: 05/27/26 23:11:48   Script: /tmp/mptr451_oem_upd_prep.ksh_run
+**************************************************************************************************************
+
+
+trap 'oem_abndalrt.ksh $?' err
++ trap oem_abndalrt.ksh $? err
+export PROCNAME=$(basename $0 .ksh_run)
++ basename /tmp/mptr451_oem_upd_prep.ksh_run .ksh_run
++ export PROCNAME=mptr451_oem_upd_prep
+#**********************************************************************************************
+#  Build environment variables for the job (based on jobname)
+#**********************************************************************************************
+. oem_job.ksh        
++ . oem_job.ksh
++ echo RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $
+RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $
++ trap oem_abndalrt.ksh $? err
++ + cat /prod/race/oem/prm/zmptpass.prm
+MPTUSERID=racejob/q1w2e3r4
++ + basename /prod/race/oem/log/mptr451_20260527231148.log
+LOGFILE=mptr451_20260527231148.log
++ REFORMATJOB=mptr451
++ UPDATEJOB=mptr451
++ WORKFILE=mptr451_oem_job.tmp
++ sqlplus -s
++ 0<<
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr451',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr451_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_LOG_DIR',                                       p_log_filename  => 'mptr451_20260527231148.log');
+QUIT;
+2>& 1
+
+mptr450,mptr451,035,CA,MAZ,maz,zmpt451a,035,CA,maz_ca,mazca,mpt451e,pkg_oem_ref_021,,N,N,N,oem_ref_mptr450_maz_merge.ksh,U,Y,
+
++ export WORKFILE=/prod/race/oem/tmp/mptr451_oem_job.tmp
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f1 -d,
++ export REFORMATJOB=mptr450
++ [ -z mptr450 ]
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f2 -d,
++ export UPDATEJOB=mptr451
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f3 -d,
++ export JOBOEM=035
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f4 -d,
++ export JOBCTRY=CA
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f5 -d,
++ export JOBOEMNAME=MAZ
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f6 -d,
++ export OEMABBRLOWER=maz
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f7 -d,
++ export JOBPARM=zmpt451a
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f8 -d,
++ export FORMATOEM=035
++ cut -f9 -d,
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ export FORMATCTRY=CA
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f10 -d,
++ export JOBFILE_OEMCTRY=maz_ca
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f11 -d,
++ export REPORTSUFFIX=mazca
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f12 -d,
++ export REVERSE_SUPER_JOBPARM=mpt451e
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f13 -d,
++ export PACKAGE_NAME_1=pkg_oem_ref_021
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f14 -d,
++ export PACKAGE_NAME_2=
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f15 -d,
++ export DUPLICATE_PARTS_EXPECTED_FLAG=N
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f16 -d,
++ export REFORMAT_BUILDS_RTRANS_FLAG=N
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f17 -d,
++ export OBSOLETE_JOB_FLAG=N
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f18 -d,
++ export PREPROCESS_SCRIPT_NAME=oem_ref_mptr450_maz_merge.ksh
++ sqlplus -s
++ 0<<
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr451',                                                           p_log_directory => 'RACE_OEM_LOG_DIR',                                                        p_log_filename  => 'mptr451_20260527231148.log',                                                           p_debug_level   => '0');
+QUIT;
+2>& 1
+
+Start mptr451 pkg_oem_ref_utilities.p_check_gtmp_indexes
+
+
+ End  mptr451 pkg_oem_ref_utilities.p_check_gtmp_indexes
+#**********************************************************************************************
+#STEP Step001R
+  export STEPNAME=Step001R
++ export STEPNAME=Step001R
+  echo "    Start " ${STEPNAME} "    "$(date)
++ date
++ echo     Start  Step001R     Wed May 27 23:11:49 PDT 2026
+    Start  Step001R     Wed May 27 23:11:49 PDT 2026
+  oem_job_status_update.ksh "R" "${STEPNAME} pkg_oem_upd_utilities.p_electronic_balancing_check"
++ oem_job_status_update.ksh R Step001R pkg_oem_upd_utilities.p_electronic_balancing_check
+  #********************************************************************************************
+  # Check for correct a) Effective Date,b) Balance Comment,c) Verified Date,d) Replacement Flag
+  #********************************************************************************************
+
+#----------------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_upd_utilities.p_electronic_balancing_check(p_jobtype         => 'U',            \
+                                                            p_jobname         => '${JOBNAME}',   \
+                                                            p_log_directory   => '${OBJ_LOGDIR}',\
+                                                            p_log_filename    => '${LOGFILE}',   \
+                                                            p_input_directory => '${OBJ_PRMDIR}',\
+                                                            p_input_filename  => '${JOBPARM}.prm');
+QUIT;
+%
++ sqlplus -s
++ 0<<
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_upd_utilities.p_electronic_balancing_check(p_jobtype         => 'U',                                                                        p_jobname         => 'mptr451',                                                               p_log_directory   => 'RACE_OEM_LOG_DIR',                                                            p_log_filename    => 'mptr451_20260527231148.log',                                                               p_input_directory => 'RACE_OEM_PRM_DIR',                                                            p_input_filename  => 'zmpt451a.prm');
+QUIT;
+2>& 1
+#----------------------------------------------------------------------------------------------
+
+#**********************************************************************************************
+# END
+#**********************************************************************************************
+
+
+**************************************************************************************************************
+Finished: oem_upd_prep.ksh    Datetime: 05/27/26 23:11:49   Script: /tmp/mptr451_oem_upd_prep.ksh_run
+**************************************************************************************************************
+
+
+
+
+**********************************************************************************
+Restart Step was NOT included in the job execution. Job will run from the beginning.
+**********************************************************************************
+
+
+
+
+**************************************************************************************************************
+Calling:  oem_upd.ksh    Datetime: 05/27/26 23:11:49   Script: /tmp/mptr451_oem_upd.ksh_run
+**************************************************************************************************************
+
+
+RCS : oem_upd.ksh,v 1.19 2024/08/05 21:19:07 pg2697 Exp $
+print ProcessId = $$
++ print ProcessId = 17891884
+ProcessId = 17891884
+#*************************************************************************************************
+# PROCNAME oem_upd.ksh   OEM Update Job Script
+#*************************************************************************************************
+trap 'oem_abndalrt.ksh $?' err
++ trap oem_abndalrt.ksh $? err
+export PROCNAME=$(basename $0 .ksh_run)
++ basename /tmp/mptr451_oem_upd.ksh_run .ksh_run
++ export PROCNAME=mptr451_oem_upd
+export MPTUSERID=`cat ${RACE}/prm/zmptpass.prm`
++ cat /prod/race/oem/prm/zmptpass.prm
++ export MPTUSERID=racejob/q1w2e3r4
+export LOGFILE=$(basename ${JOBLOGNAME})
++ basename /prod/race/oem/log/mptr451_20260527231148.log
++ export LOGFILE=mptr451_20260527231148.log
+#*************************************************************************************************
+#  Build environment variables for the job (based on jobname)
+#*************************************************************************************************
+. oem_job.ksh
++ . oem_job.ksh
++ echo RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $
+RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $
++ trap oem_abndalrt.ksh $? err
++ + cat /prod/race/oem/prm/zmptpass.prm
+MPTUSERID=racejob/q1w2e3r4
++ + basename /prod/race/oem/log/mptr451_20260527231148.log
+LOGFILE=mptr451_20260527231148.log
++ REFORMATJOB=mptr451
++ UPDATEJOB=mptr451
++ WORKFILE=mptr451_oem_job.tmp
++ sqlplus -s
++ 0<<
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr451',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr451_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_LOG_DIR',                                       p_log_filename  => 'mptr451_20260527231148.log');
+QUIT;
+2>& 1
+
+mptr450,mptr451,035,CA,MAZ,maz,zmpt451a,035,CA,maz_ca,mazca,mpt451e,pkg_oem_ref_021,,N,N,N,oem_ref_mptr450_maz_merge.ksh,U,Y,
+
++ export WORKFILE=/prod/race/oem/tmp/mptr451_oem_job.tmp
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f1 -d,
++ export REFORMATJOB=mptr450
++ [ -z mptr450 ]
++ cut -f2 -d,
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ export UPDATEJOB=mptr451
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f3 -d,
++ export JOBOEM=035
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f4 -d,
++ export JOBCTRY=CA
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f5 -d,
++ export JOBOEMNAME=MAZ
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f6 -d,
++ export OEMABBRLOWER=maz
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f7 -d,
++ export JOBPARM=zmpt451a
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f8 -d,
++ export FORMATOEM=035
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f9 -d,
++ export FORMATCTRY=CA
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f10 -d,
++ export JOBFILE_OEMCTRY=maz_ca
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f11 -d,
++ export REPORTSUFFIX=mazca
++ cut -f12 -d,
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ export REVERSE_SUPER_JOBPARM=mpt451e
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f13 -d,
++ export PACKAGE_NAME_1=pkg_oem_ref_021
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f14 -d,
++ export PACKAGE_NAME_2=
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f15 -d,
++ export DUPLICATE_PARTS_EXPECTED_FLAG=N
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f16 -d,
++ export REFORMAT_BUILDS_RTRANS_FLAG=N
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f17 -d,
++ export OBSOLETE_JOB_FLAG=N
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f18 -d,
++ export PREPROCESS_SCRIPT_NAME=oem_ref_mptr450_maz_merge.ksh
++ sqlplus -s
++ 0<<
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr451',                                                           p_log_directory => 'RACE_OEM_LOG_DIR',                                                        p_log_filename  => 'mptr451_20260527231148.log',                                                           p_debug_level   => '0');
+QUIT;
+2>& 1
+
+Start mptr451 pkg_oem_ref_utilities.p_check_gtmp_indexes
+
+
+ End  mptr451 pkg_oem_ref_utilities.p_check_gtmp_indexes
+. oem_job_notify.ksh
++ . oem_job_notify.ksh
++ echo RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $
+RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $
++ trap oem_abndalrt.ksh $? err
++ + cat /prod/race/oem/prm/zmptpass.prm
+MPTUSERID=racejob/q1w2e3r4
++ + basename /prod/race/oem/log/mptr451_20260527231148.log
+LOGFILE=mptr451_20260527231148.log
++ WORKFILE=mptr451_oem_job_notify.tmp
++ sqlplus -s
++ 0<<
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_notify.p_oem_job_notify_sel_01(p_job  =>          'mptr451',                                                        p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                     p_tmp_filename  => 'mptr451_oem_job_notify.tmp',                                                       p_log_directory => 'RACE_OEM_LOG_DIR',                                                     p_log_filename  => 'mptr451_20260527231148.log');
+QUIT;
+2>& 1
+
++ WORKFILE=/prod/race/oem/tmp/mptr451_oem_job_notify.tmp
++ + cut -f2 -d^
++ cat /prod/race/oem/tmp/mptr451_oem_job_notify.tmp
+SEND_EMAIL_FLAG=
++ + cat /prod/race/oem/tmp/mptr451_oem_job_notify.tmp
++ cut -f3 -d^
+EMAIL_ADDRESS_LIST=
++ + cat /prod/race/oem/tmp/mptr451_oem_job_notify.tmp
++ cut -f4 -d^
+EMAIL_BODY=
++ + cat /prod/race/oem/tmp/mptr451_oem_job_notify.tmp
++ cut -f5 -d^
+RESET_SEND_EMAIL_FLAG=
++ [ -z  ]
++ echo Notification NOT Required
+Notification NOT Required
++ echo  
+ 
+#*************************************************************************************************
+
+#STEP Step010R
+  export STEPNAME=Step010R
++ export STEPNAME=Step010R
+  echo "    Start " ${STEPNAME} "    "$(date)
++ date
++ echo     Start  Step010R     Wed May 27 23:11:49 PDT 2026
+    Start  Step010R     Wed May 27 23:11:49 PDT 2026
+  oem_job_status_update.ksh "R" "${STEPNAME} Delete datasets"
++ oem_job_status_update.ksh R Step010R Delete datasets
+  #***************************************************************************************
+  #  Step010R - Delete datasets that will be created in future steps
+  #***************************************************************************************
+  rm -f ${RACE}/dat/${JOBNAME}*.tmp*
++ rm -f /prod/race/oem/dat/mptr451*.tmp*
+  rm -f ${RACE}/tmp/${JOBNAME}*
++ rm -f /prod/race/oem/tmp/mptr451_oem_job.tmp /prod/race/oem/tmp/mptr451_oem_job_notify.tmp
+  
+
+#*****************************************************************************************
+#  Steps 041 thru 085 are ONLY run for jobs which require "Reverse Analysis" processing. 
+#*****************************************************************************************
+
+#STEP Step041R
+  export STEPNAME=Step041R
++ export STEPNAME=Step041R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step041R 05/27/26 23:11:49  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step041R 05/27/26 23:11:49  <--- START
+
+
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} Executes pkg_oem_upd_rtrans_1_generate - Supersession Analysis Program"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} Executes pkg_oem_upd_rtrans_1_generate - Supersession Analysis Program"
+    #*********************************************************************************************
+    #  Step041R - Executes pkg_oem_upd_rtrans_1_generate
+    #             Note:  The HTRANS file doesn't go anywhere.
+    #*********************************************************************************************    
+    NTRANSIN=${REFORMATJOB}_ntrans.tmp
+    RTRANSOUT=${JOBNAME}_rtrans_1_generate.tmp
+    HTRANSOUT=${JOBNAME}_htrans_1_generate.tmp  
+    REPORT_FILENAME=${JOBNAME}b_sana${REPORTSUFFIX}.rpt
+
+#----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 132;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_upd_rtrans_1_generate.p_main_procedure(p_update_job           => '${JOBNAME}',          \
+                                                        p_log_directory        => '${OBJ_LOGDIR}',       \
+                                                        p_log_filename         => '${LOGFILE}',          \
+                                                        p_ntrans_in_directory  => '${OBJ_DATDIR}',       \
+                                                        p_ntrans_in_filename   => '${NTRANSIN}',         \
+                                                        p_rtrans_out_directory => '${OBJ_DATDIR}',       \
+                                                        p_rtrans_out_filename  => '${RTRANSOUT}',        \
+                                                        p_htrans_out_directory => '${OBJ_DATDIR}',       \
+                                                        p_htrans_out_filename  => '${HTRANSOUT}',        \
+                                                        p_report_directory     => '${OBJ_RPTDIR}',       \
+                                                        p_report_filename      => '${REPORT_FILENAME}',  \
+                                                        p_debug_level          => '1',                   \
+                                                        p_dbms_profiler_flag   => '${RACE_DBMS_PROFILER_FLAG}');
+QUIT;
+%
+#----------------------------------------------------------------------------------------
+    
+    REPORT=$(basename $REPORT_FILENAME .rpt) 
+    mv ${RACE}/rpt/${REPORT_FILENAME} ${RACE}/rpt/${REPORT}_$(date +'%C%y%m%d%H%M%S').rpt
+    email_rpt.ksh "${JOBNAME}b"
+    rpt_log_retention.ksh "${JOBNAME}b" 
+    
+  fi
++ [ -z mpt451e ]
++ oem_job_status_update.ksh R Step041R Executes pkg_oem_upd_rtrans_1_generate - Supersession Analysis Program
++ NTRANSIN=mptr450_ntrans.tmp
++ RTRANSOUT=mptr451_rtrans_1_generate.tmp
++ HTRANSOUT=mptr451_htrans_1_generate.tmp
++ REPORT_FILENAME=mptr451b_sanamazca.rpt
++ sqlplus -s
++ 0<<
+racejob/q1w2e3r4
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 132;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_upd_rtrans_1_generate.p_main_procedure(p_update_job           => 'mptr451',                                                                  p_log_directory        => 'RACE_OEM_LOG_DIR',                                                               p_log_filename         => 'mptr451_20260527231148.log',                                                                  p_ntrans_in_directory  => 'RACE_OEM_DAT_DIR',                                                               p_ntrans_in_filename   => 'mptr450_ntrans.tmp',                                                                 p_rtrans_out_directory => 'RACE_OEM_DAT_DIR',                                                               p_rtrans_out_filename  => 'mptr451_rtrans_1_generate.tmp',                                                                p_htrans_out_directory => 'RACE_OEM_DAT_DIR',                                                               p_htrans_out_filename  => 'mptr451_htrans_1_generate.tmp',                                                                p_report_directory     => 'RACE_OEM_RPT_DIR',                                                               p_report_filename      => 'mptr451b_sanamazca.rpt',                                                          p_debug_level          => '1',                                                                           p_dbms_profiler_flag   => 'N');
+QUIT;
+2>& 1
+
+PL/SQL procedure successfully completed.
+
++ + basename mptr451b_sanamazca.rpt .rpt
+REPORT=mptr451b_sanamazca
++ date +%C%y%m%d%H%M%S
++ mv /prod/race/oem/rpt/mptr451b_sanamazca.rpt /prod/race/oem/rpt/mptr451b_sanamazca_20260527231231.rpt
++ email_rpt.ksh mptr451b
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451b_sanamazca_20260527231231.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:12:31 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr451b is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
++ rpt_log_retention.ksh mptr451b
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451b
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:12:31 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451b_sanamazca_20260225225148.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+
+#STEP Step050R
+  export STEPNAME=Step050R
++ export STEPNAME=Step050R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step050R 05/27/26 23:12:31  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step050R 05/27/26 23:12:31  <--- START
+
+
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} Sort RTRANS by old part number and new part number"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} Sort RTRANS by old part number and new part number"
+    #*********************************************************************************************
+    #  Step050R - Sort RTRANS by old part number, new part number, reason
+    #             and create backup files
+    #*********************************************************************************************
+    SORTIN_FILE=${RACE}/dat/${JOBNAME}_rtrans_1_generate.tmp
+    SORTOUT_FILE=${RACE}/dat/${JOBNAME}_rtrans_1_generate_sort.tmp
+    #   +----------|-----------|-----------|
+    #   | OLD PART | NEW PART  | REASON    |
+    #   +----------|-----------|-----------|
+    sort -k1.7,1.31 -k1.32,1.56 -k1.67,1.91r -o ${SORTOUT_FILE} ${SORTIN_FILE}
+    mv               ${RACE}/dat/${JOBNAME}_rtrans_1_generate_sort.tmp \
+       $(setgdg.ksh "${RACE}/dat/${JOBNAME}_rtrans_1_generate_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
+    
+  fi
++ [ -z mpt451e ]
++ oem_job_status_update.ksh R Step050R Sort RTRANS by old part number and new part number
++ SORTIN_FILE=/prod/race/oem/dat/mptr451_rtrans_1_generate.tmp
++ SORTOUT_FILE=/prod/race/oem/dat/mptr451_rtrans_1_generate_sort.tmp
++ sort -k1.7,1.31 -k1.32,1.56 -k1.67,1.91r -o /prod/race/oem/dat/mptr451_rtrans_1_generate_sort.tmp /prod/race/oem/dat/mptr451_rtrans_1_generate.tmp
++ setgdg.ksh /prod/race/oem/dat/mptr451_rtrans_1_generate_maz_ca.dat(+1) NEW 3
++ mv /prod/race/oem/dat/mptr451_rtrans_1_generate_sort.tmp /prod/race/oem/dat/mptr451_rtrans_1_generate_maz_ca.dat.g97
+
+
+#STEP Step060R
+  export STEPNAME=Step060R
++ export STEPNAME=Step060R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step060R 05/27/26 23:12:31  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step060R 05/27/26 23:12:31  <--- START
+
+
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo " Skipping ${STEPNAME} Builds Combo File for loading Global Temp Table"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} Builds Combo File for loading Global Temp Table"
+    #*********************************************************************************************
+    #  Step060R -                              Builds Combo File for loading Global Temp Table
+    #             mpt_elim_dup_tran.awk keeps ONE transaction per old part number in the above order
+    #*********************************************************************************************
+    SORTIN_FILE="${RACE}/dat/${REFORMATJOB}_atrans.tmp \
+                 ${RACE}/dat/${REFORMATJOB}_ctrans.tmp \
+                 ${RACE}/dat/${REFORMATJOB}_ntrans.tmp \
+                 ${RACE}/dat/${REFORMATJOB}_ptrans.tmp "
+    SORTOUT_FILE=${RACE}/dat/${JOBNAME}_trans_comb.tmp
+    #   +----------+               +------------------------------------------------------------+
+    #   | OLD PART |               |Keep ONE Transaction per OLD Part                           |
+    #   +----------+               +------------------------------------------------------------+
+    sort -k1.7,1.31 ${SORTIN_FILE} | awk -f ${RACE}/bin/mpt_elim_dup_tran.awk > ${SORTOUT_FILE}
+  fi
++ [ -z mpt451e ]
++ oem_job_status_update.ksh R Step060R Builds Combo File for loading Global Temp Table
++ SORTIN_FILE=/prod/race/oem/dat/mptr450_atrans.tmp                  /prod/race/oem/dat/mptr450_ctrans.tmp                  /prod/race/oem/dat/mptr450_ntrans.tmp                  /prod/race/oem/dat/mptr450_ptrans.tmp 
++ SORTOUT_FILE=/prod/race/oem/dat/mptr451_trans_comb.tmp
++ sort -k1.7,1.31 /prod/race/oem/dat/mptr450_atrans.tmp /prod/race/oem/dat/mptr450_ctrans.tmp /prod/race/oem/dat/mptr450_ntrans.tmp /prod/race/oem/dat/mptr450_ptrans.tmp
++ awk -f /prod/race/oem/bin/mpt_elim_dup_tran.awk
++ 1> /prod/race/oem/dat/mptr451_trans_comb.tmp
+
+
+#STEP Step080R
+  export STEPNAME=Step080R
++ export STEPNAME=Step080R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step080R 05/27/26 23:12:34  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step080R 05/27/26 23:12:34  <--- START
+
+
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} Delete data file"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} Delete data file"
+    #*********************************************************************************************
+    #  Step080R -  Deletes rtrans_2 file
+    #*********************************************************************************************
+    rm -f ${RACE}/dat/${JOBNAME}_rtrans_2_adjust.tmp
+  fi
++ [ -z mpt451e ]
++ oem_job_status_update.ksh R Step080R Delete data file
++ rm -f /prod/race/oem/dat/mptr451_rtrans_2_adjust.tmp
+
+
+#STEP Step085R
+  export STEPNAME=Step085R
++ export STEPNAME=Step085R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step085R 05/27/26 23:12:34  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step085R 05/27/26 23:12:34  <--- START
+
+
+  if [ -z "${REVERSE_SUPER_JOBPARM}" ]
+  then
+    echo "                Skipping ${STEPNAME} - pkg_oem_upd_rtrans_2_adjust"
+  else
+    oem_job_status_update.ksh "R" "${STEPNAME} - pkg_oem_upd_rtrans_2_adjust"
+    #*********************************************************************************************
+    #  Step085R - Executes pkg_oem_upd_rtrans_2_adjust - Reverse Super Pre-Processor Program
+    #*********************************************************************************************
+    RTRANS_FILEPATH=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_rtrans_1_generate_${JOBFILE_OEMCTRY}.dat(0)")    
+    RTRANSIN=$( basename ${RTRANS_FILEPATH} )     
+    NON_RTRANSIN=${JOBNAME}_trans_comb.tmp
+    RTRANSOUT=${JOBNAME}_rtrans_2_adjust.tmp   
+    REPORT_FILENAME=${JOBNAME}r_spre${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
+
+#----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 132;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_upd_rtrans_2_adjust.p_main_procedure(p_update_job              => '${JOBNAME}',          \
+                                                      p_log_directory           => '${OBJ_LOGDIR}',       \
+                                                      p_log_filename            => '${LOGFILE}',          \
+                                                      p_rtrans_in_directory     => '${OBJ_DATDIR}',       \
+                                                      p_rtrans_in_filename      => '${RTRANSIN}',         \
+                                                      p_non_rtrans_in_directory => '${OBJ_DATDIR}',       \
+                                                      p_non_rtrans_in_filename  => '${NON_RTRANSIN}',     \
+                                                      p_rtrans_out_directory    => '${OBJ_DATDIR}',       \
+                                                      p_rtrans_out_filename     => '${RTRANSOUT}',        \
+                                                      p_report_directory        => '${OBJ_RPTDIR}',       \
+                                                      p_report_filename         => '${REPORT_FILENAME}',  \
+                                                      p_debug_level             => '9', \
+                                                      p_dbms_profiler_flag      => '${RACE_DBMS_PROFILER_FLAG}');                            
+QUIT;
+%
+#----------------------------------------------------------------------------------------
+   
+    email_rpt.ksh "${JOBNAME}r" 
+    rpt_log_retention.ksh "${JOBNAME}r" 
+  fi
++ [ -z mpt451e ]
++ oem_job_status_update.ksh R Step085R - pkg_oem_upd_rtrans_2_adjust
++ + setgdg.ksh /prod/race/oem/dat/mptr451_rtrans_1_generate_maz_ca.dat(0)
+RTRANS_FILEPATH=/prod/race/oem/dat/mptr451_rtrans_1_generate_maz_ca.dat.g97
++ + basename /prod/race/oem/dat/mptr451_rtrans_1_generate_maz_ca.dat.g97
+RTRANSIN=mptr451_rtrans_1_generate_maz_ca.dat.g97
++ NON_RTRANSIN=mptr451_trans_comb.tmp
++ RTRANSOUT=mptr451_rtrans_2_adjust.tmp
++ + date +%C%y%m%d%H%M%S
+REPORT_FILENAME=mptr451r_spremazca_20260527231234.rpt
++ sqlplus -s
++ 0<<
+racejob/q1w2e3r4
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 132;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_upd_rtrans_2_adjust.p_main_procedure(p_update_job              => 'mptr451',                                                                p_log_directory           => 'RACE_OEM_LOG_DIR',                                                             p_log_filename            => 'mptr451_20260527231148.log',                                                                p_rtrans_in_directory     => 'RACE_OEM_DAT_DIR',                                                             p_rtrans_in_filename      => 'mptr451_rtrans_1_generate_maz_ca.dat.g97',                                                               p_non_rtrans_in_directory => 'RACE_OEM_DAT_DIR',                                                             p_non_rtrans_in_filename  => 'mptr451_trans_comb.tmp',                                                           p_rtrans_out_directory    => 'RACE_OEM_DAT_DIR',                                                             p_rtrans_out_filename     => 'mptr451_rtrans_2_adjust.tmp',                                                              p_report_directory        => 'RACE_OEM_RPT_DIR',                                                             p_report_filename         => 'mptr451r_spremazca_20260527231234.rpt',                                                        p_debug_level             => '9',                                                       p_dbms_profiler_flag      => 'N');                            
+QUIT;
+2>& 1
+
+PL/SQL procedure successfully completed.
+
++ email_rpt.ksh mptr451r
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451r_spremazca_20260527231234.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:13:05 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr451r is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
++ rpt_log_retention.ksh mptr451r
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451r
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:13:05 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451r_spremazca_20251125013900.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+
+#****************************************************************************************************
+# End of Steps 041 thru 085 which are ONLY run for jobs which require "Reverse Analysis" processing. 
+#****************************************************************************************************
+
+
+#STEP Step105R
+  export STEPNAME=Step105R
++ export STEPNAME=Step105R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step105R 05/27/26 23:13:05  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step105R 05/27/26 23:13:05  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Check for rtrans file"
++ oem_job_status_update.ksh R Step105R Check for rtrans file
+  #*********************************************************************************************
+  #  Step105R - Check for rtrans file
+  #             If not found, create it (there are some OEMs which do not send rtrans
+  #             and do not run the Reverse Analysis steps which would create rtrans.)
+  #*********************************************************************************************
+  REFORMAT_RTRANS_FILE=${RACE}/dat/${REFORMATJOB}_rtrans.tmp
++ REFORMAT_RTRANS_FILE=/prod/race/oem/dat/mptr450_rtrans.tmp
+  UPDATE_RTRANS_FILE=${RACE}/dat/${JOBNAME}_rtrans_2_adjust.tmp
++ UPDATE_RTRANS_FILE=/prod/race/oem/dat/mptr451_rtrans_2_adjust.tmp
+  ##############################################################################################
+  #  Hey, something is wrong if an rtrans was created by
+  #  BOTH the Reformat Program AND the Supersession Analysis program.
+  ##############################################################################################
+  if [ -e ${REFORMAT_RTRANS_FILE} ]
+  then
+    if [ -e ${UPDATE_RTRANS_FILE} ]
+    then
+      oem_abndalrt.ksh oem_upd_TWO_rtrans_files_found
+    fi
+  fi
++ [ -e /prod/race/oem/dat/mptr450_rtrans.tmp ]
+  ##############################################################################################
+  #  Use the Reformat RTRANS if found -- copy it to the Update Job's JOBNAME
+  #  Use the Update RTRANS if found, otherwise, create one.
+  ###############################################################################################
+  if [ -e ${REFORMAT_RTRANS_FILE} ]
+  then
+    echo "Using RTRANS created by Reformat Program(s): ${PACKAGE_NAME_1}  ${PACKAGE_NAME_2}"
+    mv ${REFORMAT_RTRANS_FILE} ${UPDATE_RTRANS_FILE}
+  else
+    if [ -e ${UPDATE_RTRANS_FILE} ]
+    then
+      echo "Using RTRANS created by Supersession Analysis/Reverse Super Pre-Processor"
+    else
+      echo "Creating an empty RTRANS file"
+      touch ${UPDATE_RTRANS_FILE}
+    fi
+  fi
++ [ -e /prod/race/oem/dat/mptr450_rtrans.tmp ]
++ [ -e /prod/race/oem/dat/mptr451_rtrans_2_adjust.tmp ]
++ echo Using RTRANS created by Supersession Analysis/Reverse Super Pre-Processor
+Using RTRANS created by Supersession Analysis/Reverse Super Pre-Processor
+
+
+#STEP Step110R
+  export STEPNAME=Step110R
++ export STEPNAME=Step110R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step110R 05/27/26 23:13:05  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step110R 05/27/26 23:13:05  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Sorts R TRANS by: SUPR-EFF-DT Descend and OLD PART NUMBER Ascend"
++ oem_job_status_update.ksh R Step110R Sorts R TRANS by: SUPR-EFF-DT Descend and OLD PART NUMBER Ascend
+  #*********************************************************************************************
+  #   Step110R - Sorts R TRANS by: SUPR-EFF-DT Descend and OLD PART NUMBER Ascend.
+  #              Save 3 generations reformat RTRANS.
+  #*********************************************************************************************
+  SORT_FILEIN=${RACE}/dat/${JOBNAME}_rtrans_2_adjust.tmp
++ SORT_FILEIN=/prod/race/oem/dat/mptr451_rtrans_2_adjust.tmp
+  SORT_FILEOUT=${RACE}/dat/${JOBNAME}_rtrans_2_adjust_sort.tmp
++ SORT_FILEOUT=/prod/race/oem/dat/mptr451_rtrans_2_adjust_sort.tmp
+  #   +------------+------------+------------+----------+
+  #   |            |    YYYY    |   MMDD     | OLD PART |
+  #   +------------+------------+------------+----------+
+  sort -k1.67,1.74r -k1.63,1.66r -k1.57,1.61r -k1.7,1.31 -o ${SORT_FILEOUT} ${SORT_FILEIN}
++ sort -k1.67,1.74r -k1.63,1.66r -k1.57,1.61r -k1.7,1.31 -o /prod/race/oem/dat/mptr451_rtrans_2_adjust_sort.tmp /prod/race/oem/dat/mptr451_rtrans_2_adjust.tmp
+  mv               ${RACE}/dat/${JOBNAME}_rtrans_2_adjust_sort.tmp \
+     $(setgdg.ksh "${RACE}/dat/${JOBNAME}_rtrans_2_adjust_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
++ setgdg.ksh /prod/race/oem/dat/mptr451_rtrans_2_adjust_maz_ca.dat(+1) NEW 3
++ mv /prod/race/oem/dat/mptr451_rtrans_2_adjust_sort.tmp /prod/race/oem/dat/mptr451_rtrans_2_adjust_maz_ca.dat.g97
+
+
+#STEP Step120R
+  export STEPNAME=Step120R
++ export STEPNAME=Step120R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step120R 05/27/26 23:13:06  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step120R 05/27/26 23:13:06  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} mptz013 - Reverse Supersession Update Program"
++ oem_job_status_update.ksh R Step120R mptz013 - Reverse Supersession Update Program
+  #*********************************************************************************************
+  #  Step120R - Execute mptz013 - Reverse Supersession Update Program
+  #*********************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
++ export DD_PARMSIN=/prod/race/oem/prm/zmpt451a.prm
+  export DD_TRANSIN=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_rtrans_2_adjust_${JOBFILE_OEMCTRY}.dat(0)")
++ setgdg.ksh /prod/race/oem/dat/mptr451_rtrans_2_adjust_maz_ca.dat(0)
++ export DD_TRANSIN=/prod/race/oem/dat/mptr451_rtrans_2_adjust_maz_ca.dat.g97
+  export DD_PARTSFL=${RACE}/tmp/${JOBNAME}_parts_file.tmp
++ export DD_PARTSFL=/prod/race/oem/tmp/mptr451_parts_file.tmp
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}d_rupd${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_CNTLRPT=/prod/race/oem/rpt/mptr451d_rupdmazca_20260527231306.rpt
+ 
+  mptz013 2>&1
++ mptz013
++ 2>& 1
+Connected user(MFCONNECT) 
+AUDITLOG.DISABLE_UDStamp
+AUDITLOG.DISABLE_UpdateNonWipFix
+AUDITLOG.DISABLE_LOGGING
+
+    email_rpt.ksh "${JOBNAME}d"  
++ email_rpt.ksh mptr451d
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451d_rupdmazca_20260527231306.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:13:06 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr451d is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}d" 
++ rpt_log_retention.ksh mptr451d
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451d
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:13:06 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451d_rupdmazca_20260225225222.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+#STEP Step125R
+  export STEPNAME=Step125R
++ export STEPNAME=Step125R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step125R 05/27/26 23:13:06  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step125R 05/27/26 23:13:06  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Sorts N TRANS by: SUPR-EFF-DT (YYYY, MM/DD) Ascend"
++ oem_job_status_update.ksh R Step125R Sorts N TRANS by: SUPR-EFF-DT (YYYY, MM/DD) Ascend
+  #*********************************************************************************************
+  # Step125R - Sorts N TRANS by: SUPR-EFF-DT (YYYY, MM/DD) Ascend
+  #*********************************************************************************************
+  SORT_FILEIN=${RACE}/dat/${REFORMATJOB}_ntrans.tmp
++ SORT_FILEIN=/prod/race/oem/dat/mptr450_ntrans.tmp
+  SORT_FILEOUT=${RACE}/dat/${JOBNAME}_ntrans_sort.tmp
++ SORT_FILEOUT=/prod/race/oem/dat/mptr451_ntrans_sort.tmp
+  #   +-----------|-----------|
+  #   |    YYYY   |   MMDD    |
+  #   +-----------|-----------|
+  sort -k1.63,1.66 -k1.57,1.61 -o ${SORT_FILEOUT} ${SORT_FILEIN}
++ sort -k1.63,1.66 -k1.57,1.61 -o /prod/race/oem/dat/mptr451_ntrans_sort.tmp /prod/race/oem/dat/mptr450_ntrans.tmp
+
+
+#STEP Step130R
+  export STEPNAME=Step130R
++ export STEPNAME=Step130R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step130R 05/27/26 23:13:07  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step130R 05/27/26 23:13:07  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz024 - Supersession Update Program"
++ oem_job_status_update.ksh R Step130R Executes mptz024 - Supersession Update Program
+  #*********************************************************************************************
+  # Step130R - Executes mptz024 - Supersession Update Program
+  #*********************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
++ export DD_PARMSIN=/prod/race/oem/prm/zmpt451a.prm
+  export DD_TRANSIN=${RACE}/dat/${JOBNAME}_ntrans_sort.tmp
++ export DD_TRANSIN=/prod/race/oem/dat/mptr451_ntrans_sort.tmp
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}f_supd${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_CNTLRPT=/prod/race/oem/rpt/mptr451f_supdmazca_20260527231307.rpt
+
+  mptz024 2>&1
++ mptz024
++ 2>& 1
+Connected user(MFCONNECT) 
+AUDITLOG.DISABLE_UDStamp
+AUDITLOG.DISABLE_UpdateNonWipFix
+AUDITLOG.DISABLE_LOGGING
+
+    email_rpt.ksh "${JOBNAME}f" 
++ email_rpt.ksh mptr451f
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451f_supdmazca_20260527231307.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:13:45 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr451f is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}f" 
++ rpt_log_retention.ksh mptr451f
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451f
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:13:45 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451f_supdmazca_20260225225224.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+    
+#STEP Step140R
+  export STEPNAME=Step140R
++ export STEPNAME=Step140R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step140R 05/27/26 23:13:45  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step140R 05/27/26 23:13:45  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz026 - Pricing update program"
++ oem_job_status_update.ksh R Step140R Executes mptz026 - Pricing update program
+  #*********************************************************************************************
+  # Step140R - Executes mptz026 - Pricing update program
+  #*********************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
++ export DD_PARMSIN=/prod/race/oem/prm/zmpt451a.prm
+  export DD_TRANSIN=${RACE}/dat/${REFORMATJOB}_ptrans.tmp
++ export DD_TRANSIN=/prod/race/oem/dat/mptr450_ptrans.tmp
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}h_pupd${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_CNTLRPT=/prod/race/oem/rpt/mptr451h_pupdmazca_20260527231345.rpt
+
+  mptz026 2>&1
++ mptz026
++ 2>& 1
+Connected user(MFCONNECT) 
+AUDITLOG.DISABLE_UDStamp
+AUDITLOG.DISABLE_UpdateNonWipFix
+AUDITLOG.DISABLE_LOGGING
+
+    email_rpt.ksh "${JOBNAME}h"
++ email_rpt.ksh mptr451h
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451h_pupdmazca_20260527231345.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:01 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr451h is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}h" 
++ rpt_log_retention.ksh mptr451h
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451h
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:01 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451h_pupdmazca_20260225225300.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+
+#STEP Step150R
+  export STEPNAME=Step150R
++ export STEPNAME=Step150R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}"  $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step150R 05/27/26 23:17:01  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step150R 05/27/26 23:17:01  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz025 - Discontinue Update Program"
++ oem_job_status_update.ksh R Step150R Executes mptz025 - Discontinue Update Program
+  #*********************************************************************************************
+  # Step150R - Executes mptz025 - Discontinue Update Program
+  #*********************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
++ export DD_PARMSIN=/prod/race/oem/prm/zmpt451a.prm
+  export DD_TRANSIN=${RACE}/dat/${REFORMATJOB}_dtrans.tmp
++ export DD_TRANSIN=/prod/race/oem/dat/mptr450_dtrans.tmp
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}g_dupd${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_CNTLRPT=/prod/race/oem/rpt/mptr451g_dupdmazca_20260527231701.rpt
+
+  mptz025 2>&1
++ mptz025
++ 2>& 1
+Connected user(MFCONNECT) 
+AUDITLOG.DISABLE_UDStamp
+AUDITLOG.DISABLE_UpdateNonWipFix
+AUDITLOG.DISABLE_LOGGING
+
+    email_rpt.ksh "${JOBNAME}g"  
++ email_rpt.ksh mptr451g
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451g_dupdmazca_20260527231701.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:01 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr451g is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}g" 
++ rpt_log_retention.ksh mptr451g
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451g
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:02 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451g_dupdmazca_20260225225609.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+    
+#STEP Step160R
+  export STEPNAME=Step160R
++ export STEPNAME=Step160R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step160R 05/27/26 23:17:02  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step160R 05/27/26 23:17:02  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes SORT - Sorts A TRANS by: OLD PART NUMBER"
++ oem_job_status_update.ksh R Step160R Executes SORT - Sorts A TRANS by: OLD PART NUMBER
+  #*********************************************************************************************
+  # Step160R - Executes SORT - Sorts A TRANS by: OLD PART NUMBER
+  #*********************************************************************************************
+  SORT_FILEIN=${RACE}/dat/${REFORMATJOB}_atrans.tmp
++ SORT_FILEIN=/prod/race/oem/dat/mptr450_atrans.tmp
+  SORT_FILEOUT=${RACE}/dat/${JOBNAME}_atrans_sort.tmp
++ SORT_FILEOUT=/prod/race/oem/dat/mptr451_atrans_sort.tmp
+  #   +----------+
+  #   | OLD PART |
+  #   +----------+
+  sort -k1.7,1.31 -o ${SORT_FILEOUT} ${SORT_FILEIN}
++ sort -k1.7,1.31 -o /prod/race/oem/dat/mptr451_atrans_sort.tmp /prod/race/oem/dat/mptr450_atrans.tmp
+
+
+#STEP Step170R
+  export STEPNAME=Step170R
++ export STEPNAME=Step170R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step170R 05/27/26 23:17:02  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step170R 05/27/26 23:17:02  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz022 - Assembly-to-Component Update Program"
++ oem_job_status_update.ksh R Step170R Executes mptz022 - Assembly-to-Component Update Program
+  #*********************************************************************************************
+  # Step170R - Executes mptz022 - Assembly-to-Component Update Program
+  #*********************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
++ export DD_PARMSIN=/prod/race/oem/prm/zmpt451a.prm
+  export DD_TRANSIN=${RACE}/dat/${JOBNAME}_atrans_sort.tmp
++ export DD_TRANSIN=/prod/race/oem/dat/mptr451_atrans_sort.tmp
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}c_aupd${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_CNTLRPT=/prod/race/oem/rpt/mptr451c_aupdmazca_20260527231702.rpt
+
+  mptz022 2>&1
++ mptz022
++ 2>& 1
+Connected user(MFCONNECT) 
+AUDITLOG.DISABLE_UDStamp
+AUDITLOG.DISABLE_UpdateNonWipFix
+AUDITLOG.DISABLE_LOGGING
+
+    email_rpt.ksh "${JOBNAME}c"
++ email_rpt.ksh mptr451c
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451c_aupdmazca_20260527231702.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:04 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr451c is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}c" 
++ rpt_log_retention.ksh mptr451c
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451c
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:04 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451c_aupdmazca_20260225225609.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+    
+#STEP Step180R
+  export STEPNAME=Step180R
++ export STEPNAME=Step180R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step180R 05/27/26 23:17:05  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step180R 05/27/26 23:17:05  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes SORT - Sorts C Trans by: NEW PART NUMBER"
++ oem_job_status_update.ksh R Step180R Executes SORT - Sorts C Trans by: NEW PART NUMBER
+  #*********************************************************************************************
+  # Step180R - Executes SORT - Sorts C Trans by: NEW PART NUMBER
+  #*********************************************************************************************
+  SORT_FILEIN=${RACE}/dat/${REFORMATJOB}_ctrans.tmp
++ SORT_FILEIN=/prod/race/oem/dat/mptr450_ctrans.tmp
+  SORT_FILEOUT=${RACE}/dat/${JOBNAME}_ctrans_sort.tmp
++ SORT_FILEOUT=/prod/race/oem/dat/mptr451_ctrans_sort.tmp
+  #   +-----------|
+  #   | NEW PART  |
+  #   +-----------|
+  sort -k1.32,1.56 -o ${SORT_FILEOUT} ${SORT_FILEIN}
++ sort -k1.32,1.56 -o /prod/race/oem/dat/mptr451_ctrans_sort.tmp /prod/race/oem/dat/mptr450_ctrans.tmp
+
+
+#STEP Step190R
+  export STEPNAME=Step190R
++ export STEPNAME=Step190R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step190R 05/27/26 23:17:05  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step190R 05/27/26 23:17:05  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz023 - Component-to-Assembly Update Program"
++ oem_job_status_update.ksh R Step190R Executes mptz023 - Component-to-Assembly Update Program
+  #*********************************************************************************************
+  # Step190R - Executes mptz023 - Component-to-Assembly Update Program
+  #***********************O*********************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
++ export DD_PARMSIN=/prod/race/oem/prm/zmpt451a.prm
+  export DD_TRANSIN=${RACE}/dat/${JOBNAME}_ctrans_sort.tmp
++ export DD_TRANSIN=/prod/race/oem/dat/mptr451_ctrans_sort.tmp
+  export DD_CNTLRPT=${RACE}/rpt/${JOBNAME}e_cupd${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_CNTLRPT=/prod/race/oem/rpt/mptr451e_cupdmazca_20260527231705.rpt
+
+  mptz023 2>&1
++ mptz023
++ 2>& 1
+Connected user(MFCONNECT) 
+AUDITLOG.DISABLE_UDStamp
+AUDITLOG.DISABLE_UpdateNonWipFix
+AUDITLOG.DISABLE_LOGGING
+
+    email_rpt.ksh "${JOBNAME}e"  
++ email_rpt.ksh mptr451e
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451e_cupdmazca_20260527231705.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:05 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr451e is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}e" 
++ rpt_log_retention.ksh mptr451e
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451e
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:05 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451e_cupdmazca_20260225225612.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+    
+#STEP Step200R
+  export STEPNAME=Step200R
++ export STEPNAME=Step200R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step200R 05/27/26 23:17:05  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step200R 05/27/26 23:17:05  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Executes mptz007 - Update Report Program"
++ oem_job_status_update.ksh R Step200R Executes mptz007 - Update Report Program
+  #*********************************************************************************************
+  # Step200R - Executes mptz007 - Update Report Program
+  #*********************************************************************************************
+  export DD_PARMSIN=${RACE}/prm/${JOBPARM}.prm
++ export DD_PARMSIN=/prod/race/oem/prm/zmpt451a.prm
+
+  export DD_RPT01=${RACE}/rpt/${JOBNAME}i_err${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_RPT01=/prod/race/oem/rpt/mptr451i_errmazca_20260527231705.rpt
+  export DD_RPT02A=${RACE}/rpt/${JOBNAME}j_cmlt${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_RPT02A=/prod/race/oem/rpt/mptr451j_cmltmazca_20260527231705.rpt
+  export DD_RPT02B=${RACE}/rpt/${JOBNAME}p_wmlt${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_RPT02B=/prod/race/oem/rpt/mptr451p_wmltmazca_20260527231705.rpt
+  export DD_RPT03=${RACE}/rpt/${JOBNAME}k_pvar${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').csv
++ date +%C%y%m%d%H%M%S
++ export DD_RPT03=/prod/race/oem/rpt/mptr451k_pvarmazca_20260527231705.csv
+  export DD_RPT04A=${RACE}/rpt/${JOBNAME}n_ctl${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_RPT04A=/prod/race/oem/rpt/mptr451n_ctlmazca_20260527231705.rpt
+  export DD_RPT04B=${RACE}/rpt/${JOBNAME}l_act${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_RPT04B=/prod/race/oem/rpt/mptr451l_actmazca_20260527231705.rpt
+  export DD_RPT05A=${RACE}/rpt/${JOBNAME}m_czpr${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_RPT05A=/prod/race/oem/rpt/mptr451m_czprmazca_20260527231705.rpt
+  export DD_RPT05B=${RACE}/rpt/${JOBNAME}o_wzpr${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
++ date +%C%y%m%d%H%M%S
++ export DD_RPT05B=/prod/race/oem/rpt/mptr451o_wzprmazca_20260527231705.rpt
+
+  mptz007 2>&1
++ mptz007
++ 2>& 1
+Connected user(MFCONNECT) 
+AUDITLOG.DISABLE_UDStamp
+AUDITLOG.DISABLE_UpdateNonWipFix
+AUDITLOG.DISABLE_LOGGING
+Bypassing creation of empty MPTZ007-01 Report
+
+  
+  #STEP Step201R
+  export STEPNAME=Step201R
++ export STEPNAME=Step201R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step201R 05/27/26 23:17:06  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step201R 05/27/26 23:17:06  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Report Distribution"
++ oem_job_status_update.ksh R Step201R Report Distribution
+  #**************************************************************************************
+  #  Step201R - Emails and Handles Retention for Report(s) created in previous step  
+  #**************************************************************************************
+    email_rpt.ksh "${JOBNAME}i" 
++ email_rpt.ksh mptr451i
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451i_errmazca_20260527231705.txt from /prod/race/oem/tmp.
+Report is empty or does not exist. Report will not be distributed.
+    rpt_log_retention.ksh "${JOBNAME}i" 
++ rpt_log_retention.ksh mptr451i
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451i
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:06 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451i_errmazca_20260225225612.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+    email_rpt.ksh "${JOBNAME}j"
++ email_rpt.ksh mptr451j
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451j_cmltmazca_20260527231705.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:06 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> Report Emailed: p_in_activity_level: prod
+v_process_name: mptr451
+v_report_id: mptr451j
+p_in_report_filename: mptr451j_cmltmazca_202
+60527231705.txt
+p_in_report_directory: RACE_OEM_TMP_DIR
+v_email_name: mptr451j
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}j"     
++ rpt_log_retention.ksh mptr451j
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451j
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:07 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451j_cmltmazca_20260225225612.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+    email_rpt.ksh "${JOBNAME}p"
++ email_rpt.ksh mptr451p
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451p_wmltmazca_20260527231705.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:07 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> Report Emailed: p_in_activity_level: prod
+v_process_name: mptr451
+v_report_id: mptr451p
+p_in_report_filename: mptr451p_wmltmazca_202
+60527231705.txt
+p_in_report_directory: RACE_OEM_TMP_DIR
+v_email_name: mptr451p
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}p" 
++ rpt_log_retention.ksh mptr451p
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451p
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:08 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451p_wmltmazca_20260225225612.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+    email_rpt.ksh "${JOBNAME}k"
++ email_rpt.ksh mptr451k
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451k_pvarmazca_20260527231705.csv from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:08 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> Report Emailed: p_in_activity_level: prod
+v_process_name: mptr451
+v_report_id: mptr451k
+p_in_report_filename: mptr451k_pvarmazca_202
+60527231705.csv
+p_in_report_directory: RACE_OEM_TMP_DIR
+v_email_name: mptr451k
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}k" 
++ rpt_log_retention.ksh mptr451k
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451k
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:09 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451k_pvarmazca_20260225225612.csv (due to retention)
+
+ End rpt_log_retention.ksh
+
+    email_rpt.ksh "${JOBNAME}n"
++ email_rpt.ksh mptr451n
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451n_ctlmazca_20260527231705.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:09 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: mptr451n is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}n" 
++ rpt_log_retention.ksh mptr451n
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451n
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:09 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451n_ctlmazca_20251125014402.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+    email_rpt.ksh "${JOBNAME}l" 
++ email_rpt.ksh mptr451l
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451l_actmazca_20260527231705.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:09 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> Report Emailed: p_in_activity_level: prod
+v_process_name: mptr451
+v_report_id: mptr451l
+p_in_report_filename: mptr451l_actmazca_2026
+0527231705.txt
+p_in_report_directory: RACE_OEM_TMP_DIR
+v_email_name: mptr451l
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}l" 
++ rpt_log_retention.ksh mptr451l
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451l
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:09 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451l_actmazca_20251125014402.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+    email_rpt.ksh "${JOBNAME}m" 
++ email_rpt.ksh mptr451m
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451m_czprmazca_20260527231705.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:09 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> Report Emailed: p_in_activity_level: prod
+v_process_name: mptr451
+v_report_id: mptr451m
+p_in_report_filename: mptr451m_czprmazca_202
+60527231705.txt
+p_in_report_directory: RACE_OEM_TMP_DIR
+v_email_name: mptr451m
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}m" 
++ rpt_log_retention.ksh mptr451m
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451m
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:10 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451m_czprmazca_20260225225612.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+ 
+    email_rpt.ksh "${JOBNAME}o"
++ email_rpt.ksh mptr451o
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451o_wzprmazca_20260527231705.txt from /prod/race/oem/tmp.
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:10 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> Report Emailed: p_in_activity_level: prod
+v_process_name: mptr451
+v_report_id: mptr451o
+p_in_report_filename: mptr451o_wzprmazca_202
+60527231705.txt
+p_in_report_directory: RACE_OEM_TMP_DIR
+v_email_name: mptr451o
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+    rpt_log_retention.ksh "${JOBNAME}o" 
++ rpt_log_retention.ksh mptr451o
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451o
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:11 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451o_wzprmazca_20260225225612.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+    
+    
+#STEP Step205R
+   export STEPNAME=Step205R
++ export STEPNAME=Step205R
+   echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step205R 05/27/26 23:17:11  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step205R 05/27/26 23:17:11  <--- START
+
+
+   oem_job_status_update.ksh "R" "${STEPNAME} cat ATRANS and CTRANS to GDG disk"
++ oem_job_status_update.ksh R Step205R cat ATRANS and CTRANS to GDG disk
+   #*********************************************************************************************
+   #  Step205R - Create ACTRANS gdg
+   #*********************************************************************************************
+   ATRANS_IN=${RACE}/dat/${JOBNAME}_atrans_sort.tmp
++ ATRANS_IN=/prod/race/oem/dat/mptr451_atrans_sort.tmp
+   CTRANS_IN=${RACE}/dat/${JOBNAME}_ctrans_sort.tmp
++ CTRANS_IN=/prod/race/oem/dat/mptr451_ctrans_sort.tmp
+   ACTRANS_OUT=$(setgdg.ksh "${RACE}/dat/${JOBNAME}_actrans_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
++ + setgdg.ksh /prod/race/oem/dat/mptr451_actrans_maz_ca.dat(+1) NEW 3
+ACTRANS_OUT=/prod/race/oem/dat/mptr451_actrans_maz_ca.dat.g34
+   cat ${ATRANS_IN} ${CTRANS_IN} > ${ACTRANS_OUT}
++ cat /prod/race/oem/dat/mptr451_atrans_sort.tmp /prod/race/oem/dat/mptr451_ctrans_sort.tmp
++ 1> /prod/race/oem/dat/mptr451_actrans_maz_ca.dat.g34
+
+
+#STEP Step210R
+  export STEPNAME=Step210R
++ export STEPNAME=Step210R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_upd Step210R 05/27/26 23:17:11  <--- START\n\n
+
+
+START ---> mptr451_oem_upd Step210R 05/27/26 23:17:11  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Delete temp files for update and reformat"
++ oem_job_status_update.ksh R Step210R Delete temp files for update and reformat
+  #*********************************************************************************************
+  # Step210R - Delete temporary file created in update and reformat jobs
+  #*********************************************************************************************
+  rm -f ${RACE}/dat/${JOBNAME}*.tmp* &
+  rm -f ${RACE}/tmp/${JOBNAME}*      &
++ rm -f /prod/race/oem/tmp/mptr451_parts_file.tmp /prod/race/oem/tmp/mptr451_parts_file.tmp.idx
++ rm -f /prod/race/oem/dat/mptr451_atrans_sort.tmp /prod/race/oem/dat/mptr451_ctrans_sort.tmp /prod/race/oem/dat/mptr451_htrans_1_generate.tmp /prod/race/oem/dat/mptr451_ntrans_sort.tmp /prod/race/oem/dat/mptr451_rtrans_1_generate.tmp /prod/race/oem/dat/mptr451_rtrans_2_adjust.tmp /prod/race/oem/dat/mptr451_trans_comb.tmp
+  rm -f ${RACE}/dat/${REFORMATJOB}_atrans.tmp
++ rm -f /prod/race/oem/dat/mptr450_atrans.tmp
+  rm -f ${RACE}/dat/${REFORMATJOB}_ctrans.tmp
++ rm -f /prod/race/oem/dat/mptr450_ctrans.tmp
+  rm -f ${RACE}/dat/${REFORMATJOB}_ntrans.tmp
++ rm -f /prod/race/oem/dat/mptr450_ntrans.tmp
+  rm -f ${RACE}/dat/${REFORMATJOB}_dtrans.tmp
++ rm -f /prod/race/oem/dat/mptr450_dtrans.tmp
+  rm -f ${RACE}/dat/${REFORMATJOB}_ptrans.tmp
++ rm -f /prod/race/oem/dat/mptr450_ptrans.tmp
+  rm -f ${RACE}/dat/${REFORMATJOB}_rtrans.tmp
++ rm -f /prod/race/oem/dat/mptr450_rtrans.tmp
+  rm -f ${RACE}/tmp/${REFORMATJOB}*.*
++ rm -f /prod/race/oem/tmp/mptr450*.*
+  
+
+
+
+#*********************************************************************************************
+# END oem_upd.ksh
+#*********************************************************************************************
+
+
+**************************************************************************************************************
+Finished: oem_upd.ksh    Datetime: 05/27/26 23:17:11   Script: /tmp/mptr451_oem_upd.ksh_run
+**************************************************************************************************************
+
+
+
+
+**********************************************************************************
+Restart Step was NOT included in the job execution. Job will run from the beginning.
+**********************************************************************************
+
+
+
+
+**************************************************************************************************************
+Calling:  oem_rpt_validate_supers.ksh    Datetime: 05/27/26 23:17:11   Script: /tmp/mptr451_oem_rpt_validate_supers.ksh_run
+**************************************************************************************************************
+
+
+RCS : oem_rpt_validate_supers.ksh,v 1.14 2020/08/26 00:55:48 pg2697 Exp $
+print ProcessId = $$
++ print ProcessId = 17891904
+ProcessId = 17891904
+#****************************************************************************************
+#  Description: Run process to validate supersessions and create reports
+#****************************************************************************************
+trap 'oem_abndalrt.ksh $?' err
++ trap oem_abndalrt.ksh $? err
+export PROCNAME=$(basename $0 .ksh_run)
++ basename /tmp/mptr451_oem_rpt_validate_supers.ksh_run .ksh_run
++ export PROCNAME=mptr451_oem_rpt_validate_supers
+#****************************************************************************************
+#  Build environment variables for the job (based on jobname)
+#****************************************************************************************
+. oem_job.ksh
++ . oem_job.ksh
++ echo RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $
+RCS : oem_job.ksh,v 1.6 2008/10/09 22:16:09 jw97143 Exp $
++ trap oem_abndalrt.ksh $? err
++ + cat /prod/race/oem/prm/zmptpass.prm
+MPTUSERID=racejob/q1w2e3r4
++ + basename /prod/race/oem/log/mptr451_20260527231148.log
+LOGFILE=mptr451_20260527231148.log
++ REFORMATJOB=mptr451
++ UPDATEJOB=mptr451
++ WORKFILE=mptr451_oem_job.tmp
++ sqlplus -s
++ 0<<
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr451',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr451_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_LOG_DIR',                                       p_log_filename  => 'mptr451_20260527231148.log');
+QUIT;
+2>& 1
+
+mptr450,mptr451,035,CA,MAZ,maz,zmpt451a,035,CA,maz_ca,mazca,mpt451e,pkg_oem_ref_021,,N,N,N,oem_ref_mptr450_maz_merge.ksh,U,Y,
+
++ export WORKFILE=/prod/race/oem/tmp/mptr451_oem_job.tmp
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f1 -d,
++ export REFORMATJOB=mptr450
++ [ -z mptr450 ]
++ cut -f2 -d,
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ export UPDATEJOB=mptr451
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f3 -d,
++ export JOBOEM=035
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f4 -d,
++ export JOBCTRY=CA
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f5 -d,
++ export JOBOEMNAME=MAZ
++ cut -f6 -d,
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ export OEMABBRLOWER=maz
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f7 -d,
++ export JOBPARM=zmpt451a
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f8 -d,
++ export FORMATOEM=035
++ cut -f9 -d,
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ export FORMATCTRY=CA
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f10 -d,
++ export JOBFILE_OEMCTRY=maz_ca
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f11 -d,
++ export REPORTSUFFIX=mazca
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f12 -d,
++ export REVERSE_SUPER_JOBPARM=mpt451e
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f13 -d,
++ export PACKAGE_NAME_1=pkg_oem_ref_021
++ cut -f14 -d,
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ export PACKAGE_NAME_2=
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ cut -f15 -d,
++ export DUPLICATE_PARTS_EXPECTED_FLAG=N
++ cut -f16 -d,
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ export REFORMAT_BUILDS_RTRANS_FLAG=N
++ cut -f17 -d,
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ export OBSOLETE_JOB_FLAG=N
++ cut -f18 -d,
++ cat /prod/race/oem/tmp/mptr451_oem_job.tmp
++ export PREPROCESS_SCRIPT_NAME=oem_ref_mptr450_maz_merge.ksh
++ sqlplus -s
++ 0<<
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr451',                                                           p_log_directory => 'RACE_OEM_LOG_DIR',                                                        p_log_filename  => 'mptr451_20260527231148.log',                                                           p_debug_level   => '0');
+QUIT;
+2>& 1
+
+Start mptr451 pkg_oem_ref_utilities.p_check_gtmp_indexes
+
+
+ End  mptr451 pkg_oem_ref_utilities.p_check_gtmp_indexes
+#****************************************************************************************
+
+#STEP Step510
+  export STEPNAME=Step510
++ export STEPNAME=Step510
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_rpt_validate_supers Step510 05/27/26 23:17:11  <--- START\n\n
+
+
+START ---> mptr451_oem_rpt_validate_supers Step510 05/27/26 23:17:11  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Extract the P and N records"
++ oem_job_status_update.ksh R Step510 Extract the P and N records
+  #**************************************************************************************
+  #                                          Extract the P and N records
+  #**************************************************************************************
+  REFORMAT_WORKOUT=${RACE}/tmp/${JOBNAME}_step510_oemrecs.tmp
++ REFORMAT_WORKOUT=/prod/race/oem/tmp/mptr451_step510_oemrecs.tmp
+  if [ ${JOBNAME} = ${REFORMATJOB} ]
+  then
+     #**************************************************************************************
+     # Reformat Job? Only extract N records (From Step216R)
+     #**************************************************************************************
+     REFORMAT_FILEIN=${RACE}/tmp/${JOBNAME}_step216_ref_${JOBFILE_OEMCTRY}.tmp
+     awk '{ if (substr($0,1,1)=="N") print $0 }' ${REFORMAT_FILEIN} > ${REFORMAT_WORKOUT}
+  else
+     #**************************************************************************************
+     # Update Job? Only extract N and P records
+     #**************************************************************************************
+     REFORMAT_FILEIN=$(setgdg.ksh "${RACE}/dat/${REFORMATJOB}_ref_${JOBFILE_OEMCTRY}.dat(0)")
+     awk '{ if (substr($0,1,1)=="P") print $0 }' ${REFORMAT_FILEIN} >  ${REFORMAT_WORKOUT}
+     awk '{ if (substr($0,1,1)=="N") print $0 }' ${REFORMAT_FILEIN} >> ${REFORMAT_WORKOUT}
+  fi
++ [ mptr451 = mptr450 ]
++ + setgdg.ksh /prod/race/oem/dat/mptr450_ref_maz_ca.dat(0)
+REFORMAT_FILEIN=/prod/race/oem/dat/mptr450_ref_maz_ca.dat.g66
++ awk { if (substr($0,1,1)=="P") print $0 } /prod/race/oem/dat/mptr450_ref_maz_ca.dat.g66
++ 1> /prod/race/oem/tmp/mptr451_step510_oemrecs.tmp
++ awk { if (substr($0,1,1)=="N") print $0 } /prod/race/oem/dat/mptr450_ref_maz_ca.dat.g66
++ 1>> /prod/race/oem/tmp/mptr451_step510_oemrecs.tmp
+
+
+#STEP Step515
+  export STEPNAME=Step515
++ export STEPNAME=Step515
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_rpt_validate_supers Step515 05/27/26 23:17:12  <--- START\n\n
+
+
+START ---> mptr451_oem_rpt_validate_supers Step515 05/27/26 23:17:12  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Sort unique"
++ oem_job_status_update.ksh R Step515 Sort unique
+  #**************************************************************************************
+  #                                          Sort unique 
+  #**************************************************************************************
+  SORTFILE_FILEIN=${RACE}/tmp/${JOBNAME}_step510_oemrecs.tmp
++ SORTFILE_FILEIN=/prod/race/oem/tmp/mptr451_step510_oemrecs.tmp
+  SORT_FILEOUT=${RACE}/tmp/${JOBNAME}_step515_oemrecs_sort.tmp
++ SORT_FILEOUT=/prod/race/oem/tmp/mptr451_step515_oemrecs_sort.tmp
+  rm -f $SORT_FILEOUT
++ rm -f /prod/race/oem/tmp/mptr451_step515_oemrecs_sort.tmp
+  #      +----------+
+  #      |OLD & NEW |
+  #      +----------+
+  sort -u -k1.7,1.56 -o ${SORT_FILEOUT} ${SORTFILE_FILEIN}
++ sort -u -k1.7,1.56 -o /prod/race/oem/tmp/mptr451_step515_oemrecs_sort.tmp /prod/race/oem/tmp/mptr451_step510_oemrecs.tmp
+
+
+#STEP Step530
+  export STEPNAME=Step530
++ export STEPNAME=Step530
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_rpt_validate_supers Step530 05/27/26 23:17:16  <--- START\n\n
+
+
+START ---> mptr451_oem_rpt_validate_supers Step530 05/27/26 23:17:16  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} pkg_oem_rpt_validate_supers"
++ oem_job_status_update.ksh R Step530 pkg_oem_rpt_validate_supers
+  #**************************************************************************************
+  #                                          pkg_oem_rpt_validate_supers
+  #  Execute Supersession Validation Program - Check the chains for loops
+  #                                            and for "middle" parts with pricing
+  #**************************************************************************************
+  INPUT_FILENAME=${JOBNAME}_step515_oemrecs_sort.tmp
++ INPUT_FILENAME=mptr451_step515_oemrecs_sort.tmp
+  OUTPUT_HTRANS=${JOBNAME}_step530_htrans_${JOBFILE_OEMCTRY}.tmp
++ OUTPUT_HTRANS=mptr451_step530_htrans_maz_ca.tmp
+  OUTPUT_PTRANS=${JOBNAME}_step530_ptrans_${JOBFILE_OEMCTRY}.tmp
++ OUTPUT_PTRANS=mptr451_step530_ptrans_maz_ca.tmp
+  OUTPUT_RTRANS=${JOBNAME}_step530_rtrans_${JOBFILE_OEMCTRY}.tmp
++ OUTPUT_RTRANS=mptr451_step530_rtrans_maz_ca.tmp
+  OUTPUT_NTRANS=${JOBNAME}_step530_ntrans_${JOBFILE_OEMCTRY}.tmp    # Used when checking for loops OEM Reformat File
++ OUTPUT_NTRANS=mptr451_step530_ntrans_maz_ca.tmp
+
+  if [ ${JOBNAME} = ${REFORMATJOB} ]
+  then
+    REPORT_FILENAME=${JOBNAME}n_sup${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
+  else
+    REPORT_FILENAME=${JOBNAME}a_sup${REPORTSUFFIX}_$(date +'%C%y%m%d%H%M%S').rpt
+  fi
++ [ mptr451 = mptr450 ]
++ + date +%C%y%m%d%H%M%S
+REPORT_FILENAME=mptr451a_supmazca_20260527231716.rpt
+
+#----------------------------------------------------------------------------------------
+(sqlplus -s << % 2>&1)
+${MPTUSERID}
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_rpt_validate_supers.p_main_procedure(p_this_job           => '${JOBNAME}',          \
+                                                      p_reformat_job       => '${REFORMATJOB}',      \
+                                                      p_log_directory      => '${OBJ_LOGDIR}',       \
+                                                      p_log_filename       => '${LOGFILE}',          \
+                                                      p_input_directory    => '${OBJ_TMPDIR}',       \
+                                                      p_input_filename     => '${INPUT_FILENAME}',   \
+                                                      p_output_directory   => '${OBJ_TMPDIR}',       \
+                                                      p_output_htrans      => '${OUTPUT_HTRANS}',    \
+                                                      p_output_ptrans      => '${OUTPUT_PTRANS}',    \
+                                                      p_output_rtrans      => '${OUTPUT_RTRANS}',    \
+                                                      p_output_ntrans      => '${OUTPUT_NTRANS}',    \
+                                                      p_report_directory   => '${OBJ_RPTDIR}',       \
+                                                      p_report_filename    => '${REPORT_FILENAME}',  \
+                                                      p_debug_level        => '${RACE_DEBUG_LEVEL}', \
+                                                      p_dbms_profiler_flag => '${RACE_DBMS_PROFILER_FLAG}');
+QUIT;
+%
++ sqlplus -s
++ 0<<
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_rpt_validate_supers.p_main_procedure(p_this_job           => 'mptr451',                                                                p_reformat_job       => 'mptr450',                                                            p_log_directory      => 'RACE_OEM_LOG_DIR',                                                             p_log_filename       => 'mptr451_20260527231148.log',                                                                p_input_directory    => 'RACE_OEM_TMP_DIR',                                                             p_input_filename     => 'mptr451_step515_oemrecs_sort.tmp',                                                         p_output_directory   => 'RACE_OEM_TMP_DIR',                                                             p_output_htrans      => 'mptr451_step530_htrans_maz_ca.tmp',                                                          p_output_ptrans      => 'mptr451_step530_ptrans_maz_ca.tmp',                                                          p_output_rtrans      => 'mptr451_step530_rtrans_maz_ca.tmp',                                                          p_output_ntrans      => 'mptr451_step530_ntrans_maz_ca.tmp',                                                          p_report_directory   => 'RACE_OEM_RPT_DIR',                                                             p_report_filename    => 'mptr451a_supmazca_20260527231716.rpt',                                                        p_debug_level        => '0',                                                       p_dbms_profiler_flag => 'N');
+QUIT;
+2>& 1
+#----------------------------------------------------------------------------------------
+
+
+#STEP Step531R
+  export STEPNAME=Step531R
++ export STEPNAME=Step531R
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_rpt_validate_supers Step531R 05/27/26 23:17:52  <--- START\n\n
+
+
+START ---> mptr451_oem_rpt_validate_supers Step531R 05/27/26 23:17:52  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Report Distribution"
++ oem_job_status_update.ksh R Step531R Report Distribution
+  #**************************************************************************************
+  #  Emails and Handles Retention for Report(s) created in previous step  
+  #**************************************************************************************
+  if [ ${JOBNAME} = ${REFORMATJOB} ]
+  then
+    email_rpt.ksh "${JOBNAME}n"
+    rpt_log_retention.ksh "${JOBNAME}n" 
+    
+  else
+    email_rpt.ksh "${JOBNAME}a" 
+    rpt_log_retention.ksh "${JOBNAME}a" 
+  fi
++ [ mptr451 = mptr450 ]
++ email_rpt.ksh mptr451a
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: mptr451a_supmazca_20260527231716.txt from /prod/race/oem/tmp.
+Report is empty or does not exist. Report will not be distributed.
++ rpt_log_retention.ksh mptr451a
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451a
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:52 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/rpt/mptr451a_supmazca_20260225225622.rpt (due to retention)
+
+ End rpt_log_retention.ksh
+
+
+#STEP Step570
+  export STEPNAME=Step570
++ export STEPNAME=Step570
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_rpt_validate_supers Step570 05/27/26 23:17:52  <--- START\n\n
+
+
+START ---> mptr451_oem_rpt_validate_supers Step570 05/27/26 23:17:52  <--- START
+
+
+  oem_job_status_update.ksh "R" "${STEPNAME} Save files"
++ oem_job_status_update.ksh R Step570 Save files
+  #**************************************************************************************
+  #   REFORMAT - Save ntrans
+  #   UPDATE   - Save rtrans, htrans, and ptrans files
+  #**************************************************************************************
+  if [ ${JOBNAME} = ${REFORMATJOB} ]
+  then
+               cp ${RACE}/tmp/${JOBNAME}_step530_ntrans_${JOBFILE_OEMCTRY}.tmp \
+    $(setgdg.ksh "${RACE}/dat/${JOBNAME}_looping_oem_ntrans_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
+  else
+               cp ${RACE}/tmp/${JOBNAME}_step530_htrans_${JOBFILE_OEMCTRY}.tmp \
+    $(setgdg.ksh "${RACE}/dat/${JOBNAME}_validate_htrans_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
+               cp ${RACE}/tmp/${JOBNAME}_step530_rtrans_${JOBFILE_OEMCTRY}.tmp \
+    $(setgdg.ksh "${RACE}/dat/${JOBNAME}_validate_rtrans_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
+               cp ${RACE}/tmp/${JOBNAME}_step530_ptrans_${JOBFILE_OEMCTRY}.tmp \
+    $(setgdg.ksh "${RACE}/dat/${JOBNAME}_validate_ptrans_${JOBFILE_OEMCTRY}.dat(+1)" NEW 3)
+  fi
++ [ mptr451 = mptr450 ]
++ setgdg.ksh /prod/race/oem/dat/mptr451_validate_htrans_maz_ca.dat(+1) NEW 3
++ cp /prod/race/oem/tmp/mptr451_step530_htrans_maz_ca.tmp /prod/race/oem/dat/mptr451_validate_htrans_maz_ca.dat.g37
++ setgdg.ksh /prod/race/oem/dat/mptr451_validate_rtrans_maz_ca.dat(+1) NEW 3
++ cp /prod/race/oem/tmp/mptr451_step530_rtrans_maz_ca.tmp /prod/race/oem/dat/mptr451_validate_rtrans_maz_ca.dat.g37
++ setgdg.ksh /prod/race/oem/dat/mptr451_validate_ptrans_maz_ca.dat(+1) NEW 3
++ cp /prod/race/oem/tmp/mptr451_step530_ptrans_maz_ca.tmp /prod/race/oem/dat/mptr451_validate_ptrans_maz_ca.dat.g37
+
+
+#STEP Step599
+  export STEPNAME=Step599
++ export STEPNAME=Step599
+  echo "\n\nSTART ---> ${PROCNAME} ${STEPNAME}" $(date +'%m/%d/%y %H:%M:%S')  " <--- START\n\n"
++ date +%m/%d/%y %H:%M:%S
++ echo \n\nSTART ---> mptr451_oem_rpt_validate_supers Step599 05/27/26 23:17:52  <--- START\n\n
+
+
+START ---> mptr451_oem_rpt_validate_supers Step599 05/27/26 23:17:52  <--- START
+
+
+  #************************************************************************************************
+  #  Delete temporary datasets 
+  #************************************************************************************************
+  if [ ${JOBNAME} = ${REFORMATJOB} ]
+  then
+    rm -f ${RACE}/tmp/${JOBNAME}_step5*
+  else
+    rm -f ${RACE}/tmp/${JOBNAME}*
+  fi
++ [ mptr451 = mptr450 ]
++ rm -f /prod/race/oem/tmp/mptr451_oem_job.tmp /prod/race/oem/tmp/mptr451_step510_oemrecs.tmp /prod/race/oem/tmp/mptr451_step515_oemrecs_sort.tmp /prod/race/oem/tmp/mptr451_step530_htrans_maz_ca.tmp /prod/race/oem/tmp/mptr451_step530_ptrans_maz_ca.tmp /prod/race/oem/tmp/mptr451_step530_rtrans_maz_ca.tmp
+  
+#**************************************************************************************************
+# END oem_rpt_validate_supers.ksh
+#**************************************************************************************************
+
+
+**************************************************************************************************************
+Finished: oem_rpt_validate_supers.ksh    Datetime: 05/27/26 23:17:52   Script: /tmp/mptr451_oem_rpt_validate_supers.ksh_run
+**************************************************************************************************************
+
+
+
+ Begin rpt_log_retention.ksh 
+
+Processing REPORTID=mptr451_
+
+SQL*Plus: Release 11.2.0.4.0 Production on Wed May 27 23:17:52 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+oldest file removed: /prod/race/oem/log/mptr451_20260225225105.log (due to retention)
+
+ End rpt_log_retention.ksh
+    End    mptr451   Wed May 27 23:17:52 PDT 2026
