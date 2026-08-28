@@ -1,0 +1,137 @@
+: xex017.ksh,v 1.5 2009/07/07 17:26:54 pg2697 Exp $
+export PROCNAME=$(basename $0 .ksh_run)
++ basename /prod/race/ext/bin/xex017.ksh .ksh_run
++ export PROCNAME=xex017.ksh
+trap 'abndalrt.ksh $?' err
++ trap abndalrt.ksh $? err
+         
+sqlplus <<% 
+$EXTUSERID
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON; 
+whenever sqlerror exit sql.sqlcode
+
+BEGIN
+ 
+PKG_ULTRAMATE_PARSE.ULTRAMATE_PARSE('$SQL_RUN_TYPE'
+                                   ,'$OBJ_DATDIR_UMFULL'
+                                   ,'$OBJ_DATDIR_UMMINI'
+                                   ,'$SQL_FTP_MACHINE'
+                                   ,'$SQL_FTP_DEST_PATH'
+                                   ,'$SQL_FULL_PROC_NUM');
+END;
+/
+QUIT;
+%
++ sqlplus
++ 0<<
+ext/f00tba11
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON; 
+whenever sqlerror exit sql.sqlcode
+
+BEGIN
+ 
+PKG_ULTRAMATE_PARSE.ULTRAMATE_PARSE('FULL'
+                                   ,'RACE_EXT_DAT_UMFULL_DIR'
+                                   ,'RACE_EXT_DAT_UMMINI_DIR'
+                                   ,'OPT006'
+                                   ,'d:/Data/Txtfiles'
+                                   ,'2');
+END;
+/
+QUIT;
+
+SQL*Plus: Release 11.2.0.4.0 Production on Fri Jul 24 22:38:33 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL>   2    3    4    5    6    7    8    9   10  Running in prod environment. ftp_on_flag set to true.
+Parse error inserting into um_data_dc
+Parse error inserting into um_data_dc
+Parse error inserting into um_data_dc
+Parse error inserting into um_data_dc
+Parse error inserting into um_data_dc
+Parse error inserting into um_data_dc
+
+PL/SQL procedure successfully completed.
+
+SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+############################################################################
+#  END                                                                     #
+###########################################################################
+: xex019.ksh,v 1.1 2014/06/16 15:01:50 mm5095 Exp $
+export PROCNAME=$(basename $0 .ksh_run)
++ basename /prod/race/ext/bin/xex019.ksh .ksh_run
++ export PROCNAME=xex019.ksh
+trap 'abndalrt.ksh $?' err
++ trap abndalrt.ksh $? err
+         
+sqlplus <<% 
+$EXTUSERID
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON; 
+whenever sqlerror exit sql.sqlcode
+
+BEGIN
+ 
+PKG_ULTRAMATE_COMMON.MAPP_EXTRACT('$OBJ_DATDIR_UMFULL'
+                                   ,'$SQL_FTP_MACHINE'
+                                   ,'$SQL_FTP_DEST_PATH');
+END;
+/
+QUIT;
+%
++ sqlplus
++ 0<<
+ext/f00tba11
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON; 
+whenever sqlerror exit sql.sqlcode
+
+BEGIN
+ 
+PKG_ULTRAMATE_COMMON.MAPP_EXTRACT('RACE_EXT_DAT_UMFULL_DIR'
+                                   ,'OPT006'
+                                   ,'d:/Data/Txtfiles');
+END;
+/
+QUIT;
+
+SQL*Plus: Release 11.2.0.4.0 Production on Sat Jul 25 13:23:50 2026
+
+Copyright (c) 1982, 2013, Oracle.  All rights reserved.
+
+Enter user-name: 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL>   2    3    4    5    6    7  
+PL/SQL procedure successfully completed.
+
+SQL> Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning option
+
+############################################################################
+#  END                                                                     #
+###########################################################################
