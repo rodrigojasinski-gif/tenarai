@@ -1,0 +1,138 @@
+: xex017.ksh,v 1.6 2026/08/05 12:02:44 rj132422 Exp $
+export PROCNAME=$(basename $0 .ksh_run)
++ basename /stage/race/ext/bin/xex017.ksh .ksh_run
++ PROCNAME=xex017.ksh
++ export PROCNAME
+trap 'abndalrt.ksh $?' err
+
++ trap 'abndalrt.ksh $?' err
+sqlplus <<%
+$EXTUSERID
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON SIZE UNLIMITED;
+whenever sqlerror exit sql.sqlcode
+
+BEGIN
+
+PKG_ULTRAMATE_PARSE.ULTRAMATE_PARSE('$SQL_RUN_TYPE'
+                                   ,'$OBJ_DATDIR_UMFULL'
+                                   ,'$OBJ_DATDIR_UMMINI'
+                                   ,null
+                                   ,null
+                                   ,'$SQL_FULL_PROC_NUM');
+END;
+/
+QUIT;
+%
+
++ sqlplus
++ 0<< \%
+ext/ext10g
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON SIZE UNLIMITED;
+whenever sqlerror exit sql.sqlcode
+
+BEGIN
+
+PKG_ULTRAMATE_PARSE.ULTRAMATE_PARSE('FULL'
+                                   ,'RACE_EXT_DAT_UMFULL_DIR'
+                                   ,'RACE_EXT_DAT_UMMINI_DIR'
+                                   ,null
+                                   ,null
+                                   ,'1');
+END;
+/
+QUIT;
+%
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Thu Aug 27 14:08:41 2026
+Version 23.9.0.25.07
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Thu Aug 27 2026 14:08:42 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL>   2    3    4    5    6    7    8    9   10  Running in mdev environment. ftp_on_flag set to false.
+Parse error inserting into um_data_dc
+
+PL/SQL procedure successfully completed.
+
+SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+############################################################################
+#  END                                                                     #
+###########################################################################
+: xex018.ksh,v 1.2 2026/08/05 12:02:56 rj132422 Exp $
+export PROCNAME=$(basename $0 .ksh_run)
++ basename /stage/race/ext/bin/xex018.ksh .ksh_run
++ PROCNAME=xex018.ksh
++ export PROCNAME
+trap 'abndalrt.ksh $?' err
+
++ trap 'abndalrt.ksh $?' err
+sqlplus <<%
+$EXTUSERID
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON SIZE UNLIMITED;
+whenever sqlerror exit sql.sqlcode
+
+BEGIN
+
+PKG_ULTRAMATE_COMMON.PRICE_EXTRACT('$OBJ_DATDIR_UMFULL');
+END;
+/
+QUIT;
+%
+
++ sqlplus
++ 0<< \%
+ext/ext10g
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON SIZE UNLIMITED;
+whenever sqlerror exit sql.sqlcode
+
+BEGIN
+
+PKG_ULTRAMATE_COMMON.PRICE_EXTRACT('RACE_EXT_DAT_UMFULL_DIR');
+END;
+/
+QUIT;
+%
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Thu Aug 27 16:43:55 2026
+Version 23.9.0.25.07
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Thu Aug 27 2026 16:43:55 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL>   2    3    4    5  This is a dummy version of sp_um_ftp_put.
+If you want to transfer files to OPT006, rename this and compile the real one.
+
+PL/SQL procedure successfully completed.
+
+SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+############################################################################
+#  END                                                                     #
+###########################################################################

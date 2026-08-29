@@ -1,0 +1,523 @@
+    Start  xexm110   Thu Aug 27 01:53:27 PM PDT 2026
+\n\n**********************************************************************************
+Restart Step was NOT included in the job execution. Job will run from the beginning.
+**********************************************************************************\n\n
+\n\n**************************************************************************************************************
+Calling:  xex015.ksh    Datetime: 08/27/26 13:53:28   Script: /tmp/xexm110_xex015.ksh_run
+**************************************************************************************************************\n\n
+: xex015.ksh,v 1.18 2026/08/05 16:18:40 rj132422 Exp $
+export PROCNAME=$(basename $0 .ksh_run)
++ basename /tmp/xexm110_xex015.ksh_run .ksh_run
++ PROCNAME=xexm110_xex015
++ export PROCNAME
+trap 'abndalrt.ksh $?' err
++ trap 'abndalrt.ksh $?' err
+print ProcessId = $$
+
++ print ProcessId '=' 2245088
+ProcessId = 2245088
+############################################################################
+# Initialize variables.                                                    #
+#                                                                          #
+# NOTE: No Step number here since this process should be performed each    #
+#       time the script is run.                                            #
+#                                                                          #
+# Get JOB parm file values from zxex000.prm                                #
+#  a) set parm file name                                                   #
+#  b) set version flag (PR or WP)                                          #
+#  c) set restart flag (T=restart, F=start from beginning)                 #
+#  d) set unix_subdir subdirectory                                         #
+############################################################################
+
+#   use Korn shell '  grep' command to get job parm values
+    PARMFILE=`        grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $2}'`
+        grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $2}'
++ awk '{print $2}'
++ grep xexm110.ksh /mdev/race/ext/prm/zxex000.prm
++ PARMFILE=zxex100a.prm
+    VERSION=`         grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $3}'`
+         grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $3}'
++ awk '{print $3}'
++ grep xexm110.ksh /mdev/race/ext/prm/zxex000.prm
++ VERSION=PR
+    RESTART_FLAG=`    grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $4}'`
+    grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $4}'
++ grep xexm110.ksh /mdev/race/ext/prm/zxex000.prm
++ awk '{print $4}'
++ RESTART_FLAG=F
+    RUN_TYPE=`        grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $8}'`
+        grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $8}'
++ awk '{print $8}'
++ grep xexm110.ksh /mdev/race/ext/prm/zxex000.prm
++ RUN_TYPE=FULL
+    SYS_DATE=`date +%EY%Om%d%H%M%OS`
+
+date +%EY%Om%d%H%M%OS
++ date +%EY%Om%d%H%M%OS
++ SYS_DATE=20260827135328
+    export SQL_JOBNAME=$JOBNAME
++ SQL_JOBNAME=xexm110
++ export SQL_JOBNAME
+    export SQL_PARMFILE=$PARMFILE
++ SQL_PARMFILE=zxex100a.prm
++ export SQL_PARMFILE
+    export SQL_PARMFILE_PATH=$OBJ_PRMDIR
++ SQL_PARMFILE_PATH=RACE_EXT_PRM_DIR
++ export SQL_PARMFILE_PATH
+    export SQL_VERSION=$VERSION
++ SQL_VERSION=PR
++ export SQL_VERSION
+    export SQL_RESTART_FLAG=$RESTART_FLAG
++ SQL_RESTART_FLAG=F
++ export SQL_RESTART_FLAG
+    export SQL_RUN_TYPE=$RUN_TYPE
++ SQL_RUN_TYPE=FULL
++ export SQL_RUN_TYPE
+    export SQL_SYS_DATE=$SYS_DATE
+
++ SQL_SYS_DATE=20260827135328
++ export SQL_SYS_DATE
+    export EXTUSERID=`cat $RACE/prm/zxexpass.prm`
+cat $RACE/prm/zxexpass.prm
++ cat /mdev/race/ext/prm/zxexpass.prm
++ EXTUSERID=ext/ext10g
++ export EXTUSERID
+    export EXTMUSERID=`cat $RACE/prm/zxexmini_pass.prm`
+
+cat $RACE/prm/zxexmini_pass.prm
++ cat /mdev/race/ext/prm/zxexmini_pass.prm
++ EXTMUSERID=extm/mce2018mini
++ export EXTMUSERID
+    export FULL_LOG1=$RACE/log/${JOBNAME}_full_1_${SYS_DATE}.log1
++ FULL_LOG1=/mdev/race/ext/log/xexm110_full_1_20260827135328.log1
++ export FULL_LOG1
+    export FULL_LOG2=$RACE/log/${JOBNAME}_full_2_${SYS_DATE}.log2
+
+
+
++ FULL_LOG2=/mdev/race/ext/log/xexm110_full_2_20260827135328.log2
++ export FULL_LOG2
+#STEP Step010R
+     export STEPNAME=Step010R
++ STEPNAME=Step010R
++ export STEPNAME
+     echo "    Start ${STEPNAME}    "$(date)
++ date
++ echo '    Start Step010R    Thu' Aug 27 01:53:28 PM PDT 2026
+    Start Step010R    Thu Aug 27 01:53:28 PM PDT 2026
+#######################################################################
+#  Step010R   1. Execute SqlPlus script to create error report        #
+#                Prefix of ${JOBNAME}a_ is added by report pgm.       #
+#######################################################################
+
+    set -
+
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Thu Aug 27 13:53:28 2026
+Version 23.9.0.25.07
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Thu Aug 27 2026 13:50:05 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL> 
+Table dropped.
+
+SQL>   2    3    4    5    6    7  
+Table created.
+
+SQL> SQL>   2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32   33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48   49   50   51   52   53   54   55   56   57   58   59   60   61   62   63   64   65   66   67   68   69   70   71   72   73   74   75   76   77   78   79   80   81   82   83   84   85   86   87   88   89   90   91   92   93   94   95   96   97   98   99  100  101  102  103  104  105  106  107  108  109  110  111  112  113  114  115  116  117  118  119  120  121  122  123  124  125  126  127  128  129  130  131  132  133  134  135  136  137  138  139  140  141  142  143  144  145  146  147  148  149  150  151  152  153  154  155  156  157  158  159  160  161  162  163  164  165  166  167  168  169  170  171  172  173  174  175  176  177  178  179  180  181  182  183  184  185  186  187  188  189  190  191  192  193  194  195  196  197  198  199  200  201  202  203  204  205  206  207  208  209  210  211  212  213  214  215  216  217  218  219  220  221  222  223  224  225  226  227  228  229  230  231  232  233  234  235  236  237  238  239  240  241  242  243  244  245  246  247  248  249  250  251  252  253  254  255  256  257  258  259  260  261  262  263  264  265  266  267  268  269  270  271  272  273  274  275  276  277  278  279  280  281  282  283  284  285  286  287  288  289  290  291  292  293  294  295  296  297  298  299  300  301  302  303  304  305  306  307  308  309  310  311  312  313  314  315  316  317  318  319  320  321  322  323  324  325  326  327  328  329  330  331  332  333  334  335  336  337  338  339  340  341  342  343  344  345  346  347  348  349  350  351  352  353  354  355  356  357  358  359  360  361  362  363  364  365  366  367  368  369  370  371  372  373  374  375  376  377  378  379  380  381  382  383  384  385  386  387  388  389  390  391  392  393  394  395  396  397  398  399  400  401  old 101: v_in_filename	   :='&vi_IN_FILE';
+new 101: v_in_filename	   :='zxex100a.prm';
+old 102: v_in_jobname	   :='&vi_IN_JOBNAME';
+new 102: v_in_jobname	   :='xexm110';
+old 103: v_in_dirname	   :='&vi_IN_DIR';
+new 103: v_in_dirname	   :='RACE_EXT_PRM_DIR';
+old 104: v_in_version	   :='&vi_IN_VERSION';
+new 104: v_in_version	   :='PR';
+old 105: v_rpt_filename    :='&vi_OUT_REPTFILE';
+new 105: v_rpt_filename    :='xtrsum';
+old 106: v_out_dirname	   :='&vi_OUT_DIR';
+new 106: v_out_dirname	   :='RACE_EXT_RPT_DIR';
+old 107: v_sys_date	   :='&vi_sys_date';
+new 107: v_sys_date	   :='20260827135328';
+Start: 08/27/2026 13:53:28
+----------------------------------------
+PRM  DIR: RACE_EXT_PRM_DIR
+PRM FILE: zxex100a.prm
+----------------------------------------
+End: 08/27/2026 13:53:28
+
+PL/SQL procedure successfully completed.
+
+SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+    email_rpt.ksh "${JOBNAME}a"
++ email_rpt.ksh xexm110a
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: xexm110a_xtrsum_20260827135328.txt from /mdev/race/ext/tmp.
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Thu Aug 27 13:53:28 2026
+Version 23.9.0.25.07
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Thu Aug 27 2026 13:45:25 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> SQL> SQL> 
+*** WARNING *** Report ID: xexm110a is not defined in email_xref table or distribution has been set to
+Display Only in report_mgmt table. It has not been emailed to anyone.
+
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+    rpt_log_retention.ksh "${JOBNAME}a"
+
+
+
++ rpt_log_retention.ksh xexm110a
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=xexm110a
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Thu Aug 27 13:53:28 2026
+Version 23.9.0.25.07
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Thu Aug 27 2026 13:53:28 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/ext/rpt/xexm110a_xtrsum_20260717133814.rpt (due to retention)
+\n End rpt_log_retention.ksh
+#STEP Step020R
+    export STEPNAME=Step020R
++ STEPNAME=Step020R
++ export STEPNAME
+    echo "    Start ${STEPNAME}    "$(date)
++ date
++ echo '    Start Step020R    Thu' Aug 27 01:53:29 PM PDT 2026
+    Start Step020R    Thu Aug 27 01:53:29 PM PDT 2026
+#######################################################################
+#  Step020R   1. Execute package PKG_ULTRAMATE_BUILD to create UM file#
+#######################################################################
+
+if [ ${RUN_TYPE} = MINI ]
+then
+
+    sqlplus << % 2>&1 > $LOG
+    $EXTMUSERID
+
+    SET ECHO ON;
+    SET FEEDBACK ON;
+    SET VERIFY ON;
+    SET LINESIZE 80;
+    SET SERVEROUTPUT ON size unlimited;
+    whenever sqlerror exit sql.sqlcode
+
+
+BEGIN
+   PKG_ULTRAMATE_BUILD.ULTRAMATE_MAIN('$OBJ_PRMDIR'
+                                      ,'$SQL_RUN_TYPE'
+                                      ,'$SQL_PARMFILE'
+                                      ,'$OBJ_DATDIR_UMFULL'
+                                      ,'$OBJ_DATDIR_UMMINI'
+                                      ,'$SQL_VERSION'
+                                      ,'$SQL_RESTART_FLAG');
+END;
+/
+QUIT;
+%
+    [ -s "$LOG" ] && cat "$LOG"
+    : > $LOG
+
+else
+    sqlplus << % 2>&1 > $LOG
+    $EXTUSERID
+
+    SET ECHO ON;
+    SET FEEDBACK ON;
+    SET VERIFY ON;
+    SET LINESIZE 80;
+    SET SERVEROUTPUT ON;
+    whenever sqlerror exit sql.sqlcode
+
+BEGIN
+   PKG_ULTRAMATE_PREPARSE.ULTRAMATE_PREPARSE('$SQL_PARMFILE_PATH'
+                                      ,'$SQL_RUN_TYPE'
+                                      ,'$SQL_PARMFILE'
+                                      ,'$OBJ_DATDIR_UMFULL'
+                                      ,'$OBJ_DATDIR_UMMINI'
+                                      ,'$SQL_VERSION'
+                                      ,'$SQL_RESTART_FLAG');
+END;
+/
+QUIT;
+%
+    [ -s "$LOG" ] && cat "$LOG"
+    : > $LOG
+
+fi
+
++ [ FULL '=' MINI ]
++ sqlplus
++ 0<< \%
+    ext/ext10g
+
+    SET ECHO ON;
+    SET FEEDBACK ON;
+    SET VERIFY ON;
+    SET LINESIZE 80;
+    SET SERVEROUTPUT ON;
+    whenever sqlerror exit sql.sqlcode
+
+BEGIN
+   PKG_ULTRAMATE_PREPARSE.ULTRAMATE_PREPARSE('RACE_EXT_PRM_DIR'
+                                      ,'FULL'
+                                      ,'zxex100a.prm'
+                                      ,'RACE_EXT_DAT_UMFULL_DIR'
+                                      ,'RACE_EXT_DAT_UMMINI_DIR'
+                                      ,'PR'
+                                      ,'F');
+END;
+/
+QUIT;
+%
+2>& 1 1> /mdev/race/ext/tmp/xexm110_2245064.sqlout
++ [ -s /mdev/race/ext/tmp/xexm110_2245064.sqlout ]
++ cat /mdev/race/ext/tmp/xexm110_2245064.sqlout
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Thu Aug 27 13:53:29 2026
+Version 23.9.0.25.07
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Thu Aug 27 2026 13:53:28 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL>   2    3    4    5    6    7    8    9   10  Running in mdev environment. ftp_on_flag set to false.
+224 00071 => Service not found!
+011 00402 => Service not found!
+011 56000 => Service not found!
+036 00067 => Service not found!
+011 57000 => Service not found!
+065 00031 => Service not found!
+232 00101 => Service not found!
+ERROR: 024 00068 PR not found in EXT!
+TRUNCATE TABLE EXT.tmp_um_body
+TRUNCATE TABLE EXT.tmp_um_smartprtc
+TRUNCATE TABLE EXT.tmp_um_service_prtc
+
+PL/SQL procedure successfully completed.
+
+SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
++ :
++ 1> /mdev/race/ext/tmp/xexm110_2245064.sqlout
+#STEP Step030R
+    export STEPNAME=Step030R
++ STEPNAME=Step030R
++ export STEPNAME
+    echo "    Start ${STEPNAME}    "$(date)
++ date
++ echo '    Start Step030R    Thu' Aug 27 02:08:41 PM PDT 2026
+    Start Step030R    Thu Aug 27 02:08:41 PM PDT 2026
+########################################################################
+#  Step030R   Mini Processes complete; Exit script.                    #
+#             Following steps are only processed for FULL builds       #
+########################################################################
+
+if [ ${RUN_TYPE} = MINI ]
+then
+    echo "MINI processes complete..."
+    exit;
+else
+    export SQL_FULL_PROC_NUM=1
+    xex017.ksh  > ${FULL_LOG1} 2>&1 &
+
+    export SQL_FULL_PROC_NUM=2
+    xex017.ksh  > ${FULL_LOG2} 2>&1 &
+
+    wait
+
+    xex018.ksh >> ${FULL_LOG1} 2>&1 &
+
+    xex019.ksh >> ${FULL_LOG2} 2>&1 &
+
+    wait
+fi
+
++ [ FULL '=' MINI ]
++ SQL_FULL_PROC_NUM=1
++ export SQL_FULL_PROC_NUM
++ SQL_FULL_PROC_NUM=2
++ export SQL_FULL_PROC_NUM
++ wait
++ xex017.ksh
++ xex017.ksh
++ 1> /mdev/race/ext/log/xexm110_full_2_20260827135328.log2 2>& 1
++ 1> /mdev/race/ext/log/xexm110_full_1_20260827135328.log1 2>& 1
++ wait
++ xex019.ksh
++ xex018.ksh
++ 1>> /mdev/race/ext/log/xexm110_full_1_20260827135328.log1 2>& 1
++ 1>> /mdev/race/ext/log/xexm110_full_2_20260827135328.log2 2>& 1
+#   use Korn shell '  grep' command to check if either of the xex017 executes abended
+#   NOTE: you cannot have spaces before and after the = sign! in the export statement
+
+export FOUND_FLG1=`grep -c 'ORA-' ${FULL_LOG1}`
+grep -c 'ORA-' ${FULL_LOG1}
++ grep -c ORA- /mdev/race/ext/log/xexm110_full_1_20260827135328.log1
++ FOUND_FLG1=0
++ export FOUND_FLG1
+export FOUND_FLG2=`grep -c 'ORA-' ${FULL_LOG2}`
+
+grep -c 'ORA-' ${FULL_LOG2}
++ grep -c ORA- /mdev/race/ext/log/xexm110_full_2_20260827135328.log2
++ FOUND_FLG2=0
++ export FOUND_FLG2
+if [ ${FOUND_FLG1} = "0" ] && [ ${FOUND_FLG2} = "0" ]
+then
+    xex999.ksh
+else
+    echo "ERROR OCCURRED DURING BACKGROUND EXECUTION OF xex017. CHECK LOG1 AND LOG2 FILES FOR ORACLE ERROR MSG."
+    exit 1;
+fi
+
++ [ 0 '=' 0 ]
++ [ 0 '=' 0 ]
++ xex999.ksh
+echo "$Id: xex999.ksh,v 1.4 2026/08/05 12:03:20 rj132422 Exp $JOBNAME.ksh,v 1.1 2001/10/26 09:09:09 jn0132 Exp $"
+
++ echo ': xex999.ksh,v 1.4 2026/08/05 12:03:20 rj132422 Exp xexm110.ksh,v 1.1 2001/10/26 09:09:09 jn0132 Exp $'
+: xex999.ksh,v 1.4 2026/08/05 12:03:20 rj132422 Exp xexm110.ksh,v 1.1 2001/10/26 09:09:09 jn0132 Exp $
+sqlplus <<%
+$EXTUSERID
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON SIZE UNLIMITED;
+whenever sqlerror exit sql.sqlcode
+
+BEGIN
+
+PKG_ULTRAMATE_DONE.ULTRAMATE_DONE('$SQL_PARMFILE_PATH'
+                                 ,'$SQL_RUN_TYPE'
+                                 ,'$SQL_PARMFILE'
+                                 ,'$OBJ_DATDIR_UMFULL'
+                                 ,'$OBJ_DATDIR_UMMINI'
+                                 ,'$SQL_VERSION'
+                                 ,'$SQL_RESTART_FLAG');
+END;
+/
+QUIT;
+%
+
++ sqlplus
++ 0<< \%
+ext/ext10g
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON SIZE UNLIMITED;
+whenever sqlerror exit sql.sqlcode
+
+BEGIN
+
+PKG_ULTRAMATE_DONE.ULTRAMATE_DONE('RACE_EXT_PRM_DIR'
+                                 ,'FULL'
+                                 ,'zxex100a.prm'
+                                 ,'RACE_EXT_DAT_UMFULL_DIR'
+                                 ,'RACE_EXT_DAT_UMMINI_DIR'
+                                 ,'PR'
+                                 ,'F');
+END;
+/
+QUIT;
+%
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Thu Aug 27 16:50:14 2026
+Version 23.9.0.25.07
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Thu Aug 27 2026 16:43:55 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> SQL> SQL> SQL> SQL> SQL>   2    3    4    5    6    7    8    9   10   11  Running in mdev environment. ftp_on_flag set to false.
+
+PL/SQL procedure successfully completed.
+
+SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+############################################################################
+#  END                                                                     #
+###########################################################################
+#STEP Step999R
+    export STEPNAME=Step999R
++ STEPNAME=Step999R
++ export STEPNAME
+    echo "    Start ${STEPNAME}    "$(date)
++ date
++ echo '    Start Step999R    Thu' Aug 27 04:52:54 PM PDT 2026
+    Start Step999R    Thu Aug 27 04:52:54 PM PDT 2026
+#############################################################################
+# Step999R    1. Remove all temp files                                      #
+#############################################################################
+
+    rm -f $RACE/tmp/$JOBNAME*
+
++ rm -f /mdev/race/ext/tmp/xexm110_2245064.sqlout
+############################################################################
+# END                                                                     #
+############################################################################
+\n\n**************************************************************************************************************
+Finished: xex015.ksh    Datetime: 08/27/26 16:52:55   Script: /tmp/xexm110_xex015.ksh_run
+**************************************************************************************************************\n\n
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=xexm110_
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Thu Aug 27 16:52:55 2026
+Version 23.9.0.25.07
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Thu Aug 27 2026 13:53:28 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/ext/log/xexm110_full_2_20260717143958.log2 (due to retention)
+oldest file removed: /mdev/race/ext/log/xexm110_full_1_20260717143958.log1 (due to retention)
+oldest file removed: /mdev/race/ext/log/xexm110_full_1_20260717114542.log1 (due to retention)
+\n End rpt_log_retention.ksh
+    End    xexm110   Thu Aug 27 04:52:55 PM PDT 2026

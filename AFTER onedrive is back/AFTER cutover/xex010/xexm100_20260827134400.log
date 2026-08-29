@@ -1,9 +1,9 @@
-    Start  xexm100   Wed Aug 26 12:19:57 PM PDT 2026
+    Start  xexm100   Thu Aug 27 01:44:00 PM PDT 2026
 \n\n**********************************************************************************
 Restart Step was NOT included in the job execution. Job will run from the beginning.
 **********************************************************************************\n\n
 \n\n**************************************************************************************************************
-Calling:  xex010.ksh    Datetime: 08/26/26 12:19:57   Script: /tmp/xexm100_xex010.ksh_run
+Calling:  xex010.ksh    Datetime: 08/27/26 13:44:00   Script: /tmp/xexm100_xex010.ksh_run
 **************************************************************************************************************\n\n
 : xex010.ksh,v 1.9 2026/08/25 18:52:24 rj132422 Exp xexm100.ksh,v 1.1 2001/10/26 09:09:09 jn0132 Exp $
 export PROCNAME=$(basename $0 .ksh_run)
@@ -35,8 +35,8 @@ trap 'abndalrt.ksh $?' err
 + PARMFILE=zxex100a.prm
     VERSION=`       grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $3}'`
        grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $3}'
-+ awk '{print $3}'
 + grep xexm100.ksh /mdev/race/ext/prm/zxex000.prm
++ awk '{print $3}'
 + VERSION=PR
     XFER_FILE=`     grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $7}'`
      grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $7}'
@@ -45,14 +45,14 @@ trap 'abndalrt.ksh $?' err
 + XFER_FILE=N/A
     RUN_TYPE=`      grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $8}'`
       grep $JOBNAME.ksh $RACE/prm/zxex000.prm |awk '{print $8}'
-+ awk '{print $8}'
 + grep xexm100.ksh /mdev/race/ext/prm/zxex000.prm
++ awk '{print $8}'
 + RUN_TYPE=FULL
     SYS_DATE=`date +%EY%Om%d%H%M%OS`
 
 date +%EY%Om%d%H%M%OS
 + date +%EY%Om%d%H%M%OS
-+ SYS_DATE=20260826121957
++ SYS_DATE=20260827134400
     export SQL_JOBNAME=$JOBNAME
 + SQL_JOBNAME=xexm100
 + export SQL_JOBNAME
@@ -67,7 +67,7 @@ date +%EY%Om%d%H%M%OS
 + export SQL_VERSION
     export SQL_SYS_DATE=$SYS_DATE
 
-+ SQL_SYS_DATE=20260826121957
++ SQL_SYS_DATE=20260827134400
 + export SQL_SYS_DATE
     export EXTUSERID=`cat $RACE/prm/zxexpass.prm`
 
@@ -81,8 +81,8 @@ cat $RACE/prm/zxexpass.prm
 + export STEPNAME
     echo "    Start " ${STEPNAME} "    "$(date)
 + date
-+ echo '    Start ' Step010R '    Wed' Aug 26 12:19:57 PM PDT 2026
-    Start  Step010R     Wed Aug 26 12:19:57 PM PDT 2026
++ echo '    Start ' Step010R '    Thu' Aug 27 01:44:00 PM PDT 2026
+    Start  Step010R     Thu Aug 27 01:44:00 PM PDT 2026
 #*******************************************************************
 #* Step010R: REMOVE ANY PREVIOUSLY CREATED DATASET                 *
 #*           UPLOAD NOVELL MFR/SRVC: mprod/race/bcsprod.prm        *
@@ -155,8 +155,8 @@ no translate performed .......
 + export STEPNAME
     echo "    Start ${STEPNAME}    "$(date)
 + date
-+ echo '    Start Step020R    Wed' Aug 26 12:19:57 PM PDT 2026
-    Start Step020R    Wed Aug 26 12:19:57 PM PDT 2026
++ echo '    Start Step020R    Thu' Aug 27 01:44:00 PM PDT 2026
+    Start Step020R    Thu Aug 27 01:44:00 PM PDT 2026
 #######################################################################
 #  Step020R   1. Execute procedure sp_forward_pointer_purge to remove #
 #                pointed lines more than a year old prior to extract  #
@@ -221,8 +221,8 @@ CODE_BLOCK
 + export STEPNAME
     echo "    Start ${STEPNAME}    "$(date)
 + date
-+ echo '    Start Step030R    Wed' Aug 26 12:19:59 PM PDT 2026
-    Start Step030R    Wed Aug 26 12:19:59 PM PDT 2026
++ echo '    Start Step030R    Thu' Aug 27 01:44:14 PM PDT 2026
+    Start Step030R    Thu Aug 27 01:44:14 PM PDT 2026
 #######################################################################
 #  Step030R   1. Execute procedure sp_update_special_graphics to 
 #                update Special_Material_Graphic table with new png
@@ -235,14 +235,14 @@ export LOG="$(basename $0 .sql)".log
 + export LOG
 export ADD_RPT_NAME=${JOBNAME}a_spec_graphic_add_$(date +'%C%y%m%d%H%M%S').rpt
 + date +%C%y%m%d%H%M%S
-+ ADD_RPT_NAME=xexm100a_spec_graphic_add_20260826121959.rpt
++ ADD_RPT_NAME=xexm100a_spec_graphic_add_20260827134414.rpt
 + export ADD_RPT_NAME
 export ALL_RPT_NAME=${JOBNAME}b_spec_graphic_all_$(date +'%C%y%m%d%H%M%S').rpt
 + date +%C%y%m%d%H%M%S
-+ ALL_RPT_NAME=xexm100b_spec_graphic_all_20260826121959.rpt
++ ALL_RPT_NAME=xexm100b_spec_graphic_all_20260827134414.rpt
 + export ALL_RPT_NAME
 export SOURCE_FILE=${RACE}/rpt/${ALL_RPT_NAME}
-+ SOURCE_FILE=/mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260826121959.rpt
++ SOURCE_FILE=/mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260827134414.rpt
 + export SOURCE_FILE
 export NT_FILE=${JOBNAME}b_spec_graphic_all_rpt.txt
 + NT_FILE=xexm100b_spec_graphic_all_rpt.txt
@@ -310,44 +310,24 @@ SET LINESIZE 80;
 SET SERVEROUTPUT ON; 
 whenever sqlerror exit sql.sqlcode
 
-exec sp_update_special_graphics(p_in_run_type => 'FULL',                            p_in_rptpath  => 'RACE_EXT_RPT_DIR',                            p_in_add_rpt  => 'xexm100a_spec_graphic_add_20260826121959.rpt',                            p_in_all_rpt  => 'xexm100b_spec_graphic_all_20260826121959.rpt');
+exec sp_update_special_graphics(p_in_run_type => 'FULL',                            p_in_rptpath  => 'RACE_EXT_RPT_DIR',                            p_in_add_rpt  => 'xexm100a_spec_graphic_add_20260827134414.rpt',                            p_in_all_rpt  => 'xexm100b_spec_graphic_all_20260827134414.rpt');
 
 QUIT;
 CODE_BLOCK
 2>& 1 1> xexm100_xex010.ksh_run.log
 + email_rpt.ksh xexm100a
 RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
-LATEST REPORT TO BE EMAILED: xexm100a_spec_graphic_add_20260826121959.txt from /mdev/race/ext/tmp.
-
-SQL*Plus: Release 23.0.0.0.0 - Production on Wed Aug 26 12:20:06 2026
-Version 23.9.0.25.07
-
-Copyright (c) 1982, 2025, Oracle.  All rights reserved.
-
-Enter user-name: Last Successful login time: Wed Aug 26 2026 11:15:59 -07:00
-
-Connected to:
-Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
-Version 19.27.0.0.0
-
-SQL> SQL> SQL> SQL> SQL> 
-*** WARNING *** Report ID: xexm100a is not defined in email_xref table or distribution has been set to
-Display Only in report_mgmt table. It has not been emailed to anyone.
-
-PL/SQL procedure successfully completed.
-
-SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
-Version 19.27.0.0.0
+LATEST REPORT TO BE EMAILED: xexm100a_spec_graphic_add_20260827134414.txt from /mdev/race/ext/tmp.
 + rpt_log_retention.ksh xexm100a
 \n Begin rpt_log_retention.ksh \n
 Processing REPORTID=xexm100a
 
-SQL*Plus: Release 23.0.0.0.0 - Production on Wed Aug 26 12:20:06 2026
-Version 23.9.0.25.07
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Aug 27 13:45:22 2026
+Version 19.28.0.0.0
 
 Copyright (c) 1982, 2025, Oracle.  All rights reserved.
 
-Enter user-name: Last Successful login time: Wed Aug 26 2026 12:20:06 -07:00
+Enter user-name: Last Successful login time: Thu Aug 27 2026 13:45:22 -07:00
 
 Connected to:
 Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
@@ -358,18 +338,18 @@ PL/SQL procedure successfully completed.
 
 SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
 Version 19.27.0.0.0
-oldest file removed: /mdev/race/ext/rpt/xexm100a_spec_graphic_add_20260716214225.rpt (due to retention)
+oldest file removed: /mdev/race/ext/rpt/xexm100a_spec_graphic_add_20260826121959.rpt (due to retention)
 \n End rpt_log_retention.ksh
 + rpt_log_retention.ksh xexm100b
 \n Begin rpt_log_retention.ksh \n
 Processing REPORTID=xexm100b
 
-SQL*Plus: Release 23.0.0.0.0 - Production on Wed Aug 26 12:20:06 2026
-Version 23.9.0.25.07
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Aug 27 13:45:22 2026
+Version 19.28.0.0.0
 
 Copyright (c) 1982, 2025, Oracle.  All rights reserved.
 
-Enter user-name: Last Successful login time: Wed Aug 26 2026 12:20:06 -07:00
+Enter user-name: Last Successful login time: Thu Aug 27 2026 13:45:22 -07:00
 
 Connected to:
 Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
@@ -380,37 +360,74 @@ PL/SQL procedure successfully completed.
 
 SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
 Version 19.27.0.0.0
-oldest file removed: /mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260716214225.rpt (due to retention)
+oldest file removed: /mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260826121959.rpt (due to retention)
 \n End rpt_log_retention.ksh
 + USRDAT_DIR=/prod/data/ftp/Business_Partners/mitchell/mdev/usrdat
 + SOURCE_FILE_CRLF=/mdev/race/ext/tmp/xexm100b_spec_graphic_all_rpt.txt.crlf
-+ sed 's/$/\r/' /mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260826121959.rpt
++ sed 's/$/\r/' /mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260827134414.rpt
 + 1> /mdev/race/ext/tmp/xexm100b_spec_graphic_all_rpt.txt.crlf
 + tee /mdev/race/ext/tmp/xexm100_rptxfer.tmp
 + scp /mdev/race/ext/tmp/xexm100b_spec_graphic_all_rpt.txt.crlf ftp-ssh.mitchell.com:/prod/data/ftp/Business_Partners/mitchell/mdev/usrdat/xexm100b_spec_graphic_all_rpt.txt
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
-Someone could be eavesdropping on you right now (man-in-the-middle attack)!
-It is also possible that a host key has just been changed.
-The fingerprint for the ED25519 key sent by the remote host is
-SHA256:LwcGfzfVinDiOZDQ/b5JCLOj5qgdyoKfiZLhs/h959I.
-Please contact your system administrator.
-Add correct host key in /home/corp.int/rj132422/.ssh/known_hosts to get rid of this message.
-Offending ED25519 key in /home/corp.int/rj132422/.ssh/known_hosts:5
-Host key for 10.0.23.119 has changed and you have requested strict checking.
-Host key verification failed.
-scp: Connection closed
-+ awk '{print $1}'
+
+This system is for AUTHORIZED USERS ONLY.  
+Individual use of this computer and/or network without authority, or in excess 
+of your authority, is strictly prohibited.  Monitoring of transmissions or 
+transactional information may be conducted to ensure the proper functioning 
+and security of system resources.  Anyone using this system expressly consents 
+to such monitoring and is advised that if such monitoring reveals possible 
+criminal activity or policy violation, system personnel may provide evidence
+of such monitoring to law enforcement or to other senior officials for 
+disciplinary action.
+
 + wc -c /mdev/race/ext/tmp/xexm100b_spec_graphic_all_rpt.txt.crlf
++ awk '{print $1}'
 + GOODBYTECOUNT=4572705
 + ssh -nq ftp-ssh.mitchell.com 'wc -c < /prod/data/ftp/Business_Partners/mitchell/mdev/usrdat/xexm100b_spec_graphic_all_rpt.txt'
-sh: /prod/data/ftp/Business_Partners/mitchell/mdev/usrdat/xexm100b_spec_graphic_all_rpt.txt: No such file or directory
-+ FTPBYTECOUNT=''
-abndalrt.ksh $?+ abndalrt.ksh 1
++ FTPBYTECOUNT=4572705
++ [ 4572705 -eq 4572705 ]
++ echo 'Successful transfer /mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260827134414.rpt to /prod/data/ftp/Business_Partners/mitchell/mdev/usrdat/xexm100b_spec_graphic_all_rpt.txt: count = 4572705'
+Successful transfer /mdev/race/ext/rpt/xexm100b_spec_graphic_all_20260827134414.rpt to /prod/data/ftp/Business_Partners/mitchell/mdev/usrdat/xexm100b_spec_graphic_all_rpt.txt: count = 4572705
++ rm -f /mdev/race/ext/tmp/xexm100b_spec_graphic_all_rpt.txt.crlf
+#STEP Step999R
+    export STEPNAME=Step999R
++ STEPNAME=Step999R
++ export STEPNAME
+    echo "    Start ${STEPNAME}    "$(date)
++ date
++ echo '    Start Step999R    Thu' Aug 27 01:45:25 PM PDT 2026
+    Start Step999R    Thu Aug 27 01:45:25 PM PDT 2026
+#############################################################################
+# Step999R    1. Remove all temp files                                      #
+#############################################################################
 
- !!  PRODUCTION JOB--CONDITION CODE ERROR  !!
- !!     REPORT TO PRODUCTION CONTROL       !!
-   ** xexm100:xexm100_xex010[Step030R] failed, rc = 1 ** 08/26/26 12:20:07
-/stage/race/share/bin/exec_restart.ksh: line 94: 2168438: Killed
+    rm -f $RACE/tmp/$JOBNAME*
+
++ rm -f /mdev/race/ext/tmp/xexm100_rptxfer.tmp
+############################################################################
+#  END                                                                     #
+###########################################################################
+\n\n**************************************************************************************************************
+Finished: xex010.ksh    Datetime: 08/27/26 13:45:25   Script: /tmp/xexm100_xex010.ksh_run
+**************************************************************************************************************\n\n
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=xexm100_
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Aug 27 13:45:25 2026
+Version 19.28.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Thu Aug 27 2026 13:45:22 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.27.0.0.0
+oldest file removed: /mdev/race/ext/log/xexm100_20260826121957.log (due to retention)
+\n End rpt_log_retention.ksh
+    End    xexm100   Thu Aug 27 01:45:25 PM PDT 2026
