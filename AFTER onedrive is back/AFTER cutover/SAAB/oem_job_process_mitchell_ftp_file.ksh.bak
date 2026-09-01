@@ -113,18 +113,15 @@ then
        exit 0                           # exit if first g01
     fi
       
-    export FILE_SUFFIX="."$( echo ${INPUT_FILE_NAME} | awk -F "." '{ print $NF }' | tr '[:upper:]' '[:lower:]' )
+    export FILE_SUFFIX="."$( echo ${INPUT_FILE_NAME} | awk -F "." '{ print $NF }' )
     echo "\nFILE_SUFFIX: ${FILE_SUFFIX}\n"
-    # rj132422 - prod3nt sunset: fileget.ksh unzipped these disguised-ZIP suffixes before delivery; restored here (was: .zip/.ZIP only)
-    case ${FILE_SUFFIX} in
-      .zip|.zzz|.piz|.zzp|.zpp)
-        echo "gunzip -c ${FTP_XFR_FILE_NAME} > ${STEP010_FILEOUT}"
-        gunzip -c ${FTP_XFR_FILE_NAME} > ${STEP010_FILEOUT}
-        ;;
-      *)
-        cp ${FTP_XFR_FILE_NAME} ${STEP010_FILEOUT}
-        ;;
-    esac
+    if [[ "${FILE_SUFFIX}" = ".zip" || "${FILE_SUFFIX}" = ".ZIP" ]]
+    then
+      echo "gunzip -c ${FTP_XFR_FILE_NAME} > ${STEP010_FILEOUT}"
+      gunzip -c ${FTP_XFR_FILE_NAME} > ${STEP010_FILEOUT}
+    else
+      cp ${FTP_XFR_FILE_NAME} ${STEP010_FILEOUT}
+    fi
 
     RECCNT1=$(wc -c ${STEP010_FILEOUT} | awk ' {print $1}' )
     if [ "${RECCNT1}" = "0" ]
