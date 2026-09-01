@@ -1,3 +1,26 @@
+OK mptr799	TRP/US	PACCAR (TRP)
+OK mptr289	KAW/US	Kawasaki
+OK mptr829	TSHR/US	Truck Shrouds, LLC
+OK mptr249	HDM/US	Harley Davidson
+mptr809	BFIT/US	BestFit
+
+email
+mptr825	LYNN/US	LYNN Truck Parts
+
+external
+
+mptr819	LKQT/US	LKQ (LKQT)
+mptr839	TSEM/US	Tesla Commercial Semi
+mptr770	FNTR/US	Frontier Truck Parts
+
+\\pawsvm7001a\EditorialContent\Forms\Installation\RACE\race_aws_dev.jnlp]
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+----------------------------------------------------------------
+----------------------------------------------------------------
+
 
 checkin process and mptr300 execution on pawapp7017l
  
@@ -529,4 +552,27 @@ OK /prod/race/share/bin/prod_move oem_ref_mptr770_ftp_fntr_to_editorial.ksh oem/
 OK rcheck_out -l xex010.ksh ext/bin  
 OK rcheck_in -d "AIX to RHEL migration" xex010.ksh ext/bin 
 /prod/race/share/bin/prod_move xex010.ksh ext/bin  
+(WAITING FOR TICKET USRDAT FOLDER) !!!!!!!
 
+OK rcheck_out -l oem_ref_mptr825_ftp_lynn_to_editorial.ksh oem/bin  
+OK rcheck_in -d "AIX to RHEL migration" oem_ref_mptr825_ftp_lynn_to_editorial.ksh oem/bin 
+/prod/race/share/bin/prod_move oem_ref_mptr825_ftp_lynn_to_editorial.ksh oem/bin  
+
+
+
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+ 
+
+OK rcheck_out -l xex010.ksh ext/bin  
+OK rcheck_in -d "AIX to RHEL migration" xex010.ksh ext/bin 
+OK at first run in prod, I forgot /prod/race/share/bin/prod_move xex010.ksh ext/bin 
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
+OK rcheck_out -l raceftp.ksh share/bin  
+OK rcheck_in -d "AIX to RHEL migration" raceftp.ksh share/bin 
+OK /prod/race/share/bin/prod_move raceftp.ksh share/bin  
