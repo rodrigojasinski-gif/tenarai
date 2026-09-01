@@ -78,19 +78,13 @@ then
   fi
 
 		    # Determine if the FTP'd file is zipped (or ZIPped)
-  # rj132422 - use last suffix, not 2nd field, so names with extra dots resolve correctly (was: cut -f2 -d".")
-  export FILE_SUFFIX=$(echo ${INPUT_FILE_NAME##*.} | tr '[:upper:]' '[:lower:]')
-  # rj132422 - prod3nt sunset: fileget.ksh unzipped these disguised-ZIP suffixes before delivery; restored here.
-  # rj132422 - unzip (not gunzip): these are ZIP containers; AIX gunzip tolerated them, RHEL gunzip does not.
-  case ${FILE_SUFFIX} in
-     zip|zzz|piz|zzp|zpp)
-        echo "\nFILE_SUFFIX --> ${FILE_SUFFIX} : unzipping ${FTP_PULL_TARGET}\n"
-        unzip -p ${FTP_PULL_TARGET} > ${STEP010_FILEOUT}
-        ;;
-     *)
-        cp ${FTP_PULL_TARGET} ${STEP010_FILEOUT}
-        ;;
-  esac
+  export FILE_SUFFIX=`echo ${INPUT_FILE_NAME} | cut -f2  -d"."`
+  if [[ "${FILE_SUFFIX}" = "zip" || "${FILE_SUFFIX}" = "ZIP" ]]
+  then
+     gunzip -c ${FTP_PULL_TARGET} > ${STEP010_FILEOUT}
+  else
+    cp ${FTP_PULL_TARGET} ${STEP010_FILEOUT}
+  fi
 
   RECCNT1=$(wc -c ${STEP010_FILEOUT} | awk ' {print $1}' )
   if [ "${RECCNT1}" = "0" ]
