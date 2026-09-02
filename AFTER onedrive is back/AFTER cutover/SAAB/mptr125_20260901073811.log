@@ -789,3 +789,707 @@ XTAB_TABLE_NAME=xtab_oem_ref_mptr125_saa
    ** mptr125:mptr125_oem_ref[Step049R] failed, rc = 7 **
 \n\n***  End  oem_abndalrt.ksh ***\n\n
 /prod/race/share/bin/exec_restart.ksh: line 94: 973146: Killed
+    Start  mptr125   Wed Sep 2 07:36:38 AM PDT 2026
+\n\n**********************************************************************************
+Restart Step Step049R has been included in the job execution.
+**********************************************************************************\n\n
+\n\n**************************************************************************************************************
+Calling:  oem_ref.ksh Step049R   Datetime: 09/02/26 07:36:38   Script: /tmp/mptr125_oem_ref.ksh_run
+**************************************************************************************************************\n\n
+RCS : oem_ref.ksh,v 1.39 2024/01/17 23:23:23 pg2697 Exp $
++ print ProcessId '=' 1008255
+ProcessId = 1008255
++ trap 'oem_abndalrt.ksh $?' err
++ basename /tmp/mptr125_oem_ref.ksh_run .ksh_run
++ PROCNAME=mptr125_oem_ref
++ export PROCNAME
++ cat /prod/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ export MPTUSERID
++ basename /prod/race/oem/log/mptr125_20260901073811.log
++ LOGFILE=mptr125_20260901073811.log
++ export LOGFILE
++ echo '\n\n Build environment variables'
+\n\n Build environment variables
++ . oem_job.ksh
++ echo 'RCS : oem_job.ksh,v 1.9 2026/08/07 19:34:48 rj132422 Exp $'
+RCS : oem_job.ksh,v 1.9 2026/08/07 19:34:48 rj132422 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /prod/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /prod/race/oem/log/mptr125_20260901073811.log
++ LOGFILE=mptr125_20260901073811.log
++ REFORMATJOB=mptr125
++ UPDATEJOB=mptr125
++ WORKFILE=mptr125_oem_job.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr125',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr125_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_TMP_DIR',                                       p_log_filename  => 'mptr125_20260901073811.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=/prod/race/oem/tmp/mptr125_20260901073811.db.log
++ [ -s /prod/race/oem/tmp/mptr125_20260901073811.db.log ]
++ cat /prod/race/oem/tmp/mptr125_20260901073811.db.log
++ 1>> /prod/race/oem/log/mptr125_20260901073811.log
+
+1^PartsPriceUS.zpp^mptr125_xtab_oem_ref_mptr125_saa_raw.dat^xtab_oem_ref_mptr125_saa^^N^A^,^^mptr125_araw_saa_us.dat^^1^07/27/2026^^^^
+
+
+mptr125,mptr126,042,US,SAA,saa,zmpt126a,042,US,saa_us,saaus,mpt126e,pkg_oem_ref_041,,Y,N,N,,U,N,
+
++ rm /prod/race/oem/tmp/mptr125_20260901073811.db.log
++ WORKFILE=/prod/race/oem/tmp/mptr125_oem_job.tmp
++ export WORKFILE
++ cut -f1 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ REFORMATJOB=mptr125
++ export REFORMATJOB
++ [ -z mptr125 ]
++ cut -f2 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ UPDATEJOB=mptr126
++ export UPDATEJOB
++ cut -f3 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ JOBOEM=042
++ export JOBOEM
++ cut -f4 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ JOBCTRY=US
++ export JOBCTRY
++ cut -f5 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ JOBOEMNAME=SAA
++ export JOBOEMNAME
++ cut -f6 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ OEMABBRLOWER=saa
++ export OEMABBRLOWER
++ cut -f7 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ JOBPARM=zmpt126a
++ export JOBPARM
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ cut -f8 -d,
++ FORMATOEM=042
++ export FORMATOEM
++ cut -f9 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ FORMATCTRY=US
++ export FORMATCTRY
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ cut -f10 -d,
++ JOBFILE_OEMCTRY=saa_us
++ export JOBFILE_OEMCTRY
++ cut -f11 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ REPORTSUFFIX=saaus
++ export REPORTSUFFIX
++ cut -f12 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ REVERSE_SUPER_JOBPARM=mpt126e
++ export REVERSE_SUPER_JOBPARM
++ cut -f13 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ PACKAGE_NAME_1=pkg_oem_ref_041
++ export PACKAGE_NAME_1
++ cut -f14 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ PACKAGE_NAME_2=''
++ export PACKAGE_NAME_2
++ cut -f15 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ DUPLICATE_PARTS_EXPECTED_FLAG=Y
++ export DUPLICATE_PARTS_EXPECTED_FLAG
++ cut -f16 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ REFORMAT_BUILDS_RTRANS_FLAG=N
++ export REFORMAT_BUILDS_RTRANS_FLAG
++ cut -f17 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ OBSOLETE_JOB_FLAG=N
++ export OBSOLETE_JOB_FLAG
++ cut -f18 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ PREPROCESS_SCRIPT_NAME=''
++ export PREPROCESS_SCRIPT_NAME
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+SET SERVEROUTPUT ON SIZE 1000000
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr125',                                                           p_log_directory => 'RACE_OEM_TMP_DIR',                                                        p_log_filename  => 'mptr125_20260901073811.db.log',                                                           p_debug_level   => '0');
+QUIT;
+%
+2>& 1
++ DB_LOG=/prod/race/oem/tmp/mptr125_20260901073811.db.log
++ [ -s /prod/race/oem/tmp/mptr125_20260901073811.db.log ]
++ cat /prod/race/oem/tmp/mptr125_20260901073811.db.log
++ 1>> /prod/race/oem/log/mptr125_20260901073811.log
+
+Start mptr125 pkg_oem_ref_utilities.p_check_gtmp_indexes
+
+
+ End  mptr125 pkg_oem_ref_utilities.p_check_gtmp_indexes
++ rm /prod/race/oem/tmp/mptr125_20260901073811.db.log
++ . oem_job_notify.ksh
++ echo 'RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $'
+RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /prod/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /prod/race/oem/log/mptr125_20260901073811.log
++ LOGFILE=mptr125_20260901073811.log
++ WORKFILE=mptr125_oem_job_notify.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_notify.p_oem_job_notify_sel_01(p_job  =>          'mptr125',                                                        p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                     p_tmp_filename  => 'mptr125_oem_job_notify.tmp',                                                       p_log_directory => 'RACE_OEM_LOG_DIR',                                                     p_log_filename  => 'mptr125_20260901073811.log');
+QUIT;
+%
+2>& 1
++ WORKFILE=/prod/race/oem/tmp/mptr125_oem_job_notify.tmp
++ cat /prod/race/oem/tmp/mptr125_oem_job_notify.tmp
++ cut -f2 -d^
++ SEND_EMAIL_FLAG=''
++ cut -f3 -d^
++ cat /prod/race/oem/tmp/mptr125_oem_job_notify.tmp
++ EMAIL_ADDRESS_LIST=''
++ cut -f4 -d^
++ cat /prod/race/oem/tmp/mptr125_oem_job_notify.tmp
++ EMAIL_BODY=''
++ cut -f5 -d^
++ cat /prod/race/oem/tmp/mptr125_oem_job_notify.tmp
++ RESET_SEND_EMAIL_FLAG=''
++ [ -z '' ]
++ echo 'Notification NOT Required'
+Notification NOT Required
++ echo ' '
+ 
++ . oem_job_datafile.ksh
++ echo 'RCS : oem_job_datafile.ksh,v 1.9 2026/08/07 19:35:00 rj132422 Exp $'
+RCS : oem_job_datafile.ksh,v 1.9 2026/08/07 19:35:00 rj132422 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /prod/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /prod/race/oem/log/mptr125_20260901073811.log
++ LOGFILE=mptr125_20260901073811.log
++ WORKFILE=mptr125_oem_job_datafile.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_datafile.p_oem_job_datafile_sel_04(p_reformat_job  => 'mptr125',                                                         p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                          p_tmp_filename  => 'mptr125_oem_job_datafile.tmp',                                                            p_log_directory => 'RACE_OEM_TMP_DIR',                                                          p_log_filename  => 'mptr125_20260901073811.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=RACE_OEM_TMP_DIR/mptr125_20260901073811.db.log
++ [ -s RACE_OEM_TMP_DIR/mptr125_20260901073811.db.log ]
++ WORKFILE=/prod/race/oem/tmp/mptr125_oem_job_datafile.tmp
++ export WORKFILE
++ STEPNAME=Step049R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr125_oem_ref Step049R - Price Format Checker - ' 09/02/26 07:36:39 ' <--- START\n\n'
+\n\nSTART ---> mptr125_oem_ref Step049R - Price Format Checker -  09/02/26 07:36:39  <--- START\n\n
++ oem_job_status_update.ksh R 'Step049R p_oem_ref_price_check'
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET ECHO ON;
+SET FEEDBACK OFF;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_price_check.p_main_price_check(p_reformat_job       => 'mptr125',                                                          p_log_directory      => 'RACE_OEM_LOG_DIR',                                                           p_log_filename       => 'mptr125_20260901073811.log',                                                              p_debug_level        => '0',                                                     p_dbms_profiler_flag => 'N');
+QUIT;
+%
+2>& 1
+BEGIN pkg_oem_ref_price_check.p_main_price_check(p_reformat_job       => 'mptr125',							     p_log_directory	  => 'RACE_OEM_LOG_DIR',							   p_log_filename	=> 'mptr125_20260901073811.log',							      p_debug_level	   => '0',						       p_dbms_profiler_flag => 'N'); END;
+
+*
+ERROR at line 1:
+ORA-20999: ABEND! Contact On-call Programmer
+ORA-06512: at "RACE.PKG_COMMON_UTILITIES", line 491
+ORA-06512: at "RACE.PKG_OEM_REF_PRICE_CHECK", line 146
+ORA-06512: at line 1
+
+
++ oem_abndalrt.ksh 7
+\n\n*** Begin oem_abndalrt.ksh ***\n\n
+}
+_=*1008328*/bin/env
+act_lvl=prod
+ACT_LVL=prod
+_AST_FEATURES=UNIVERSE - ucb
+A__z="*SHLVL="*TMOUT
+BASH_FUNC_which%%=() {  ( alias;
+COBDIR=/opt/rocketsoftware/VisualCOBOL
+DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/483426703/bus
+DEBUGINFOD_IMA_CERT_PATH=/etc/keys/ima:
+DUPLICATE_PARTS_EXPECTED_FLAG=Y
+ eval ${which_declare} ) | /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@
+FORMATCTRY=US
+FORMATOEM=042
+FTP_BUSINESS_PATH=/ftp1/Business_Partners
+FTP_MITCHELL_BUSINESS_PATH=/prod/data/ftp/Business_Partners/mitchell
+FTP_SERVER=prod3nt.production.int
+FTP_SFTP_USER=race_b1@
+FTP_SITE=ftp-ssh.mitchell.com
+HOME=/home/production.int/svc-apd-race-prd
+JOBCTRY=US
+JOBFILE_OEMCTRY=saa_us
+JOBLOGNAME=/prod/race/oem/log/mptr125_20260901073811.log
+JOBNAME=mptr125
+JOBOEM=042
+JOBOEMNAME=SAA
+JOBPARM=zmpt126a
+LANG=en_US.UTF-8
+LD_LIBRARY_PATH=/u01/app/oracle/product/19.3.0/client64/lib:/opt/rocketsoftware/VisualCOBOL/lib:/opt/rocketsoftware/VisualCOBOL/lib64:
+LESSOPEN=||/usr/bin/lesspipe.sh %s
+LOGDIR=/prod/race/oem/log
+LOGFILE=mptr125_20260901073811.log
+LOGNAME=svc-apd-race-prd@production.int
+LOG=/prod/race/oem/tmp/mptr125_1008229.sqlout
+MAIL=/var/spool/mail/svc-apd-race-prd@production.int
+MF_LICENSE_DIR=/opt/rocketsoftware/VisualCOBOL/etc
+MOTD_SHOWN=pam
+MPTUSERID=racejob/q1w2e3r4
+NOVELL=prod/
+OBJ_DATDIR=RACE_OEM_DAT_DIR
+OBJ_LOGDIR=RACE_OEM_LOG_DIR
+OBJ_PRMDIR=RACE_OEM_PRM_DIR
+OBJ_RPTDIR=RACE_OEM_RPT_DIR
+OBJ_TMPDIR=RACE_OEM_TMP_DIR
+OBSOLETE_JOB_FLAG=N
+OEMABBRLOWER=saa
+ORACLE_BASE=/u01/app/oracle
+ORACLE_HOME=/u01/app/oracle/product/19.3.0/client64
+ORACLE_SID=RADP.MITCHELL.COM
+PACKAGE_NAME_1=pkg_oem_ref_041
+PACKAGE_NAME_2=
+PATH=/prod/race/oem/bin:/prod/race/share/bin:/u01/app/oracle/product/19.3.0/client64/bin:/usr/lib/oracle/23/client64/bin:/opt/microfocus/cobol/bin:/home/production.int/svc-apd-race-prd/bin:/home/production.int/svc-apd-race-prd/.local/bin:/home/production.int/svc-apd-race-prd/bin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/prod/race/share/bin:/stage/race/share/bin
+PREPROCESS_SCRIPT_NAME=
+PROCNAME=mptr125_oem_ref
+PRODHOST=pawapp7017l
+PWD=/home/production.int/svc-apd-race-prd
+RACE_DBMS_PROFILER_FLAG=N
+RACE_DEBUG_LEVEL=0
+RACE_HOST=race
+RACE=/prod/race/oem
+REFORMAT_BUILDS_RTRANS_FLAG=N
+REFORMATJOB=mptr125
+REPORTSUFFIX=saaus
+RESTART_FILE_SEQUENCE=
+RESTART=Step049R
+REVERSE_SUPER_JOBPARM=mpt126e
+S_COLORS=auto
+SELINUX_LEVEL_REQUESTED=
+SELINUX_ROLE_REQUESTED=
+SELINUX_USE_CURRENT_RANGE=
+SHELL=/bin/ksh
+SHLVL=5
+SSH_CLIENT=10.136.86.98 60277 22
+SSH_CONNECTION=10.136.86.98 60277 10.136.86.51 22
+STEPNAME=Step049R
+TESTHOST=TESTHOSTgoesHERE
+THISHOST=pawapp7017l
+TMOUT=28800
+TNS_ADMIN=/u01/app/oracle/product/19.3.0/client64/network/admin
+TWO_TASK=RADP.MITCHELL.COM
+UPDATEJOB=mptr126
+USER=svc-apd-race-prd@production.int
+which_declare=declare -f
+WORKFILE=/prod/race/oem/tmp/mptr125_oem_job_datafile.tmp
+XDG_DATA_DIRS=/home/production.int/svc-apd-race-prd/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share
+XDG_RUNTIME_DIR=/run/user/483426703
+XDG_SESSION_CLASS=user
+XDG_SESSION_ID=2225
+XDG_SESSION_TYPE=tty
+
+ !!  PRODUCTION JOB--CONDITION CODE ERROR  !!
+ !!     REPORT TO PRODUCTION CONTROL       !!
+   ** mptr125:mptr125_oem_ref[Step049R] failed, rc = 7 **
+\n\n***  End  oem_abndalrt.ksh ***\n\n
+/prod/race/share/bin/exec_restart.ksh: line 94: 1008255: Killed
+    Start  mptr125   Wed Sep 2 07:55:13 AM PDT 2026
+\n\n**********************************************************************************
+Restart Step Step049R has been included in the job execution.
+**********************************************************************************\n\n
+\n\n**************************************************************************************************************
+Calling:  oem_ref.ksh Step049R   Datetime: 09/02/26 07:55:13   Script: /tmp/mptr125_oem_ref.ksh_run
+**************************************************************************************************************\n\n
+RCS : oem_ref.ksh,v 1.39 2024/01/17 23:23:23 pg2697 Exp $
++ print ProcessId '=' 1010200
+ProcessId = 1010200
++ trap 'oem_abndalrt.ksh $?' err
++ basename /tmp/mptr125_oem_ref.ksh_run .ksh_run
++ PROCNAME=mptr125_oem_ref
++ export PROCNAME
++ cat /prod/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ export MPTUSERID
++ basename /prod/race/oem/log/mptr125_20260901073811.log
++ LOGFILE=mptr125_20260901073811.log
++ export LOGFILE
++ echo '\n\n Build environment variables'
+\n\n Build environment variables
++ . oem_job.ksh
++ echo 'RCS : oem_job.ksh,v 1.9 2026/08/07 19:34:48 rj132422 Exp $'
+RCS : oem_job.ksh,v 1.9 2026/08/07 19:34:48 rj132422 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /prod/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /prod/race/oem/log/mptr125_20260901073811.log
++ LOGFILE=mptr125_20260901073811.log
++ REFORMATJOB=mptr125
++ UPDATEJOB=mptr125
++ WORKFILE=mptr125_oem_job.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job.p_oem_job_sel_03(p_jobname       => 'mptr125',                                          p_tmp_directory => 'RACE_OEM_TMP_DIR',                                       p_tmp_filename  => 'mptr125_oem_job.tmp',                                         p_log_directory => 'RACE_OEM_TMP_DIR',                                       p_log_filename  => 'mptr125_20260901073811.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=/prod/race/oem/tmp/mptr125_20260901073811.db.log
++ [ -s /prod/race/oem/tmp/mptr125_20260901073811.db.log ]
++ cat /prod/race/oem/tmp/mptr125_20260901073811.db.log
++ 1>> /prod/race/oem/log/mptr125_20260901073811.log
+
+1^PartsPriceUS.zpp^mptr125_xtab_oem_ref_mptr125_saa_raw.dat^xtab_oem_ref_mptr125_saa^^N^A^,^^mptr125_araw_saa_us.dat^^1^09/01/2026^^^^
+
+
+mptr125,mptr126,042,US,SAA,saa,zmpt126a,042,US,saa_us,saaus,mpt126e,pkg_oem_ref_041,,Y,N,N,,U,N,
+
++ rm /prod/race/oem/tmp/mptr125_20260901073811.db.log
++ WORKFILE=/prod/race/oem/tmp/mptr125_oem_job.tmp
++ export WORKFILE
++ cut -f1 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ REFORMATJOB=mptr125
++ export REFORMATJOB
++ [ -z mptr125 ]
++ cut -f2 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ UPDATEJOB=mptr126
++ export UPDATEJOB
++ cut -f3 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ JOBOEM=042
++ export JOBOEM
++ cut -f4 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ JOBCTRY=US
++ export JOBCTRY
++ cut -f5 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ JOBOEMNAME=SAA
++ export JOBOEMNAME
++ cut -f6 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ OEMABBRLOWER=saa
++ export OEMABBRLOWER
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ cut -f7 -d,
++ JOBPARM=zmpt126a
++ export JOBPARM
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ cut -f8 -d,
++ FORMATOEM=042
++ export FORMATOEM
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ cut -f9 -d,
++ FORMATCTRY=US
++ export FORMATCTRY
++ cut -f10 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ JOBFILE_OEMCTRY=saa_us
++ export JOBFILE_OEMCTRY
++ cut -f11 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ REPORTSUFFIX=saaus
++ export REPORTSUFFIX
++ cut -f12 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ REVERSE_SUPER_JOBPARM=mpt126e
++ export REVERSE_SUPER_JOBPARM
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ cut -f13 -d,
++ PACKAGE_NAME_1=pkg_oem_ref_041
++ export PACKAGE_NAME_1
++ cut -f14 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ PACKAGE_NAME_2=''
++ export PACKAGE_NAME_2
++ cut -f15 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ DUPLICATE_PARTS_EXPECTED_FLAG=Y
++ export DUPLICATE_PARTS_EXPECTED_FLAG
++ cut -f16 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ REFORMAT_BUILDS_RTRANS_FLAG=N
++ export REFORMAT_BUILDS_RTRANS_FLAG
++ cut -f17 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ OBSOLETE_JOB_FLAG=N
++ export OBSOLETE_JOB_FLAG
++ cut -f18 -d,
++ cat /prod/race/oem/tmp/mptr125_oem_job.tmp
++ PREPROCESS_SCRIPT_NAME=''
++ export PREPROCESS_SCRIPT_NAME
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+SET SERVEROUTPUT ON SIZE 1000000
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_utilities.p_check_gtmp_indexes(p_jobname       => 'mptr125',                                                           p_log_directory => 'RACE_OEM_TMP_DIR',                                                        p_log_filename  => 'mptr125_20260901073811.db.log',                                                           p_debug_level   => '0');
+QUIT;
+%
+2>& 1
++ DB_LOG=/prod/race/oem/tmp/mptr125_20260901073811.db.log
++ [ -s /prod/race/oem/tmp/mptr125_20260901073811.db.log ]
++ cat /prod/race/oem/tmp/mptr125_20260901073811.db.log
++ 1>> /prod/race/oem/log/mptr125_20260901073811.log
+
+Start mptr125 pkg_oem_ref_utilities.p_check_gtmp_indexes
+
+
+ End  mptr125 pkg_oem_ref_utilities.p_check_gtmp_indexes
++ rm /prod/race/oem/tmp/mptr125_20260901073811.db.log
++ . oem_job_notify.ksh
++ echo 'RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $'
+RCS : oem_job_notify.ksh,v 1.2 2008/10/09 22:17:44 jw97143 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /prod/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /prod/race/oem/log/mptr125_20260901073811.log
++ LOGFILE=mptr125_20260901073811.log
++ WORKFILE=mptr125_oem_job_notify.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_notify.p_oem_job_notify_sel_01(p_job  =>          'mptr125',                                                        p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                     p_tmp_filename  => 'mptr125_oem_job_notify.tmp',                                                       p_log_directory => 'RACE_OEM_LOG_DIR',                                                     p_log_filename  => 'mptr125_20260901073811.log');
+QUIT;
+%
+2>& 1
++ WORKFILE=/prod/race/oem/tmp/mptr125_oem_job_notify.tmp
++ cut -f2 -d^
++ cat /prod/race/oem/tmp/mptr125_oem_job_notify.tmp
++ SEND_EMAIL_FLAG=''
++ cut -f3 -d^
++ cat /prod/race/oem/tmp/mptr125_oem_job_notify.tmp
++ EMAIL_ADDRESS_LIST=''
++ cut -f4 -d^
++ cat /prod/race/oem/tmp/mptr125_oem_job_notify.tmp
++ EMAIL_BODY=''
++ cut -f5 -d^
++ cat /prod/race/oem/tmp/mptr125_oem_job_notify.tmp
++ RESET_SEND_EMAIL_FLAG=''
++ [ -z '' ]
++ echo 'Notification NOT Required'
+Notification NOT Required
++ echo ' '
+ 
++ . oem_job_datafile.ksh
++ echo 'RCS : oem_job_datafile.ksh,v 1.9 2026/08/07 19:35:00 rj132422 Exp $'
+RCS : oem_job_datafile.ksh,v 1.9 2026/08/07 19:35:00 rj132422 Exp $
++ trap 'oem_abndalrt.ksh $?' err
++ cat /prod/race/oem/prm/zmptpass.prm
++ MPTUSERID=racejob/q1w2e3r4
++ basename /prod/race/oem/log/mptr125_20260901073811.log
++ LOGFILE=mptr125_20260901073811.log
++ WORKFILE=mptr125_oem_job_datafile.tmp
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET VERIFY OFF
+SET FEEDBACK OFF
+SET TAB OFF
+SET LINESIZE 100
+SET PAGES 0
+SET TRIMSPOOL ON
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_job_datafile.p_oem_job_datafile_sel_04(p_reformat_job  => 'mptr125',                                                         p_tmp_directory => 'RACE_OEM_TMP_DIR',                                                          p_tmp_filename  => 'mptr125_oem_job_datafile.tmp',                                                            p_log_directory => 'RACE_OEM_TMP_DIR',                                                          p_log_filename  => 'mptr125_20260901073811.db.log');
+QUIT;
+%
+2>& 1
++ DB_LOG=RACE_OEM_TMP_DIR/mptr125_20260901073811.db.log
++ [ -s RACE_OEM_TMP_DIR/mptr125_20260901073811.db.log ]
++ WORKFILE=/prod/race/oem/tmp/mptr125_oem_job_datafile.tmp
++ export WORKFILE
++ STEPNAME=Step049R
++ export STEPNAME
++ date '+%m/%d/%y %H:%M:%S'
++ echo '\n\nSTART ---> mptr125_oem_ref Step049R - Price Format Checker - ' 09/02/26 07:55:15 ' <--- START\n\n'
+\n\nSTART ---> mptr125_oem_ref Step049R - Price Format Checker -  09/02/26 07:55:15  <--- START\n\n
++ oem_job_status_update.ksh R 'Step049R p_oem_ref_price_check'
++ sqlplus -s
++ 0<< \%
+racejob/q1w2e3r4
+SET ECHO ON;
+SET FEEDBACK OFF;
+SET VERIFY ON;
+SET LINESIZE 80;
+SET SERVEROUTPUT ON;
+whenever sqlerror exit sql.sqlcode
+    exec pkg_oem_ref_price_check.p_main_price_check(p_reformat_job       => 'mptr125',                                                          p_log_directory      => 'RACE_OEM_LOG_DIR',                                                           p_log_filename       => 'mptr125_20260901073811.log',                                                              p_debug_level        => '0',                                                     p_dbms_profiler_flag => 'N');
+QUIT;
+%
+2>& 1
+BEGIN pkg_oem_ref_price_check.p_main_price_check(p_reformat_job       => 'mptr125',							     p_log_directory	  => 'RACE_OEM_LOG_DIR',							   p_log_filename	=> 'mptr125_20260901073811.log',							      p_debug_level	   => '0',						       p_dbms_profiler_flag => 'N'); END;
+
+*
+ERROR at line 1:
+ORA-20999: ABEND! Contact On-call Programmer
+ORA-06512: at "RACE.PKG_COMMON_UTILITIES", line 491
+ORA-06512: at "RACE.PKG_OEM_REF_PRICE_CHECK", line 146
+ORA-06512: at line 1
+
+
++ oem_abndalrt.ksh 7
+\n\n*** Begin oem_abndalrt.ksh ***\n\n
+}
+_=*1010293*/bin/env
+act_lvl=prod
+ACT_LVL=prod
+_AST_FEATURES=UNIVERSE - ucb
+A__z="*SHLVL="*TMOUT
+BASH_FUNC_which%%=() {  ( alias;
+COBDIR=/opt/rocketsoftware/VisualCOBOL
+DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/483426703/bus
+DEBUGINFOD_IMA_CERT_PATH=/etc/keys/ima:
+DUPLICATE_PARTS_EXPECTED_FLAG=Y
+ eval ${which_declare} ) | /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@
+FORMATCTRY=US
+FORMATOEM=042
+FTP_BUSINESS_PATH=/ftp1/Business_Partners
+FTP_MITCHELL_BUSINESS_PATH=/prod/data/ftp/Business_Partners/mitchell
+FTP_SERVER=prod3nt.production.int
+FTP_SFTP_USER=race_b1@
+FTP_SITE=ftp-ssh.mitchell.com
+HOME=/home/production.int/svc-apd-race-prd
+JOBCTRY=US
+JOBFILE_OEMCTRY=saa_us
+JOBLOGNAME=/prod/race/oem/log/mptr125_20260901073811.log
+JOBNAME=mptr125
+JOBOEM=042
+JOBOEMNAME=SAA
+JOBPARM=zmpt126a
+LANG=en_US.UTF-8
+LD_LIBRARY_PATH=/u01/app/oracle/product/19.3.0/client64/lib:/opt/rocketsoftware/VisualCOBOL/lib:/opt/rocketsoftware/VisualCOBOL/lib64:
+LESSOPEN=||/usr/bin/lesspipe.sh %s
+LOGDIR=/prod/race/oem/log
+LOGFILE=mptr125_20260901073811.log
+LOGNAME=svc-apd-race-prd@production.int
+LOG=/prod/race/oem/tmp/mptr125_1010174.sqlout
+MAIL=/var/spool/mail/svc-apd-race-prd@production.int
+MF_LICENSE_DIR=/opt/rocketsoftware/VisualCOBOL/etc
+MOTD_SHOWN=pam
+MPTUSERID=racejob/q1w2e3r4
+NOVELL=prod/
+OBJ_DATDIR=RACE_OEM_DAT_DIR
+OBJ_LOGDIR=RACE_OEM_LOG_DIR
+OBJ_PRMDIR=RACE_OEM_PRM_DIR
+OBJ_RPTDIR=RACE_OEM_RPT_DIR
+OBJ_TMPDIR=RACE_OEM_TMP_DIR
+OBSOLETE_JOB_FLAG=N
+OEMABBRLOWER=saa
+ORACLE_BASE=/u01/app/oracle
+ORACLE_HOME=/u01/app/oracle/product/19.3.0/client64
+ORACLE_SID=RADP.MITCHELL.COM
+PACKAGE_NAME_1=pkg_oem_ref_041
+PACKAGE_NAME_2=
+PATH=/prod/race/oem/bin:/prod/race/share/bin:/u01/app/oracle/product/19.3.0/client64/bin:/usr/lib/oracle/23/client64/bin:/opt/microfocus/cobol/bin:/home/production.int/svc-apd-race-prd/bin:/home/production.int/svc-apd-race-prd/.local/bin:/home/production.int/svc-apd-race-prd/bin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/prod/race/share/bin:/stage/race/share/bin
+PREPROCESS_SCRIPT_NAME=
+PROCNAME=mptr125_oem_ref
+PRODHOST=pawapp7017l
+PWD=/home/production.int/svc-apd-race-prd
+RACE_DBMS_PROFILER_FLAG=N
+RACE_DEBUG_LEVEL=0
+RACE_HOST=race
+RACE=/prod/race/oem
+REFORMAT_BUILDS_RTRANS_FLAG=N
+REFORMATJOB=mptr125
+REPORTSUFFIX=saaus
+RESTART_FILE_SEQUENCE=
+RESTART=Step049R
+REVERSE_SUPER_JOBPARM=mpt126e
+S_COLORS=auto
+SELINUX_LEVEL_REQUESTED=
+SELINUX_ROLE_REQUESTED=
+SELINUX_USE_CURRENT_RANGE=
+SHELL=/bin/ksh
+SHLVL=5
+SSH_CLIENT=10.136.86.98 60335 22
+SSH_CONNECTION=10.136.86.98 60335 10.136.86.51 22
+STEPNAME=Step049R
+TESTHOST=TESTHOSTgoesHERE
+THISHOST=pawapp7017l
+TMOUT=28800
+TNS_ADMIN=/u01/app/oracle/product/19.3.0/client64/network/admin
+TWO_TASK=RADP.MITCHELL.COM
+UPDATEJOB=mptr126
+USER=svc-apd-race-prd@production.int
+which_declare=declare -f
+WORKFILE=/prod/race/oem/tmp/mptr125_oem_job_datafile.tmp
+XDG_DATA_DIRS=/home/production.int/svc-apd-race-prd/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share
+XDG_RUNTIME_DIR=/run/user/483426703
+XDG_SESSION_CLASS=user
+XDG_SESSION_ID=2232
+XDG_SESSION_TYPE=tty
+
+ !!  PRODUCTION JOB--CONDITION CODE ERROR  !!
+ !!     REPORT TO PRODUCTION CONTROL       !!
+   ** mptr125:mptr125_oem_ref[Step049R] failed, rc = 7 **
+\n\n***  End  oem_abndalrt.ksh ***\n\n
+/prod/race/share/bin/exec_restart.ksh: line 94: 1010200: Killed
