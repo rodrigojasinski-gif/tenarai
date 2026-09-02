@@ -156,14 +156,11 @@ else
 
     wait
 
-    # rj132422 - FTP sunset: xex018/xex019 disabled - the price.txt / mapp.txt extracts they produce are
-    # no longer consumed (the NT/prod3nt delivery they fed was retired), and PKG_ULTRAMATE_COMMON still
-    # calls sp_ftp_command for both, which abends with ORA-01405 on the new environment.
-    # xex018.ksh >> ${FULL_LOG1} 2>&1 &
-    #
-    # xex019.ksh >> ${FULL_LOG2} 2>&1 &
-    #
-    # wait
+    xex018.ksh >> ${FULL_LOG1} 2>&1 &
+
+    xex019.ksh >> ${FULL_LOG2} 2>&1 &
+
+    wait
 fi
 
 #   use Korn shell '  grep' command to check if either of the xex017 executes abended
