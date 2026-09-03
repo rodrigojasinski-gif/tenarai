@@ -48,19 +48,7 @@ echo "\nDoes the input file name contain a wildcard?\n"
 if expr "${INPUT_FILE_NAME}" : '.*[?*]'
 then
   echo "${INPUT_FILE_NAME} contains wildcard."
-  # rj132422 - resolve the wildcard remotely so the local scp target is a real name.
-  # scp does not expand the pattern locally: the literal '*' stayed in the target name and scp
-  # created a directory, which then passed the "-s" check and failed later in gunzip (was: WORK_FTP_XFR_FILE_NAME=${INPUT_FILE_NAME})
-  WORK_FTP_XFR_FILE_NAME=$(ssh -nq ${FTP_SFTP_USER}${FTP_SITE} \
-     "ls -1t ${FTPSITE_DIRECTORY}/${INPUT_FILE_NAME} 2>/dev/null | head -1" | xargs -r basename)
-  if [ -z "${WORK_FTP_XFR_FILE_NAME}" ]
-  then
-    echo "\nNo file on the Mitchell FTP Site matches ${INPUT_FILE_NAME}\n"
-    oem_abndalrt.ksh FTP.file.error
-  fi
-  echo "\nWildcard ${INPUT_FILE_NAME} resolved to ${WORK_FTP_XFR_FILE_NAME}\n"
-  # rj132422 - carry the resolved name forward, same as the non-wildcard branch below does
-  export INPUT_FILE_NAME=${WORK_FTP_XFR_FILE_NAME}
+  WORK_FTP_XFR_FILE_NAME=${INPUT_FILE_NAME}
 else
   #  Build a temporary file containing all of the directory/filenames found in the OEM's incoming directory
   FTP_FILELIST=${RACE}/tmp/${JOBNAME}_${INPUT_FILE_NAME}_ftplist.tmp
@@ -101,7 +89,9 @@ if [ "${FILE_ACTION}" = "GETIT" ]
 then
   if [ "${INPUT_FILE_NAME}" = "${WORK_FTP_XFR_FILE_NAME}" ]
   then
-    FTP_XFR_FILE_NAME=${RACE}/tmp/${JOBNAME}_${INPUT_FILE_NAME}
+    # rj132422 - strip wildcard chars from the LOCAL target only; scp does not expand them locally,
+    # so the literal '*' became part of the file name and scp created a directory (was: ..._${INPUT_FILE_NAME})
+    FTP_XFR_FILE_NAME=${RACE}/tmp/${JOBNAME}_$(echo ${INPUT_FILE_NAME} | tr -d '*?')
     # If the file to be transferred already exists, remove it
     rm -f ${FTP_XFR_FILE_NAME}
     echo "\nPreparing to scp file to ${FTP_XFR_FILE_NAME}\n"
@@ -198,7 +188,8 @@ then
   #P. Becotte added below:
   echo "INPUT_FILE_NAME= ${INPUT_FILE_NAME}"
   echo "FTP_XFR_FILE_NAME before re-valuing= ${FTP_XFR_FILE_NAME}"
-  FTP_XFR_FILE_NAME=${RACE}/tmp/${JOBNAME}_${INPUT_FILE_NAME}
+  # rj132422 - strip wildcard chars from the LOCAL target only; must match the GETIT block above
+  FTP_XFR_FILE_NAME=${RACE}/tmp/${JOBNAME}_$(echo ${INPUT_FILE_NAME} | tr -d '*?')
   echo "FTP_XFR_FILE_NAME= ${FTP_XFR_FILE_NAME}"
   #P. Becotted end of change
   cp ${FTP_XFR_FILE_NAME} ${NEW_XFR_FTP_FILE}
