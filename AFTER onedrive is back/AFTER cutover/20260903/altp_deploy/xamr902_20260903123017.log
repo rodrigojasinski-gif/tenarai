@@ -1,0 +1,694 @@
+    Start  xamr902   Thu Sep 3 12:30:17 PM PDT 2026
+\n\n**********************************************************************************
+Restart Step was NOT included in the job execution. Job will run from the beginning.
+**********************************************************************************\n\n
+\n\n**************************************************************************************************************
+Calling:  xamrpt.ksh    Datetime: 09/03/26 12:30:17   Script: /tmp/xamr902_xamrpt.ksh_run
+**************************************************************************************************************\n\n
+: xamrpt.ksh,v 1.18 2026/08/07 21:41:41 rj132422 Exp xamr902.ksh,v 1.1 2004/10/30 05:48:01 pg2697 Exp $
+  export PROCNAME=$(basename $0 .ksh_run)
++ basename /tmp/xamr902_xamrpt.ksh_run .ksh_run
++ PROCNAME=xamr902_xamrpt
++ export PROCNAME
+  trap 'abndalrt.ksh $?' err
+
++ trap 'abndalrt.ksh $?' err
+############################################################################
+# INITIALIZE VARIABLES PASSED TO AND USED BY THIS PROC SUB-SCRIPT.         #
+#                                                                          #
+# NOTE - THERE'S NO STEP NUMBER FOR THIS STEP AS IT SHOULD BE PERFORMED    #
+#        EACH TIME THE SCRIPT IS RUN.                                      #
+#                                                                          #
+# STEP GETS/SETS THE FOLLOWING VARIABLES:                                  #
+# 1. JOBNAME      - Passed from main script. Used to save files and get    #
+#                   other variables from parm file.                        #
+# 2. XAMUSERID    - Retrieved from parm zxampass.prm. Logon information    #
+#                   needed for Oracle SQL processes.                       #
+# 3. XFER_FILE    - Retrieved from parm zxamvbls.prm. Represents file to   #
+#                   be ftp'd to unix. This file contains the names of      #
+#                   Data Providers for which reports are to be produced.   #             
+#                                                                          #
+# Example of Parm:                                                         #
+# DRIVER_JOB  NT FILENAME            QUALIFIER                             #
+# ----------  ---------------------  ---------                             #
+# xamr102     keystone_rpt_prov.txt  n/a                                   #
+############################################################################
+
+  export XAMUSERID=`cat $RACE/prm/zxampass.prm` 
+
+cat $RACE/prm/zxampass.prm
++ cat /prod/race/altp/prm/zxampass.prm
++ XAMUSERID=racejob/q1w2e3r4
++ export XAMUSERID
+# uses korne shell 'grep' command to get variable values from parm file
+
+  XFER=` grep $JOBNAME $RACE/prm/zxamvbls.prm | awk '{print $2}'`
+ grep $JOBNAME $RACE/prm/zxamvbls.prm | awk '{print $2}'
++ grep xamr902 /prod/race/altp/prm/zxamvbls.prm
++ awk '{print $2}'
++ XFER=multiple_rpt_prov.txt
+  QUALIFIER=` grep $JOBNAME $RACE/prm/zxamvbls.prm | awk '{print $3}'`
+ grep $JOBNAME $RACE/prm/zxamvbls.prm | awk '{print $3}'
++ grep xamr902 /prod/race/altp/prm/zxamvbls.prm
++ awk '{print $3}'
++ QUALIFIER=n/a
+  EMAILFTP=` grep $JOBNAME $RACE/prm/zxamvbls.prm | awk '{print $4}'`
+ grep $JOBNAME $RACE/prm/zxamvbls.prm | awk '{print $4}'
++ awk '{print $4}'
++ grep xamr902 /prod/race/altp/prm/zxamvbls.prm
++ EMAILFTP=EMAIL
+ 
+  export XFER_FILE=$XFER
++ XFER_FILE=multiple_rpt_prov.txt
++ export XFER_FILE
+  export RPTDATE=$(date +'%C%y%m%d%H%M%S')
++ date +%C%y%m%d%H%M%S
++ RPTDATE=20260903123017
++ export RPTDATE
+  
+# P. Becotte - 10/2017 added
+  echo "${ACT_LVL} = " ${ACT_LVL}
+
++ echo 'prod = ' prod
+prod =  prod
+#STEP Step100R
+############################################################################
+#* STEP100R                                                                #
+#  1. EXECUTE FILE GET AND PASS THE NT FILE TO UNIX.                       #
+#  2. CHECK DIRECTORY COUNTS ON BOTH SIDES TO VALIDATE THE TRANSFER        #
+#  NOTE - Due to ascii transfer and difference between NT and unix records,#
+#         balance check must subtract CR's associated to NT file before    #
+#         checking byte counts.                                            #  
+############################################################################
+  export STEPNAME=Step100R
++ STEPNAME=Step100R
++ export STEPNAME
+  echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step100R           Thu' Sep 3 12:30:17 PM PDT 2026
+    Start   Step100R           Thu Sep 3 12:30:17 PM PDT 2026
+  export NTFILE=$XFER_FILE
++ NTFILE=multiple_rpt_prov.txt
++ export NTFILE
+  export UNXFILE=$RACE/tmp/${JOBNAME}_rpt_prov.xfr
++ UNXFILE=/prod/race/altp/tmp/xamr902_rpt_prov.xfr
++ export UNXFILE
+# Change rj132422 - 20260424 - Remove prod3nt dependency; use NFS-mounted path
+  export NTDIR=${ALTP_DIR}
++ NTDIR=/prod/ftp_data/prod/altp
++ export NTDIR
+  export FTPLOG=$RACE/tmp/${JOBNAME}_rpt_prov_ftp.tmp
+
++ FTPLOG=/prod/race/altp/tmp/xamr902_rpt_prov_ftp.tmp
++ export FTPLOG
+  rm -f $UNXFILE
++ rm -f /prod/race/altp/tmp/xamr902_rpt_prov.xfr
+# Copy from NFS, then strip CR to preserve the former 'ascii' fileget behavior (CRLF -> LF)
+  cp ${NTDIR}/${NTFILE} ${UNXFILE} > $FTPLOG 2>&1
++ cp /prod/ftp_data/prod/altp/multiple_rpt_prov.txt /prod/race/altp/tmp/xamr902_rpt_prov.xfr
++ 1> /prod/race/altp/tmp/xamr902_rpt_prov_ftp.tmp 2>& 1
+  tr -d '\r' < ${UNXFILE} > ${UNXFILE}.tmp && mv ${UNXFILE}.tmp ${UNXFILE}
+
++ tr -d '\r'
++ 0< /prod/race/altp/tmp/xamr902_rpt_prov.xfr 1> /prod/race/altp/tmp/xamr902_rpt_prov.xfr.tmp
++ mv /prod/race/altp/tmp/xamr902_rpt_prov.xfr.tmp /prod/race/altp/tmp/xamr902_rpt_prov.xfr
+  if [[ ! -s ${UNXFILE} ]]
+    then
+       echo " ***** error ***** file copy failed or source file is empty \n"
+       print " SOURCE = ${NTDIR}/${NTFILE} "
+       abndalrt.ksh ftp_get
+  else
+       unixcount=$(wc -c ${UNXFILE} | awk '{print $1}')
+       echo " file copy is good - UNIX byte count = $unixcount "
+  fi
+
+
++ [[ ! -s /prod/race/altp/tmp/xamr902_rpt_prov.xfr ]]
++ awk '{print $1}'
++ wc -c /prod/race/altp/tmp/xamr902_rpt_prov.xfr
++ unixcount=5
++ echo ' file copy is good - UNIX byte count = 5 '
+ file copy is good - UNIX byte count = 5 
+#STEP Step200R
+#***************************************************************************
+#* STEP200R                                                                *
+#* 1. MAKE SURE DATA IS VOID OF ASCII CONTROL CHARACTERS                   *
+#***************************************************************************
+  export STEPNAME=Step200R
++ STEPNAME=Step200R
++ export STEPNAME
+  echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step200R           Thu' Sep 3 12:30:17 PM PDT 2026
+    Start   Step200R           Thu Sep 3 12:30:17 PM PDT 2026
+  export DD_CLEANIN="$RACE/tmp/${JOBNAME}_rpt_prov.xfr"
++ DD_CLEANIN=/prod/race/altp/tmp/xamr902_rpt_prov.xfr
++ export DD_CLEANIN
+  export DD_CLEANOU="$RACE/tmp/${JOBNAME}_rpt_prov_clean.tmp"
+
++ DD_CLEANOU=/prod/race/altp/tmp/xamr902_rpt_prov_clean.tmp
++ export DD_CLEANOU
+  rm -f $DD_CLEANOU
+
++ rm -f /prod/race/altp/tmp/xamr902_rpt_prov_clean.tmp
+  cat $DD_CLEANIN | tr -d '\032' |\
+  tr '\000-\011\013-\037\177' '[^*]' |\
+  tr '\240' '[ *]' |\
+  sed 's/\^$//' > $DD_CLEANOU
+
+
++ sed 's/\^$//'
++ 1> /prod/race/altp/tmp/xamr902_rpt_prov_clean.tmp
++ tr -d '\032'
++ cat /prod/race/altp/tmp/xamr902_rpt_prov.xfr
++ tr '\240' '[ *]'
++ tr '\000-\011\013-\037\177' '[^*]'
+#STEP Step300R
+#********************************************************************
+#* STEP300R - PRODUCE REPORTS AND EMAIL LOOP AS FOLLOWS:            *
+#* 1. GET PROVIDER NAME FROM PARM FILE                              *
+#* 2. EXECUTE SQL PROGRAM TO REPORT SUPPLIER(S) ASSOC'D TO PROVIDER *
+#* 3. EMAIL REPORT TO DATA PROVIDER CONTACT(S)                      *
+#********************************************************************
+  export STEPNAME=Step300R
++ STEPNAME=Step300R
++ export STEPNAME
+  echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step300R           Thu' Sep 3 12:30:17 PM PDT 2026
+    Start   Step300R           Thu Sep 3 12:30:17 PM PDT 2026
+  
+  export SQL_PARM_PATH=$OBJ_TMPDIR
++ SQL_PARM_PATH=RACE_ALTP_TMP_DIR
++ export SQL_PARM_PATH
+  export SQL_PROV_PARM=${JOBNAME}_rpt_prov_clean.tmp
++ SQL_PROV_PARM=xamr902_rpt_prov_clean.tmp
++ export SQL_PROV_PARM
+  export SQL_EMAIL_PARM=${JOBNAME}_email_parm.tmp
++ SQL_EMAIL_PARM=xamr902_email_parm.tmp
++ export SQL_EMAIL_PARM
+  export SQL_RPTS_PATH=$OBJ_TMPDIR
++ SQL_RPTS_PATH=RACE_ALTP_TMP_DIR
++ export SQL_RPTS_PATH
+  export SQL_SUM_PATH=$OBJ_RPTDIR
++ SQL_SUM_PATH=RACE_ALTP_RPT_DIR
++ export SQL_SUM_PATH
+  export SQL_SUM_RPT=${JOBNAME}a_provrpts_${RPTDATE}.rpt
++ SQL_SUM_RPT=xamr902a_provrpts_20260903123017.rpt
++ export SQL_SUM_RPT
+  
+
+sqlplus << CODE_BLOCK 2>&1 > $LOG
+$XAMUSERID
+           
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 250;
+SET SERVEROUTPUT ON; 
+whenever sqlerror exit sql.sqlcode
+       
+exec sp_provider_exception_rpts('$JOBNAME','$SQL_PARM_PATH','$SQL_PROV_PARM','$SQL_EMAIL_PARM','$SQL_RPTS_PATH','$SQL_SUM_PATH','$SQL_SUM_RPT');
+
+QUIT;
+CODE_BLOCK
+
++ sqlplus
++ 0<< \CODE_BLOCK
+racejob/q1w2e3r4
+           
+SET ECHO ON;
+SET FEEDBACK ON;
+SET VERIFY ON;
+SET LINESIZE 250;
+SET SERVEROUTPUT ON; 
+whenever sqlerror exit sql.sqlcode
+       
+exec sp_provider_exception_rpts('xamr902','RACE_ALTP_TMP_DIR','xamr902_rpt_prov_clean.tmp','xamr902_email_parm.tmp','RACE_ALTP_TMP_DIR','RACE_ALTP_RPT_DIR','xamr902a_provrpts_20260903123017.rpt');
+
+QUIT;
+CODE_BLOCK
+2>& 1 1> /prod/race/altp/tmp/xamr902_1065904.sqlout
+email_rpt.ksh "${JOBNAME}a"
++ email_rpt.ksh xamr902a
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: xamr902a_provrpts_20260903123017.txt from /prod/race/altp/tmp.
+rpt_log_retention.ksh "${JOBNAME}a"
+
++ rpt_log_retention.ksh xamr902a
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=xamr902a
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Sep 3 12:30:18 2026
+Version 19.29.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Thu Sep 03 2026 12:30:18 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.30.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.30.0.0.0
+oldest file removed: /prod/race/altp/rpt/xamr902a_provrpts_20260807103840.rpt (due to retention)
+\n End rpt_log_retention.ksh
+# P. Becotte - 10/2017 changed to restartable
+#STEP Step700R
+#********************************************************************
+#* STEP700                                                          *
+#* THIS STEP LOOPS UNTIL ALL DATA PROVIDERS FOR WHICH REPORTS WERE  *
+#* PRODUCED, HAVE BEEN PROCESSED. (BASED ON EMAIL_PARM)             *
+#* 1. GET RECIP INFO FROM EMAIL PARM FILE                           *
+#* 2. ZIP PROVIDER'S REPORT FILES                                   *
+#* 3. IF REPORTS ARE TO BE EMAILED, ISSUE MAILX COMMAND             *
+#*    IF REPORTS ARE TO BE FTP'D, ISSUE SCP COMMAND                 *
+#* 4. DELETE ZIP FILE.                                              *
+#********************************************************************
+  export STEPNAME=Step700R
++ STEPNAME=Step700R
++ export STEPNAME
+  echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step700R           Thu' Sep 3 12:30:18 PM PDT 2026
+    Start   Step700R           Thu Sep 3 12:30:18 PM PDT 2026
+export MAIL_LIST=$RACE/tmp/${JOBNAME}_email_parm.tmp
++ MAIL_LIST=/prod/race/altp/tmp/xamr902_email_parm.tmp
++ export MAIL_LIST
+export MAIL_TEXT=$RACE/prm/zxamrptb.prm
++ MAIL_TEXT=/prod/race/altp/prm/zxamrptb.prm
++ export MAIL_TEXT
+export FTP_TEXT=$RACE/prm/zxamrptc.prm
++ FTP_TEXT=/prod/race/altp/prm/zxamrptc.prm
++ export FTP_TEXT
+export ZIP_FILE=$RACE/tmp/${JOBNAME}_mail.zip
+
++ ZIP_FILE=/prod/race/altp/tmp/xamr902_mail.zip
++ export ZIP_FILE
+# P. Becotte - changed .zzz to .zip
+export FTPFILE=$FTP_SITE:$FTP_BUSINESS_PATH/$QUALIFIER/$ACT_LVL/outgoing/mitch_exc_rpts.zip
++ FTPFILE=ftp-ssh.mitchell.com:/ftp1/Business_Partners/n/a/prod/outgoing/mitch_exc_rpts.zip
++ export FTPFILE
+export PDF_FILE=$RACE/prm/AlternatePartPriceVerification.pdf
+
++ PDF_FILE=/prod/race/altp/prm/AlternatePartPriceVerification.pdf
++ export PDF_FILE
+# P. Becotte - added FTPFILENAME
+export FTPFILENAME=mitch_exc_rpts.zip
+
++ FTPFILENAME=mitch_exc_rpts.zip
++ export FTPFILENAME
+export CONST_DA="DATA_ANALYST"
++ CONST_DA=DATA_ANALYST
++ export CONST_DA
+export CONST_EMAIL="EMAIL"
++ CONST_EMAIL=EMAIL
++ export CONST_EMAIL
+export CONST_FTP="FTP"
+
++ CONST_FTP=FTP
++ export CONST_FTP
+# P. Becotte - added SFTP
+export CONST_SFTP="SFTP"
+
++ CONST_SFTP=SFTP
++ export CONST_SFTP
+cd $RACE/tmp
+
++ cd /prod/race/altp/tmp
+rm -f ${ZIP_FILE}
+
++ rm -f /prod/race/altp/tmp/xamr902_mail.zip
+while read LINE
+do 
+    export PROVIDER=`echo $LINE | cut -f1 -d"|"`
+    export RECIP=`echo $LINE | cut -f2 -d"|"`
+    export ATTACH1=`echo $LINE | cut -f3 -d"|"` 
+    export ATTACH2=`echo $LINE | cut -f4 -d"|"`
+    export ATTACH3=`echo $LINE | cut -f5 -d"|"`
+
+#Added in AES-3181: START
+    #Get path for new log file to write the sqlplus values.
+    LOG_FILE=$RACE/tmp/${JOBNAME}_validate_ftp_rpts_$(date +%Y%m%d_%H%M%S).log
+#SQLPLUS block to call the procedure "sp_validate_ftp_rpts" which responds if the supplier should send their information to the Mitchell FTP(on a supplier specific forlder) or continue already existing normal process of sending through e-mail.
+sqlplus << CODE_BLOCK 2>&1 > $LOG_FILE
+    $XAMUSERID
+               
+    SET SERVEROUTPUT ON SIZE 1000000;
+    SET HEADING OFF;
+    SET FEEDBACK OFF;
+    SET VERIFY OFF;
+    SET LINESIZE 1000;
+    SET PAGESIZE 0;
+    SET TRIMSPOOL ON;
+    SET TRIMOUT ON;
+    WHENEVER SQLERROR EXIT SQL.SQLCODE;
+    
+    DECLARE
+      v_xamrpt_ftp_reporting     VARCHAR2(1);
+      v_mitchell_ftp_folder_name VARCHAR2(100);
+    BEGIN
+      sp_validate_ftp_rpts(pi_xamrpt_supplier_name        => '${PROVIDER}'
+                         , po_xamrpt_ftp_reporting        => v_xamrpt_ftp_reporting
+                         , po_mitchell_ftp_supp_fold_name => v_mitchell_ftp_folder_name
+                          );
+      
+      -- Print the output values in a format it will be easily captured by shell
+      DBMS_OUTPUT.PUT_LINE('FTP_REPORTING=' || NVL(v_xamrpt_ftp_reporting, 'N'));
+      DBMS_OUTPUT.PUT_LINE('FOLDER_NAME=' || NVL(v_mitchell_ftp_folder_name, ''));
+    EXCEPTION
+      WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('ERROR_CODE=' || SQLCODE);
+        DBMS_OUTPUT.PUT_LINE('ERROR_MSG=' || SQLERRM);
+        DBMS_OUTPUT.PUT_LINE('FTP_REPORTING=N');
+        DBMS_OUTPUT.PUT_LINE('FOLDER_NAME=');
+    END;
+    /
+    
+    QUIT;
+CODE_BLOCK
+ 
+    # Check if there was an error during SQLPlus execution
+    SQL_EXIT_CODE=$?
+    if [ $SQL_EXIT_CODE -ne 0 ]; then
+        echo "Error executing SQLPlus. Exit code: $SQL_EXIT_CODE"
+        echo "Check log file for more details: $LOG_FILE"
+        exit 1
+    fi
+    
+    # Extract output values from the log file
+    XAMRPT_FTP_REPORTING=$(grep "FTP_REPORTING=" $LOG_FILE | tail -1 | cut -d'=' -f2)
+    PROVIDER_FOLDER_NAME=$(grep "FOLDER_NAME=" $LOG_FILE | tail -1 | cut -d'=' -f2)
+    ERROR_CODE=$(grep "ERROR_CODE=" $LOG_FILE | cut -d'=' -f2)
+    
+    # Check if there was an error
+    if [ -n "$ERROR_CODE" ]; then
+        ERROR_MSG=$(grep "ERROR_MSG=" $LOG_FILE | cut -d'=' -f2-)
+        echo "Error executing procedure: $ERROR_CODE - $ERROR_MSG"
+    fi
+    
+    # Verify if values were captured correctly
+    if [ -z "$XAMRPT_FTP_REPORTING" ]; then
+        XAMRPT_FTP_REPORTING="N"
+        echo "Warning: Could not retrieve FTP_REPORTING value. Using default value 'N'."
+    fi
+    
+    # Display results
+    echo "Validation Results:"
+    echo "----------------------------------------"
+    echo "Supplier: $PROVIDER"
+    echo "FTP Reporting: $XAMRPT_FTP_REPORTING"
+    echo "FTP Folder: ${PROVIDER_FOLDER_NAME:-'<Not defined>'}"
+    echo "----------------------------------------"
+    #AES-3181: END
+
+    # Added in AES-3146 - Rafael Balen Deitos
+    #PROVIDER_FOLDER_NAME=$(echo "${PROVIDER}" | tr -cd '[:alnum:] ' | tr ' ' '_' | tr '[:upper:]' '[:lower:]') #Commented in AES-3181 -Changing the process so this is not needed anymore
+    FTPBIGFILE=$FTP_SITE:$FTP_BUSINESS_PATH/$PROVIDER_FOLDER_NAME/$ACT_LVL/outgoing/mitch_exc_rpts.zip
+
+# P. Becotte - added 
+    export ATTACH4=`echo $LINE | cut -f6 -d"|"`
+    export ATTACH5=`echo $LINE | cut -f7 -d"|"`
+
+# P. Becotte - added echo
+    echo "PROVIDER =" $PROVIDER
+    echo "ATTACH1 =" ${ATTACH1}  --'prov_suplr.txt';
+    echo "ATTACH2 =" ${ATTACH2}  --'prov_excdtl.txt';
+    echo "ATTACH3 =" ${ATTACH3}  --'prov_excsum.txt';
+    echo "ATTACH4 =" ${ATTACH4}  --'prov_excdtl.xlsx';
+    echo "ATTACH5 =" ${ATTACH5}  --'prov_excdtl_excel.txt'
+  
+    if [ ${RECIP} = ${CONST_DA} ] 
+      then
+        RECIP="$(head -n +1 ${RACE}/prm/zxamrpta.prm | awk '{print $1}')"
+        # P. Becotte - added echo
+        echo "RECIP =" ${RECIP}
+    fi 
+  
+  #P. Becotte - added to determine how many worksheets to created
+    export RECCNT=$(wc -l $RACE/tmp/${ATTACH5}  | awk '{print $1}')
+    echo "RECCNT: " $RECCNT
+    export NUMSHEETS=`expr $RECCNT / 1000000`
+    echo "NUMSHEETS: " $NUMSHEETS
+    export NUMSHEETSADD1=0
+    NUMSHEETSADD1=`expr $NUMSHEETS + 1`
+
+  #P. Becotte - need to set tempdir to perl script because used up more than 2GB
+    export TMPDIR=/$ACT_LVL/race/share/tmp
+
+  #P. Becotte - added execution of perl script to create excel file 
+  # pass in source file, excel file, number of sheets to create, temporary directory 
+    conv_txt_excel.pl $RACE/tmp/$ATTACH5 $RACE/tmp/$ATTACH4 $NUMSHEETSADD1 $TMPDIR
+
+    echo "data/time: " $(date)
+  #P. Becotte - removed -l  for zip below to not Translate the Unix end-of-line character LF into the MSDOS convention CR LF because this caused issue for excel file
+    zip -j -P mapp -q $ZIP_FILE $ATTACH1 $ATTACH3 $ATTACH4
+    echo "data/time: " $(date)
+    
+    echo "EMAILFTP = " ${EMAILFTP}
+    
+    #Added in AES-3181: Now it first verifies if the supplier is configured to receive the reports via FTP.
+    if [ "$XAMRPT_FTP_REPORTING" = "Y" ]; then
+       echo "This supplier is configured to receive reports via FTP."
+       if [ -n "$PROVIDER_FOLDER_NAME" ]; then
+         echo "FTP folder configured: $PROVIDER_FOLDER_NAME"
+         
+         scp $ZIP_FILE $FTPBIGFILE || {
+               #IF the FTP errored out, it means something is erroring out. Maybe wrong permissions on supplier folder or the folder has the incorrect name.
+               EMAIL=$(grep -i "@mitchell.com" "$FTP_TEXT" | tr -d ' ' | tail -1)
+               
+               echo "email = " $EMAIL
+               (echo There was an error while generating the supplier file in the FTP. Please forward this e-mail to Editorial Systems team for them to verify what is causing the error.  Thank you. ) \
+               | mailx -r production.control.mapp@mitchell.com -s "${PROVIDER} - Exception Reports" ${RECIP}
+               #abort process so Responsible can restart at STEP700R again when FTP is set OR restart the whole process again.
+               exit 1
+            }
+            #If the FTP worked, we just send a notification e-mail to supplier
+            (echo 
+            cat $FTP_TEXT) \
+            | mailx -r production.control.mapp@mitchell.com -s "${PROVIDER} - Exception Reports" ${RECIP}
+         
+         echo "FTP Processing completed successfully."
+       else
+         echo "ERROR: Supplier configured to send file to FTP, but has no folder name defined."
+         #abort process so Responsible can restart at STEP700R again when FTP is set OR restart the whole process again.
+         exit 1
+       fi
+    else
+      if [ ${EMAILFTP} = ${CONST_EMAIL} ]
+      then  
+        # Added in AES-3146 - Start
+        # Verify attachment file size
+        PDF_SIZE=$(stat -c %s "$PDF_FILE" 2>/dev/null || stat -f %z "$PDF_FILE")
+        ZIP_SIZE=$(stat -c %s "$ZIP_FILE" 2>/dev/null || stat -f %z "$ZIP_FILE")
+        TEXT_SIZE=$(stat -c %s "$MAIL_TEXT" 2>/dev/null || stat -f %z "$MAIL_TEXT")
+        TOTAL_SIZE=$((PDF_SIZE + ZIP_SIZE + TEXT_SIZE + 1000))  # 1000 bytes for overhead
+        
+        # Validate File size limit approximately 25MB
+        if [ $TOTAL_SIZE -gt 25876767 ]; then
+            echo "Attachment File exceeds e-mail server output size limit. Starting FTP process."
+            # Code to save files in FTP
+            
+            scp $ZIP_FILE $FTPBIGFILE || {
+               #IF the FTP errored out, it means the path does not exist, so we must send e-mail for responsible of the process in Mitchell team.
+               EMAIL=$(grep -i "@mitchell.com" "$FTP_TEXT" | tr -d ' ' | tail -1)
+               
+               echo "email = " $EMAIL
+               (echo The file size is too big for and e-mail attachment. We have to sent it through FTP for the supplier. Please get in touch with Editorial Systems team for them to setup the supplier FTP access accordingly and also get in touch with the supplier to warn about the new process.  Thank you. ) \
+               | mailx -r production.control.mapp@mitchell.com -s "${PROVIDER} - Exception Reports" ${RECIP}
+               #abort process so Responsible can restart at STEP700R again when FTP is set OR restart the whole process again.
+               exit 1
+            }
+            #If the FTP worked, we just send a notification e-mail to supplier
+            (echo 
+            cat $FTP_TEXT) \
+            | mailx -r production.control.mapp@mitchell.com -s "${PROVIDER} - Exception Reports" ${RECIP}
+        else
+            # P. Becotte - changed .zzz to .zip
+            (echo Please refer to the attached Readme.txt and the PDF file for information regarding the reports.  Thank you. ;uuencode $MAIL_TEXT Readme.txt;uuencode $PDF_FILE AlternatePartPriceVerification.pdf;uuencode $ZIP_FILE mitch_exc_rpts.zip) \
+            | mailx -r production.control.mapp@mitchell.com -s "${PROVIDER} - Exception Reports" ${RECIP}
+        fi
+        # Added in AES-3146 - End
+       elif [ ${EMAILFTP} = ${CONST_FTP} ]
+        then
+         scp $ZIP_FILE $FTPFILE
+         (echo 
+         cat $FTP_TEXT) \
+         | mailx -r production.control.mapp@mitchell.com -s "${PROVIDER} - Exception Reports" ${RECIP}
+      # P. Becotte - Added SFTP
+      elif [ ${EMAILFTP} = ${CONST_SFTP} ]
+        then
+         export FTPLOGINPARM=$RACE/prm/zxamftp_napa.prm
+         export USER=$(head -n1 $FTPLOGINPARM | awk '{print $1}')
+         export PASSWD=$(head -n1 $FTPLOGINPARM  | awk '{print $2}')
+         fileput_sftp.exp $USER $PASSWD $ZIP_FILE /$ACT_LVL/outgoing $FTPFILENAME
+          (echo 
+           cat $FTP_TEXT) \
+       	| mailx -r production.control.mapp@mitchell.com -s "${PROVIDER} - Exception Reports" ${RECIP}
+      else
+         echo "ERROR WITH EMAIL, SFTP, OR FTP FILES"
+         exit 1
+      fi
+    fi
+  
+  #* CLEAR ZIP FILE FOR NEXT SET OF REPORTS
+  
+# P. Becotte - changed $ATTACH3 to $ATTACH4
+  zip -d $ZIP_FILE $ATTACH1 $ATTACH3 $ATTACH4
+  
+done<$MAIL_LIST
+
+
++ 0< /prod/race/altp/tmp/xamr902_email_parm.tmp
++ read LINE
+echo $LINE | cut -f1 -d"|"
++ echo 'QCAP|support@qcapllc.com|xamr902_2121_prov_suplr.txt|xamr902_2121_prov_excdtl.txt|xamr902_2121_prov_excsum.txt|xamr902_2121_prov_excdtl.xlsx|xamr902_2121_prov_excdtl_excel.txt'
++ cut -f1 '-d|'
++ PROVIDER=QCAP
++ export PROVIDER
+echo $LINE | cut -f2 -d"|"
++ echo 'QCAP|support@qcapllc.com|xamr902_2121_prov_suplr.txt|xamr902_2121_prov_excdtl.txt|xamr902_2121_prov_excsum.txt|xamr902_2121_prov_excdtl.xlsx|xamr902_2121_prov_excdtl_excel.txt'
++ cut -f2 '-d|'
++ RECIP=support@qcapllc.com
++ export RECIP
+echo $LINE | cut -f3 -d"|"
++ echo 'QCAP|support@qcapllc.com|xamr902_2121_prov_suplr.txt|xamr902_2121_prov_excdtl.txt|xamr902_2121_prov_excsum.txt|xamr902_2121_prov_excdtl.xlsx|xamr902_2121_prov_excdtl_excel.txt'
++ cut -f3 '-d|'
++ ATTACH1=xamr902_2121_prov_suplr.txt
++ export ATTACH1
+echo $LINE | cut -f4 -d"|"
++ echo 'QCAP|support@qcapllc.com|xamr902_2121_prov_suplr.txt|xamr902_2121_prov_excdtl.txt|xamr902_2121_prov_excsum.txt|xamr902_2121_prov_excdtl.xlsx|xamr902_2121_prov_excdtl_excel.txt'
++ cut -f4 '-d|'
++ ATTACH2=xamr902_2121_prov_excdtl.txt
++ export ATTACH2
+echo $LINE | cut -f5 -d"|"
++ echo 'QCAP|support@qcapllc.com|xamr902_2121_prov_suplr.txt|xamr902_2121_prov_excdtl.txt|xamr902_2121_prov_excsum.txt|xamr902_2121_prov_excdtl.xlsx|xamr902_2121_prov_excdtl_excel.txt'
++ cut -f5 '-d|'
++ ATTACH3=xamr902_2121_prov_excsum.txt
++ export ATTACH3
++ date +%Y%m%d_%H%M%S
++ LOG_FILE=/prod/race/altp/tmp/xamr902_validate_ftp_rpts_20260903_123018.log
++ sqlplus
++ 0<< \CODE_BLOCK
+    racejob/q1w2e3r4
+               
+    SET SERVEROUTPUT ON SIZE 1000000;
+    SET HEADING OFF;
+    SET FEEDBACK OFF;
+    SET VERIFY OFF;
+    SET LINESIZE 1000;
+    SET PAGESIZE 0;
+    SET TRIMSPOOL ON;
+    SET TRIMOUT ON;
+    WHENEVER SQLERROR EXIT SQL.SQLCODE;
+    
+    DECLARE
+      v_xamrpt_ftp_reporting     VARCHAR2(1);
+      v_mitchell_ftp_folder_name VARCHAR2(100);
+    BEGIN
+      sp_validate_ftp_rpts(pi_xamrpt_supplier_name        => 'QCAP'
+                         , po_xamrpt_ftp_reporting        => v_xamrpt_ftp_reporting
+                         , po_mitchell_ftp_supp_fold_name => v_mitchell_ftp_folder_name
+                          );
+      
+      -- Print the output values in a format it will be easily captured by shell
+      DBMS_OUTPUT.PUT_LINE('FTP_REPORTING=' || NVL(v_xamrpt_ftp_reporting, 'N'));
+      DBMS_OUTPUT.PUT_LINE('FOLDER_NAME=' || NVL(v_mitchell_ftp_folder_name, ''));
+    EXCEPTION
+      WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('ERROR_CODE=' || SQLCODE);
+        DBMS_OUTPUT.PUT_LINE('ERROR_MSG=' || SQLERRM);
+        DBMS_OUTPUT.PUT_LINE('FTP_REPORTING=N');
+        DBMS_OUTPUT.PUT_LINE('FOLDER_NAME=');
+    END;
+    /
+    
+    QUIT;
+CODE_BLOCK
+2>& 1 1> /prod/race/altp/tmp/xamr902_validate_ftp_rpts_20260903_123018.log
++ SQL_EXIT_CODE=0
++ [ 0 -ne 0 ]
++ cut '-d=' -f2
++ tail -1
++ grep FTP_REPORTING= /prod/race/altp/tmp/xamr902_validate_ftp_rpts_20260903_123018.log
++ XAMRPT_FTP_REPORTING=N
++ cut '-d=' -f2
++ tail -1
++ grep FOLDER_NAME= /prod/race/altp/tmp/xamr902_validate_ftp_rpts_20260903_123018.log
++ PROVIDER_FOLDER_NAME=''
++ cut '-d=' -f2
++ grep ERROR_CODE= /prod/race/altp/tmp/xamr902_validate_ftp_rpts_20260903_123018.log
++ ERROR_CODE=''
++ [ -n '' ]
++ [ -z N ]
++ echo 'Validation Results:'
+Validation Results:
++ echo ----------------------------------------
+----------------------------------------
++ echo 'Supplier: QCAP'
+Supplier: QCAP
++ echo 'FTP Reporting: N'
+FTP Reporting: N
++ echo $'FTP Folder: \'<Not defined>\''
+FTP Folder: '<Not defined>'
++ echo ----------------------------------------
+----------------------------------------
++ FTPBIGFILE=ftp-ssh.mitchell.com:/ftp1/Business_Partners//prod/outgoing/mitch_exc_rpts.zip
+echo $LINE | cut -f6 -d"|"
++ echo 'QCAP|support@qcapllc.com|xamr902_2121_prov_suplr.txt|xamr902_2121_prov_excdtl.txt|xamr902_2121_prov_excsum.txt|xamr902_2121_prov_excdtl.xlsx|xamr902_2121_prov_excdtl_excel.txt'
++ cut -f6 '-d|'
++ ATTACH4=xamr902_2121_prov_excdtl.xlsx
++ export ATTACH4
+echo $LINE | cut -f7 -d"|"
++ echo 'QCAP|support@qcapllc.com|xamr902_2121_prov_suplr.txt|xamr902_2121_prov_excdtl.txt|xamr902_2121_prov_excsum.txt|xamr902_2121_prov_excdtl.xlsx|xamr902_2121_prov_excdtl_excel.txt'
++ cut -f7 '-d|'
++ ATTACH5=xamr902_2121_prov_excdtl_excel.txt
++ export ATTACH5
++ echo 'PROVIDER =' QCAP
+PROVIDER = QCAP
++ echo 'ATTACH1 =' xamr902_2121_prov_suplr.txt --prov_suplr.txt
+ATTACH1 = xamr902_2121_prov_suplr.txt --prov_suplr.txt
++ echo 'ATTACH2 =' xamr902_2121_prov_excdtl.txt --prov_excdtl.txt
+ATTACH2 = xamr902_2121_prov_excdtl.txt --prov_excdtl.txt
++ echo 'ATTACH3 =' xamr902_2121_prov_excsum.txt --prov_excsum.txt
+ATTACH3 = xamr902_2121_prov_excsum.txt --prov_excsum.txt
++ echo 'ATTACH4 =' xamr902_2121_prov_excdtl.xlsx --prov_excdtl.xlsx
+ATTACH4 = xamr902_2121_prov_excdtl.xlsx --prov_excdtl.xlsx
++ echo 'ATTACH5 =' xamr902_2121_prov_excdtl_excel.txt --prov_excdtl_excel.txt
+ATTACH5 = xamr902_2121_prov_excdtl_excel.txt --prov_excdtl_excel.txt
++ [ support@qcapllc.com '=' DATA_ANALYST ]
++ awk '{print $1}'
++ wc -l /prod/race/altp/tmp/xamr902_2121_prov_excdtl_excel.txt
++ RECCNT=138
++ export RECCNT
++ echo 'RECCNT: ' 138
+RECCNT:  138
+expr $RECCNT / 1000000
++ expr 138 / 1000000
++ NUMSHEETS=0
++ export NUMSHEETS
++ echo 'NUMSHEETS: ' 0
+NUMSHEETS:  0
++ NUMSHEETSADD1=0
++ export NUMSHEETSADD1
+expr $NUMSHEETS + 1
++ expr 0 + 1
++ NUMSHEETSADD1=1
++ TMPDIR=/prod/race/share/tmp
++ export TMPDIR
++ conv_txt_excel.pl /prod/race/altp/tmp/xamr902_2121_prov_excdtl_excel.txt /prod/race/altp/tmp/xamr902_2121_prov_excdtl.xlsx 1 /prod/race/share/tmp
+/tmp/xamr902_xamrpt.ksh_run[294]: conv_txt_excel.pl: not found
+abndalrt.ksh $?+ abndalrt.ksh 127
+
+ !!  PRODUCTION JOB--CONDITION CODE ERROR  !!
+ !!     REPORT TO PRODUCTION CONTROL       !!
+   ** xamr902:xamr902_xamrpt[Step700R] failed, rc = 127 ** 09/03/26 12:30:19
+/prod/race/share/bin/exec_restart.ksh: line 94: 1065927: Killed
