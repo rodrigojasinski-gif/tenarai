@@ -22,6 +22,34 @@
 - Files must stay **LF** (Unix) line endings — never CRLF (breaks on RHEL/AIX). A `.gitattributes` enforces this.
 - Validate shell syntax (`ksh -n` / `bash -n`) after edits.
 
+## Deploy commands — always this format (RCS + prod_move)
+- When handing over a deploy, give **three lines in ONE ```sh block** — all check-outs chained with
+  `&&`, then all check-ins chained, then all prod_moves chained. Never one block per file.
+- Shared/profile scripts (`race_<sub>.ksh`, `raceftp.ksh`, `oem_job_*.ksh`) live in `share/bin`;
+  subsystem scripts live in `<sub>/bin` (`oem/bin`, `altp/bin`, `ext/bin`). Order matters: deploy the
+  shared/profile script **first** — the others depend on the variables it exports.
+- Template:
+```sh
+rcheck_out -l <file1> <dir1> && rcheck_out -l <file2> <dir2>
+
+rcheck_in -d "AIX to RHEL migration" <file1> <dir1> && rcheck_in -d "AIX to RHEL migration" <file2> <dir2>
+
+/prod/race/share/bin/prod_move <file1> <dir1> && /prod/race/share/bin/prod_move <file2> <dir2>
+```
+
+## prod3nt share is NFS-mounted — `${NOVELL}` has a local equivalent
+- The prod3nt server is gone, but its share (`\\pawsvm7001a\cdprod02\ftp_data`) is **NFS-mounted**
+  at `/<lvl>/ftp_data`, with the original folder tree intact:
+  `altp  iaest  misc  oem  oem_research  race  usrdat`.
+- So every legacy `${NOVELL}<folder>` maps to a plain local path — no scp, no key, no remote
+  byte-count: `${NOVELL}oem` -> `/${ACT_LVL}/ftp_data/${ACT_LVL}/oem`.
+- ALTP already uses this (`race_altp.ksh` exports `ALTP_FTP_DATA=/prod/ftp_data/prod`, deriving
+  `ALTP_DIR`, `ALTP_NAPA_DIR`, `ALTP_INTRPT_DIR`, `ALTP_CUSTRPT_DIR`).
+- For an `ascii` fileput, keep the CRLF conversion: `sed 's/\r*$/\r/' ${SRC} > ${DEST}`.
+- **Before migrating a `${NOVELL}` transfer, decide the destination deliberately:** the NFS share
+  (internal consumers who open it from Windows) or the Mitchell SFTP (external partners). They are
+  different places; delivering to the wrong one "works" but nobody picks the file up.
+
 ## Environment quirks (get these right in commands)
 - **`rm` wrapper differs by host:** on **RADD (dev, `dawapp7017l`)** the delete command is **`rmi`**;
   on **RADP (prod, `pawapp7017l`)** it is plain **`rm`**. Use the right one per host.
