@@ -1,0 +1,487 @@
+    Start  xamr900   Thu Sep 3 10:08:45 AM PDT 2026
+\n\n**********************************************************************************
+Restart Step was NOT included in the job execution. Job will run from the beginning.
+**********************************************************************************\n\n
+\n\n**************************************************************************************************************
+Calling:  xamref.ksh    Datetime: 09/03/26 10:08:45   Script: /tmp/xamr900_xamref.ksh_run
+**************************************************************************************************************\n\n
+: xamref.ksh,v 1.4 2016/04/27 20:05:04 pg2697 Exp xamr900.ksh,v 1.1 2004/10/30 05:48:01 pg2697 Exp $
+  export PROCNAME=$(basename $0 .ksh_run)
++ basename /tmp/xamr900_xamref.ksh_run .ksh_run
++ PROCNAME=xamr900_xamref
++ export PROCNAME
+  trap 'abndalrt.ksh $?' err
+
++ trap 'abndalrt.ksh $?' err
+############################################################################
+# INITIALIZE VARIABLES PASSED TO AND USED BY THIS PROC SUB-SCRIPT.         #
+#                                                                          #
+# NOTE - THERE'S NO STEP NUMBER FOR THIS STEP AS IT SHOULD BE PERFORMED    #
+#        EACH TIME THE SCRIPT IS RUN.                                      #
+#                                                                          #
+# STEP GETS/SETS THE FOLLOWING VARIABLES:                                  #
+# 1. JOBNAME      - Passed from main script. Used to save files and get    #
+#                   other variables from parm file.                        #
+# 2. XAMUSERID    - Retrieved from parm zxampass.prm. Logon information    #
+#                   needed for Oracle SQL processes.                       #
+# 3. XFER_FILE    - Retrieved from parm zxamvbls.prm. Represents file to be#
+#                   transferred from NT server to UNIX environment.        #
+# 4. QUALIFIER    - Retrieved from parm zxamvbls.prm. Represents name to   #
+#                   be included in file and reports that are created.      #
+#                                                                          #
+# Example of Parm:                                                         #
+# DRIVER_JOB  NT FILENAME            QUALIFIER                             #
+# ----------  ---------------------  ---------                             #
+# xamr100     keystone_combined.txt  keystone                              #
+############################################################################
+
+  
+  export XAMUSERID=`cat $RACE/prm/zxampass.prm`
+
+cat $RACE/prm/zxampass.prm
++ cat /prod/race/altp/prm/zxampass.prm
++ XAMUSERID=racejob/q1w2e3r4
++ export XAMUSERID
+# uses korne shell 'grep' command to get variable values from parm file
+
+  XFER=` grep $JOBNAME $RACE/prm/zxamvbls.prm | awk '{print $2}'`
+ grep $JOBNAME $RACE/prm/zxamvbls.prm | awk '{print $2}'
++ awk '{print $2}'
++ grep xamr900 /prod/race/altp/prm/zxamvbls.prm
++ XFER=multiple_combined.txt
+  QUAL=` grep $JOBNAME $RACE/prm/zxamvbls.prm | awk '{print $3}'`
+
+ grep $JOBNAME $RACE/prm/zxamvbls.prm | awk '{print $3}'
++ awk '{print $3}'
++ grep xamr900 /prod/race/altp/prm/zxamvbls.prm
++ QUAL=multiple
+  export XFER_FILE=$XFER
++ XFER_FILE=multiple_combined.txt
++ export XFER_FILE
+  export QUALIFIER=$QUAL
+
++ QUALIFIER=multiple
++ export QUALIFIER
+  export RPTDATE=$(date +'%C%y%m%d%H%M%S')
+
++ date +%C%y%m%d%H%M%S
++ RPTDATE=20260903100845
++ export RPTDATE
+#STEP Step100R
+############################################################################
+#* STEP100R                                                                #
+#  1. EXECUTE FILE GET AND PASS THE NT FILE TO UNIX.                       #
+#  2. CHECK DIRECTORY COUNTS ON BOTH SIDES TO VALIDATE THE TRANSFER        #
+############################################################################
+  export STEPNAME=Step100R
++ STEPNAME=Step100R
++ export STEPNAME
+  echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step100R           Thu' Sep 3 10:08:45 AM PDT 2026
+    Start   Step100R           Thu Sep 3 10:08:45 AM PDT 2026
+  export NTFILE=$XFER_FILE
++ NTFILE=multiple_combined.txt
++ export NTFILE
+  export UNXFILE=$RACE/tmp/${JOBNAME}_${QUALIFIER}.xfr
++ UNXFILE=/prod/race/altp/tmp/xamr900_multiple.xfr
++ export UNXFILE
+  export NTDIR=${NOVELL}altp
++ NTDIR=prod/altp
++ export NTDIR
+  export FTPLOG=$RACE/tmp/${JOBNAME}_${QUALIFIER}_ftp.tmp
+
++ FTPLOG=/prod/race/altp/tmp/xamr900_multiple_ftp.tmp
++ export FTPLOG
+  fileget.exp $NTFILE $UNXFILE $NTDIR \
+  | tee $FTPLOG
+
++ tee /prod/race/altp/tmp/xamr900_multiple_ftp.tmp
++ fileget.exp multiple_combined.txt /prod/race/altp/tmp/xamr900_multiple.xfr prod/altp
+/tmp/xamr900_xamref.ksh_run: line 61: fileget.exp: not found
+  ntcount=$( grep 'Information ret' $FTPLOG | awk '{print $1}')
++ grep 'Information ret' /prod/race/altp/tmp/xamr900_multiple_ftp.tmp
++ awk '{print $1}'
++ ntcount=''
+  unixcount=$(wc -c $UNXFILE | awk '{print $1}')
+
++ awk '{print $1}'
++ wc -c /prod/race/altp/tmp/xamr900_multiple.xfr
+wc: /prod/race/altp/tmp/xamr900_multiple.xfr: No such file or directory
++ unixcount=''
+  if [ ntcount -eq unixcount ]
+    then
+       echo " ftp directory counts are good "
+  else
+       echo " ***** error ***** ftp directory counts do not match "
+       echo " UNIX byte count = $unixcount "
+       abndalrt.ksh ftp_get
+  fi
+
++ [ ntcount -eq unixcount ]
++ echo ' ftp directory counts are good '
+ ftp directory counts are good 
+#STEP Step200R
+#***************************************************************************
+#* STEP200R                                                                *
+#* 1. MAKE SURE DATA IS VOID OF ASCII CONTROL CHARACTERS                   *
+#***************************************************************************
+  export STEPNAME=Step200R
++ STEPNAME=Step200R
++ export STEPNAME
+  echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step200R           Thu' Sep 3 10:08:45 AM PDT 2026
+    Start   Step200R           Thu Sep 3 10:08:45 AM PDT 2026
+  export CLEANIN="$RACE/tmp/${JOBNAME}_${QUALIFIER}.xfr"
++ CLEANIN=/prod/race/altp/tmp/xamr900_multiple.xfr
++ export CLEANIN
+  export CLEANOU="$RACE/tmp/${JOBNAME}_${QUALIFIER}_clean.tmp"
+
++ CLEANOU=/prod/race/altp/tmp/xamr900_multiple_clean.tmp
++ export CLEANOU
+  rm -f $CLEANOU
+
++ rm -f /prod/race/altp/tmp/xamr900_multiple_clean.tmp
+  cat $CLEANIN | tr -d '\032' |\
+  tr '\000-\011\013-\037\177' '[^*]' |\
+  tr '\240' '[ *]' |\
+  sed 's/\^$//' > $CLEANOU
+
+
++ sed 's/\^$//'
++ tr -d '\032'
++ cat /prod/race/altp/tmp/xamr900_multiple.xfr
++ tr '\240' '[ *]'
++ 1> /prod/race/altp/tmp/xamr900_multiple_clean.tmp
++ tr '\000-\011\013-\037\177' '[^*]'
+cat: /prod/race/altp/tmp/xamr900_multiple.xfr: No such file or directory
+#STEP Step300R
+#********************************************************************
+#* STEP300R                                                         *
+#* 1. EXECUTE SQL PROGRAM TO LOAD AND REFORMAT TRANSACTIONS INTO DB *
+#********************************************************************
+  export STEPNAME=Step300R
++ STEPNAME=Step300R
++ export STEPNAME
+  echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step300R           Thu' Sep 3 10:08:45 AM PDT 2026
+    Start   Step300R           Thu Sep 3 10:08:45 AM PDT 2026
+  export ORA_JOBNAME=${JOBNAME}
++ ORA_JOBNAME=xamr900
++ export ORA_JOBNAME
+  export ORA_IN_DIR=$OBJ_TMPDIR
++ ORA_IN_DIR=RACE_ALTP_TMP_DIR
++ export ORA_IN_DIR
+  export ORA_IN_FILE=${JOBNAME}_${QUALIFIER}_clean.tmp
++ ORA_IN_FILE=xamr900_multiple_clean.tmp
++ export ORA_IN_FILE
+  export ORA_SUM_DIR=$OBJ_RPTDIR
++ ORA_SUM_DIR=RACE_ALTP_RPT_DIR
++ export ORA_SUM_DIR
+  export ORA_SUM_FILE=${JOBNAME}a_${QUALIFIER}_refsum_${RPTDATE}.rpt
++ ORA_SUM_FILE=xamr900a_multiple_refsum_20260903100845.rpt
++ export ORA_SUM_FILE
+  export ORA_PRM_DIR=$OBJ_TMPDIR
++ ORA_PRM_DIR=RACE_ALTP_TMP_DIR
++ export ORA_PRM_DIR
+  export ORA_PRM_FILE=${JOBNAME}_${QUALIFIER}_refproc_files.tmp
++ ORA_PRM_FILE=xamr900_multiple_refproc_files.tmp
++ export ORA_PRM_FILE
+  export ORA_ERR_DIR=$OBJ_TMPDIR
++ ORA_ERR_DIR=RACE_ALTP_TMP_DIR
++ export ORA_ERR_DIR
+  export ORA_ERR_FILE=${JOBNAME}_${QUALIFIER}_referrs.tmp
+
++ ORA_ERR_FILE=xamr900_multiple_referrs.tmp
++ export ORA_ERR_FILE
+  export SQL_JOBNAME=$JOBNAME
++ SQL_JOBNAME=xamr900
++ export SQL_JOBNAME
+  export SQL_TMP_PATH=$OBJ_TMPDIR
++ SQL_TMP_PATH=RACE_ALTP_TMP_DIR
++ export SQL_TMP_PATH
+  export SQL_RPT_PATH=$OBJ_RPTDIR
++ SQL_RPT_PATH=RACE_ALTP_RPT_DIR
++ export SQL_RPT_PATH
+  
+sqlplus << CODE_BLOCK 2>&1 > $LOG
+$XAMUSERID
+set serveroutput on;
+set feedback on;
+set termout on;
+set trimspool on;
+set arraysize 200;
+whenever sqlerror exit sql.sqlcode
+
+exec PKG_ALTERNATE_PARTS_LOAD_TRANS.ALTP_REFORMAT_PROCESS('$SQL_JOBNAME','$SQL_TMP_PATH','$SQL_RPT_PATH','$ORA_IN_FILE','$ORA_SUM_FILE','$ORA_PRM_FILE','$ORA_ERR_FILE');
+
+QUIT;
+CODE_BLOCK
+
++ sqlplus
++ 0<< \CODE_BLOCK
+racejob/q1w2e3r4
+set serveroutput on;
+set feedback on;
+set termout on;
+set trimspool on;
+set arraysize 200;
+whenever sqlerror exit sql.sqlcode
+
+exec PKG_ALTERNATE_PARTS_LOAD_TRANS.ALTP_REFORMAT_PROCESS('xamr900','RACE_ALTP_TMP_DIR','RACE_ALTP_RPT_DIR','xamr900_multiple_clean.tmp','xamr900a_multiple_refsum_20260903100845.rpt','xamr900_multiple_refproc_files.tmp','xamr900_multiple_referrs.tmp');
+
+QUIT;
+CODE_BLOCK
+2>& 1 1> /prod/race/altp/tmp/xamr900_1056821.sqlout
+# email and manage report versions
+email_rpt.ksh "${JOBNAME}a"
++ email_rpt.ksh xamr900a
+RCS : email_rpt.ksh,v 1.7 2021/11/02 19:13:13 pg2697 Exp $
+LATEST REPORT TO BE EMAILED: xamr900a_multiple_refsum_20260903100845.txt from /prod/race/altp/tmp.
+rpt_log_retention.ksh "${JOBNAME}a"
+
++ rpt_log_retention.ksh xamr900a
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=xamr900a
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Sep 3 10:08:46 2026
+Version 19.29.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Thu Sep 03 2026 10:08:46 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.30.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.30.0.0.0
+oldest file removed: /prod/race/altp/rpt/xamr900a_multiple_refsum_20260403100424.rpt (due to retention)
+\n End rpt_log_retention.ksh
+#STEP Step400R
+#********************************************************************
+#* STEP400R                                                         *
+#* 1. SAVE COPY OF PARM FILE TO PERMANENT GDG                       *
+#********************************************************************
+  export STEPNAME=Step400R
++ STEPNAME=Step400R
++ export STEPNAME
+  echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step400R           Thu' Sep 3 10:08:46 AM PDT 2026
+    Start   Step400R           Thu Sep 3 10:08:46 AM PDT 2026
+  export TMPFILE=$RACE/tmp/${JOBNAME}_${QUALIFIER}_refproc_files.tmp
++ TMPFILE=/prod/race/altp/tmp/xamr900_multiple_refproc_files.tmp
++ export TMPFILE
+  export PERMFILE=$( setgdg.ksh "$RACE/dat/${JOBNAME}_${QUALIFIER}_refproc_files.dat(+1)" NEW 3)
+
++ setgdg.ksh '/prod/race/altp/dat/xamr900_multiple_refproc_files.dat(+1)' NEW 3
++ PERMFILE=/prod/race/altp/dat/xamr900_multiple_refproc_files.dat.g72
++ export PERMFILE
+  mv $TMPFILE $PERMFILE
+
++ mv /prod/race/altp/tmp/xamr900_multiple_refproc_files.tmp /prod/race/altp/dat/xamr900_multiple_refproc_files.dat.g72
+#STEP Step450R
+#********************************************************************
+#* STEP450R                                                         *
+#* 1. SAVE COPY OF ERROR FILE TO PERMANENT GDG                      *
+#********************************************************************
+  export STEPNAME=Step450R
++ STEPNAME=Step450R
++ export STEPNAME
+  echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step450R           Thu' Sep 3 10:08:46 AM PDT 2026
+    Start   Step450R           Thu Sep 3 10:08:46 AM PDT 2026
+  export TMPFILE=$RACE/tmp/${JOBNAME}_${QUALIFIER}_referrs.tmp
++ TMPFILE=/prod/race/altp/tmp/xamr900_multiple_referrs.tmp
++ export TMPFILE
+  export PERMFILE=$( setgdg.ksh "$RACE/dat/${JOBNAME}_${QUALIFIER}_referrs.dat(+1)" NEW 3)
+
++ setgdg.ksh '/prod/race/altp/dat/xamr900_multiple_referrs.dat(+1)' NEW 3
++ PERMFILE=/prod/race/altp/dat/xamr900_multiple_referrs.dat.g72
++ export PERMFILE
+  mv $TMPFILE $PERMFILE
+
+
++ mv /prod/race/altp/tmp/xamr900_multiple_referrs.tmp /prod/race/altp/dat/xamr900_multiple_referrs.dat.g72
+#STEP Step500R
+#********************************************************************
+#* STEP500R                                                         *
+#* 1. FTP PARM FILE TO NT DIRECTORY                                 *
+#*    (File is ftp'd in the event Data Analyst wants to modify it   *
+#*    prior to update.)                                             *
+#*    NOTE: It MUST be transferred in ascii mode so that each record*
+#*    remains separate (i.e. CRLF is applied). Otherwise binary     *
+#*    transfer wraps the data.                                      *
+#********************************************************************
+  export STEPNAME=Step500R
++ STEPNAME=Step500R
++ export STEPNAME
+  echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step500R           Thu' Sep 3 10:08:46 AM PDT 2026
+    Start   Step500R           Thu Sep 3 10:08:46 AM PDT 2026
+  export FTPFILE=$( setgdg.ksh "$RACE/dat/${JOBNAME}_${QUALIFIER}_refproc_files.dat(0)")
++ setgdg.ksh '/prod/race/altp/dat/xamr900_multiple_refproc_files.dat(0)'
++ FTPFILE=/prod/race/altp/dat/xamr900_multiple_refproc_files.dat.g72
++ export FTPFILE
+  export FTPLOG=$RACE/tmp/${JOBNAME}_ftp_refproc.tmp
+
++ FTPLOG=/prod/race/altp/tmp/xamr900_ftp_refproc.tmp
++ export FTPLOG
+  fileput.exp $FTPFILE ${QUALIFIER}_refproc.txt ${NOVELL}altp ascii | tee $FTPLOG
+
+
++ tee /prod/race/altp/tmp/xamr900_ftp_refproc.tmp
++ fileput.exp /prod/race/altp/dat/xamr900_multiple_refproc_files.dat.g72 multiple_refproc.txt prod/altp ascii
+/tmp/xamr900_xamref.ksh_run: line 178: fileput.exp: not found
+#STEP Step550R
+#********************************************************************
+#* STEP550R                                                         *
+#* 1. FTP ERROR FILE TO NT DIRECTORY                                *
+#*    (File is ftp'd in the event Data Analyst needs to research    *
+#*    errors, and due to unknown file size it's better to ftp it    *
+#*    than email it.)                                               *
+#*    NOTE: It MUST be transferred in ascii mode so that each record*
+#*    remains separate (i.e. CRLF is applied). Otherwise binary     *
+#*    transfer wraps the data.                                      *
+#********************************************************************
+  export STEPNAME=Step550R
++ STEPNAME=Step550R
++ export STEPNAME
+  echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step550R           Thu' Sep 3 10:08:46 AM PDT 2026
+    Start   Step550R           Thu Sep 3 10:08:46 AM PDT 2026
+  export FTPFILE=$( setgdg.ksh "$RACE/dat/${JOBNAME}_${QUALIFIER}_referrs.dat(0)")
++ setgdg.ksh '/prod/race/altp/dat/xamr900_multiple_referrs.dat(0)'
++ FTPFILE=/prod/race/altp/dat/xamr900_multiple_referrs.dat.g72
++ export FTPFILE
+  export FTPLOG=$RACE/tmp/${JOBNAME}_ftp_referrs.tmp
+
++ FTPLOG=/prod/race/altp/tmp/xamr900_ftp_referrs.tmp
++ export FTPLOG
+  fileput.exp $FTPFILE ${QUALIFIER}_referrs.txt ${NOVELL}altp/Internal_Rpts ascii| tee $FTPLOG
+
+
++ tee /prod/race/altp/tmp/xamr900_ftp_referrs.tmp
++ fileput.exp /prod/race/altp/dat/xamr900_multiple_referrs.dat.g72 multiple_referrs.txt prod/altp/Internal_Rpts ascii
+/tmp/xamr900_xamref.ksh_run: line 198: fileput.exp: not found
+#STEP Step560
+#********************************************************************
+#* STEP560                                                         *
+#* 1. FTP SUMMARY RPT TO NT DIRECTORY                               *
+#*    NOTE: It MUST be transferred in ascii mode so that each record*
+#*    remains separate (i.e. CRLF is applied). Otherwise binary     *
+#*    transfer wraps the data.                                      *
+#********************************************************************
+  export STEPNAME=Step560
++ STEPNAME=Step560
++ export STEPNAME
+  echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step560           Thu' Sep 3 10:08:47 AM PDT 2026
+    Start   Step560           Thu Sep 3 10:08:47 AM PDT 2026
+  export FTPFILE=$RACE/rpt/${JOBNAME}a_${QUALIFIER}_refsum_${RPTDATE}.rpt
++ FTPFILE=/prod/race/altp/rpt/xamr900a_multiple_refsum_20260903100845.rpt
++ export FTPFILE
+  export FTPLOG=$RACE/tmp/${JOBNAME}_ftp_refsum.tmp
+
++ FTPLOG=/prod/race/altp/tmp/xamr900_ftp_refsum.tmp
++ export FTPLOG
+  fileput.exp $FTPFILE ${QUALIFIER}_refsum.txt ${NOVELL}altp/Internal_Rpts ascii| tee $FTPLOG
+
+
++ tee /prod/race/altp/tmp/xamr900_ftp_refsum.tmp
++ fileput.exp /prod/race/altp/rpt/xamr900a_multiple_refsum_20260903100845.rpt multiple_refsum.txt prod/altp/Internal_Rpts ascii
+/tmp/xamr900_xamref.ksh_run: line 215: fileput.exp: not found
+#STEP Step600R
+#********************************************************************
+#* STEP600R                                                          *
+#* 1. EMAIL DATA ANALYST THAT REPORTS ARE AVAILABLE FOR REVIEW.     *
+#********************************************************************
+# export STEPNAME=Step600R
+# echo "    Start   ${STEPNAME}           "$(date)
+
+  export MAIL_LIST=$RACE/prm/zxamrefa.prm 
++ MAIL_LIST=/prod/race/altp/prm/zxamrefa.prm
++ export MAIL_LIST
+  export MAIL_TEXT=$RACE/prm/zxamrefb.prm
+
++ MAIL_TEXT=/prod/race/altp/prm/zxamrefb.prm
++ export MAIL_TEXT
+# set email address from parm card and mail
+
+  for VARLIST in `cat $MAIL_LIST`
+    do
+      set $VARLIST
+      export RECIP=$1
+      mailx -s "${JOBNAME} - Reformat" ${RECIP} < $MAIL_TEXT
+  done
+cat $MAIL_LIST
++ cat /prod/race/altp/prm/zxamrefa.prm
++ set Rpt.Altpart.Updates@mitchell.com
++ RECIP=Rpt.Altpart.Updates@mitchell.com
++ export RECIP
++ mailx -s 'xamr900 - Reformat' Rpt.Altpart.Updates@mitchell.com
++ 0< /prod/race/altp/prm/zxamrefb.prm
+  
+
+#STEP Step999R
+#********************************************************************
+#* STEP999R                                                         *
+#* 1. REMOVE TEMP FILES                                             *
+#********************************************************************
+ export STEPNAME=Step999R
++ STEPNAME=Step999R
++ export STEPNAME
+ echo "    Start   ${STEPNAME}           "$(date)
+
++ date
++ echo '    Start   Step999R           Thu' Sep 3 10:08:47 AM PDT 2026
+    Start   Step999R           Thu Sep 3 10:08:47 AM PDT 2026
+ rm -f $RACE/tmp/${JOBNAME}*
+
++ rm -f /prod/race/altp/tmp/xamr900_ftp_referrs.tmp /prod/race/altp/tmp/xamr900_ftp_refproc.tmp /prod/race/altp/tmp/xamr900_ftp_refsum.tmp /prod/race/altp/tmp/xamr900_multiple_clean.tmp /prod/race/altp/tmp/xamr900_multiple_ftp.tmp
+############################################################################
+#  END                                                                     #
+############################################################################\n\n**************************************************************************************************************
+Finished: xamref.ksh    Datetime: 09/03/26 10:08:47   Script: /tmp/xamr900_xamref.ksh_run
+**************************************************************************************************************\n\n
+\n Begin rpt_log_retention.ksh \n
+Processing REPORTID=xamr900_
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Sep 3 10:08:47 2026
+Version 19.29.0.0.0
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Thu Sep 03 2026 10:08:46 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.30.0.0.0
+
+SQL> SQL> SQL> 
+PL/SQL procedure successfully completed.
+
+SQL> SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.30.0.0.0
+oldest file removed: /prod/race/altp/log/xamr900_20260806144736.log (due to retention)
+\n End rpt_log_retention.ksh
+    End    xamr900   Thu Sep 3 10:08:47 AM PDT 2026
