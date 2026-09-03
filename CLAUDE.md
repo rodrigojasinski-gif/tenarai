@@ -99,11 +99,31 @@
   that would skip the discontinue. Likely latent in other procs comparing char columns to COBOL fixed
   fields if the cutover changed CHAR->VARCHAR2 broadly.
 
-## Email recipient separator (always review this)
-- **`mailx` on RHEL does NOT accept `;` between recipients** — it needs **space** (or comma).
-  The old AIX/Novell scripts used `;` (e.g. `MAIL_RECIP="a@x.com; b@x.com"`), which breaks on RHEL.
-- Whenever touching a script that sends mail, **check every `MAIL_RECIP` / recipient list** and
-  convert `;` separators to a single space. Since the call is usually `mailx -s "..." ${MAIL_RECIP}`
-  (unquoted), space-separated values word-split into correct args.
+## Email recipient separator — ONLY spaces (always review this)
+- On RHEL `mailx` is **s-nail**, which rejects **both `;` and `,`** between recipients.
+  Proven in prod (mptr911): `MAIL_TO="a@x.com,b@x.com"` ->
+  `s-nail: ... contains invalid byte ','` / `No recipients specified` / `message not sent` -> job abends rc=4.
+- **The only valid separator is a single space.** The old AIX scripts used `;` and `,` freely.
+- Whenever touching a script that sends mail, **check every recipient list** (`MAIL_RECIP`,
+  `MAIL_TO`, `PROD_MAIL_*`, `TEST_MAIL_*`) and convert `;` and `,` to a single space. The call is
+  usually `mailx -s "..." ${MAIL_TO}` (unquoted), so space-separated values word-split correctly.
 - Mark the change with `rj132422` and note the old separator, e.g.
-  `# rj132422 - space-separated for RHEL mailx (was: ';' separator)`.
+  `# rj132422 - space-separated for RHEL s-nail (was: ',' separator)`.
+
+## `TESTHOST` is unset in prod — it holds the literal `TESTHOSTgoesHERE`
+- Scripts branch TEST vs PROD with `if [ ${THISHOST} = ${TESTHOST} ]`. In RADP the log shows
+  `[ pawapp7017l = TESTHOSTgoesHERE ]` — the variable was never given a real value.
+- In prod this "works" by accident (no match -> PROD branch, which is correct there). **In dev it is
+  dangerous**: `dawapp7017l` also fails to match, so a dev run takes the **PROD branch** and mails
+  the production distribution lists. Verify `TESTHOST` before running anything mail-related in RADD.
+
+## scp with a wildcard filename creates a literal `*` target (mptr045)
+- When `input_file_name` contains a wildcard (e.g. `AP01186O_Level3_*.zip`), the GETIT path skips
+  name resolution and passes the pattern through. The remote side expands it, but the **local
+  destination keeps the literal `*`**, so scp ends up creating a *directory* named
+  `mptr045_AP01186O_Level3_*.zip`. Then `[ ! -s ... ]` passes (a directory has size) and the job
+  reports "Input file pulled ... is good" before `gunzip` fails with
+  `is a directory -- ignored` -> abend rc=2.
+- Fix: resolve the wildcard remotely first (`ssh -nq ${FTP_SITE} "ls -1 <dir>/<pattern>"`), take the
+  concrete file name, and use **that** name for both the scp source and the local target.
+  The old `fileget` resolved the real name before transferring; scp does not.
